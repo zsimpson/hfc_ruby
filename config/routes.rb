@@ -1,5 +1,6 @@
 HfcRuby::Application.routes.draw do
   match 'users/account_created' => "users#account_created"
+  match 'users/create_account' => "users#create_account"
   match '/login' => "users#login"
   match '/logout' => "users#logout"
 

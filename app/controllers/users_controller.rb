@@ -45,7 +45,7 @@ class UsersController < ApplicationController
 			else
 				existing = User.find( :first, :conditions=>["name=?",params[:name]] )
 				if existing
-					@errors.push "Name alrady taken."
+					@errors.push "Name already taken."
 				end
 			end
 			
@@ -77,8 +77,5 @@ class UsersController < ApplicationController
 	def logout
 		session[:user_id] = nil
 		redirect_to "/"
-	end
-
-	def account_created
 	end
 end
