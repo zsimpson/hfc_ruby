@@ -1,0 +1,69 @@
+<script type="text/javascript">
+	function programsTabSelected() {
+		programsLoad();
+	}
+
+	function programsLoad() {
+		$("#programsAndFriends").load( "/programs/programs_and_friends_panel.html", function() {
+			commonSetupElements();
+		});
+	}
+
+	function programsFriendAddByTextField() {
+		$("#programFriendsErrors").html( "" );
+		var name = $("#programFriendAddName").val();
+		$.post( "/friends", {name:name}, function(data) {
+			if( data.success ) {
+				programsLoad();
+			}
+			else {
+				$("#programFriendsErrors").html( data.error );
+			}
+		});
+	}
+
+	function programsFriendDeleteById( id ) {
+		$.ajax({
+			url: "/friends/"+id,
+			type: "DELETE",
+			success: function(data) {
+				if( data.success ) {
+					programsLoad();
+				}
+				else {
+					alert( data.error );
+				}
+			},
+			error: function() {
+				alert( "delete failed" );
+			}
+			
+		});
+	}
+
+	function programsOpen( programId ) {
+		mainTabsSelect( "codePanel" );
+		codeLoadFileById( programId );
+	}
+
+</script>
+
+
+<% if ! User.current_user %>
+	<a href="/login">Login</a> to see your and your friends' programs
+<% else %>
+	<div id="programsControlPanel" class="controlPanel">
+		<form action="javascript:programsFriendAddByTextField()">
+			<input id="programFriendAddName" type="text" style="width:150px;"/>
+			<button>
+				Add friend
+			</button>
+		</form>
+		<div id="programFriendsErrors" style="color:red;">
+		</div>
+	</div>
+
+	<div id="programsAndFriends">
+	</div>
+<% end %>
+

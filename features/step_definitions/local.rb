@@ -30,19 +30,15 @@ Given /^I am not logged in$/ do
 end
 
 Given /^I am logged in as test$/ do
-  u = User.new( :name=>"test", :password=>"password", :password_verify=>"password" )
+  u = User.new( :name=>"test", :password=>"password" )
   u.save!
   visit "/login"
-  fill_in( "Name", :with=>"test" )
-  fill_in( "Password", :with=>"password" )
+  fill_in( "name", :with=>"test" )
+  fill_in( "password", :with=>"password" )
   click_button("Log in")
 end
 
 #########################################################
-
-When /^I close all file tabs$/ do
-  all( ".closeIcon" ).each { |button| button.click }
-end
 
 Then /^inside "([^"]*)" I should see "([^"]*)"$/ do |area,value|
   find(area).should have_content( value )
@@ -68,10 +64,6 @@ Then /^"([^"]*)" should not be visible$/ do |area|
   assert page.find( area ).visible? != true
 end
 
-When /^I click on all the delete friends buttons$/ do
-  all( ".friendDeleteButton" ).each { |button| button.click }
-end
-
 Given /^user "([^"]*)" has a program called "([^"]*)"/ do |name,program|
   u = User.find_by_name( name )
   p = Program.new
@@ -84,28 +76,7 @@ Then /^"([^\"]*)" should be disabled$/ do |id|
   find(id)['disabled'].should == "true"
 end
 
-Given /^there exists a post "([^"]*)" from "([^"]*)"$/ do |post, name|
-  u = User.find_by_name( name )
-  p = Post.new
-  p.user_id = u.id
-  p.content = post
-  p.save!
-end
-
-When /^I fill in the active code area with "([^"]*)"$/ do |value|
-	 evaluate_script "codeSetActiveText('"+value+"')"
-end
-
-Then /^the active code area should contain "([^"]*)"$/ do |value|
-	a = evaluate_script "codeGetActiveText()"
-	assert a.should have_content(value)
-end
-
 Then /^I wait (.*) second(s)?$/ do |secs,plural|
 	sleep( secs.to_i )
-end
-
-When /^I execute "([^"]*)"/ do |name|
-	evaluate_script "codeExecuteByName('"+name+"')"
 end
 

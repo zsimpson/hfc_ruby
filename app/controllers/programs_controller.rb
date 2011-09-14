@@ -64,45 +64,18 @@ class ProgramsController < ApplicationController
 	# Non REST
 	##############################################################################################
 
-	def menu
+	def programs_and_friends_panel
 		@programs = []
-		if current_user
-			@programs.concat( Program.find( :all, :conditions=>{ :user_id=>current_user.id } ) )
+		if User.current_user
+			@programs.concat( Program.find( :all, :conditions=>{ :user_id=>User.current_user.id } ) )
+		end
+
+		@friends = []
+		if User.current_user
+			@friends.concat( User.current_user.friends )
 		end
 
 		render :layout=>false
 	end
-
-	def execute
-		render :json => {
-			:execUrl=>"http://exec1.happysciencecoding.com:5000/execute/"+params[:programId].to_s,
-			:pollUrl=>"http://exec1.happysciencecoding.com:5000/poll"
-		} 
-	end
-
-	def get_id_from_name
-		uid = 0
-		user_name = ""
-
-		if current_user
-			uid = current_user.id
-			user_name = current_user.name
-		end
-		program_name = params[:name]
-
-		match = program_name.split( ":" )
-		if match
-			user_name = match[0]
-			program_name = match[1]
-			uid = User.find_by_name( user_name ).id
-		end
-
-		p = Program.find_by_name( program_name, :conditions=>{ :user_id=>uid } )
-		if p
-			render :json=>{ :id=>p.id }
-		else
-			render :json=>{ :error=>"Not found" }
-		end
-	end
-
+	
 end

@@ -4,10 +4,9 @@ HfcRuby::Application.routes.draw do
   match '/login' => "users#login"
   match '/logout' => "users#logout"
 
-  match '/programs/menu' => "programs#menu"
+  match "/programs/programs_and_friends_panel" => "programs#programs_and_friends_panel"
   resources :programs
   
-  match '/friends/list' => "friends#list"
   resources :friends
   
   root :to => "home#index"

@@ -1,0 +1,42 @@
+<table>
+	<tr>
+		<td style="vertical-align:top; width:50%;">
+			<div class="h1">
+				Your programs
+			</div>
+
+			<div id="programsList">
+				<% if @programs.length == 0 %>
+					You have no programs yet.
+				<% else %>
+					<% for p in @programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+						<%= p.name -%><br/>
+					<% end %>
+				<% end %>
+			</div>
+		</td>
+		<td style="vertical-align:top; width:50%;">
+			<div class="h1">
+				Your friends' programs
+			</div>
+
+			<div id="friendsList">
+				<% if @friends.length == 0 %>
+					You have no friends yet.
+				<% else %>
+					<% for f in @friends.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+						<div>
+							<%= f.name -%>
+							<div class="indent10">
+								<% for p in f.programs %>
+									<%= p.name -%><br/>
+								<% end %>
+							</div>
+						</div>
+					<% end %>
+				<% end %>
+			</div>
+		</td>
+	<tr>
+</table>
+

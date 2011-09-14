@@ -3,7 +3,7 @@
 		$("#mainTabs").tabs();
 
 // TEMP HACK uyntil I figure out why the tabsshow is not getting called on startup
-friendsTabSelected();
+programsTabSelected();
 discussTabSelected();
 
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
@@ -13,14 +13,11 @@ discussTabSelected();
 			if( ui.panel.id == 'codePanel' ) {
 				codeTabSelected();
 			}
-			if( ui.panel.id == 'friendsPanel' ) {
-				friendsTabSelected();
+			if( ui.panel.id == 'programsPanel' ) {
+				programsTabSelected();
 			}
 			if( ui.panel.id == 'discussPanel' ) {
 				discussTabSelected();
-			}
-			if( ui.panel.id == 'pythonModulesPanel' ) {
-				pythonModulesTabSelected();
 			}
 
 			setCookie( "mainTabsSelected", ui.index );
@@ -45,8 +42,9 @@ discussTabSelected();
 	<ul>
 		<li><a href="#homePanel"><span class="tabLabel">Home</span></a></li>
 		<li><a href="#codePanel"><span class="tabLabel">Code</span></a></li>
+		<li><a href="#programsPanel"><span class="tabLabel">Programs</span></a></li>
+		<li><a href="#functionsPanel"><span class="tabLabel">Functions</span></a></li>
 		<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
-		<li><a href="#friendsPanel"><span class="tabLabel">Friends</span></a></li>
 		<li><a href="#helpPanel"><span class="tabLabel">Help</span></a></li>
 		<li><a href="#artPanel"><span class="tabLabel">Art</span></a></li>
 		<li><a href="#tutorialsPanel"><span class="tabLabel">Tutorials</span></a></li>
@@ -61,12 +59,16 @@ discussTabSelected();
 			<%= render 'code_panel.html' %>
 		</div>
 		
-		<div id="discussPanel">
-			<%= render 'discuss_panel.html' %>
+		<div id="programsPanel">
+			<%= render 'programs_panel.html' %>
 		</div>
 
-		<div id="friendsPanel">
-			<%= render 'friends_panel.html' %>
+		<div id="functionsPanel">
+			Public funcions will go here
+		</div>
+
+		<div id="discussPanel">
+			<%= render 'discuss_panel.html' %>
 		</div>
 
 		<div id="helpPanel">

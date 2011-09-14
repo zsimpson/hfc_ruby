@@ -46,20 +46,4 @@ class FriendsController < ApplicationController
 		end
 	end
 
-	def list
-		#@TODO: Use a proper sql select for this
-
-		@friends = []
-		if current_user
-			@friends.concat( current_user.friends )
-		end
-		friend_ids = []
-		for f in @friends
-			friend_ids.push f.friend_user_id
-		end
-		
-		@friend_users = User.find( :all, :conditions => ["id IN (?)", friend_ids] )
-		render :layout=>false
-	end
-
 end
