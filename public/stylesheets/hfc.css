@@ -1,0 +1,276 @@
+body {
+	background-color: #DDDDCC;
+	font: normal 13px calibri,arial,sans-serif;
+}
+
+table {
+	font: normal 13px calibri,arial,sans-serif;
+}
+
+a {
+	font: normal 13px calibri,arial,sans-serif;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+textarea {
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	-webkit-tab-size: 4;
+	tab-size: 4;
+	white-space: pre;
+}
+
+.regularFont {
+	font: normal 13px calibri,arial,sans-serif;
+}
+
+.ui-button-text-only .ui-button-text {
+	padding: 1px 8px 1px 8px;
+}
+
+.ui-tabs-selected {
+	border: 1px solid #aaaaaa !important; 
+	background: #ffffff url(custom-theme/images/ui-bg_inset-hard_80_ffffff_1x100.png) 50% 50% repeat-x !important;
+}
+
+.ui-widget textarea {
+	font: normal 13px consolas, monospace ! important;
+	background-color: #EEEEEE;
+	color: #2222DD;
+}
+
+#mainHeaderLogo {
+	font: normal 16px calibri,arial,sans-serif;
+}
+
+.toggleableDiv {
+	cursor: pointer;
+}
+
+.topHeading {
+	font: normal 25px consolas, monospace;
+	cursor: pointer;
+}
+
+.tabLabel {
+	font: bold 14px calibri,arial,sans-serif;
+	margin-top: 0.2em;
+	color: #000000;
+}
+
+.subtabElement {
+	font: bold 12px calibri,arial,sans-serif;
+	color: #0000FF;
+}
+
+.areaLabel {
+	font: normal 15px calibri,arial,sans-serif;
+	font-weight: bold;
+}
+
+.dragBar {
+	background-color: #FFFFFF;
+}
+
+.thinBorder {
+	border: solid 1px #DDDDDD;
+}
+
+.grayBackground {
+	background-color: #EEEEEE;
+}
+
+.menu {
+	background-color: #D9D8CB;
+	border: solid 1px #505050;
+	padding: 20px 20px 20px 20px;
+}
+
+.padding5 {
+	padding: 5px 5px 5px 5px;
+}
+
+.func {
+	font-weight: bold;
+}
+
+.topPad5 {
+	padding-top: 5px;
+}
+
+.code {
+	color: #2222DD;
+	font: normal 13px consolas, monospace;
+	white-space: pre;
+}
+
+.lesson p {
+	margin-left: 10px;
+}
+
+.lesson a {
+	cursor: pointer;
+}
+
+.lesson h1 {
+	font: bold 15px calibri,arial,sans-serif;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+
+.lesson h2 {
+	font: bold 13px calibri,arial,sans-serif;
+	padding: 0 0 0 0;
+	margin: 0 0 0 5px;
+}
+
+.lesson .code {
+	margin: 0 0 0 15px;
+}
+
+.programNameLineItem {
+	padding: 2px 5px 2px 5px;
+	cursor: pointer;
+}
+
+.messageFrom {
+	font-weight: bold;
+}
+
+.message {
+}
+
+.messageBlock {
+	vertical-align: top;
+}
+
+.home_h1 {
+	padding: 10px 0px 0px  0px;
+	font: bold 16px calibri,arial,sans-serif;
+}
+
+.controlPanel {
+	background-color: #CCD5E1;
+	padding: 10px 10px 10px 10px;
+	margin: 10px 0px 10px 0px;
+}
+
+.areaLabel {
+	font: bold 14px calibri,arial,sans-serif;
+	color: #000000;
+}
+
+.filetab-unselected {
+	margin: 2px 2px 2px 2px;
+	padding: 4px 6px 4px 6px;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.filetab-selected {
+	margin: 2px 2px 2px 2px;
+	padding: 4px 6px 4px 6px;
+	background-color: #EEE;
+	cursor: pointer;
+}
+
+.filetab-fillertab {
+	margin 0px 1px 0px 1px;
+	padding: 4px 6px 4px 6px;
+	background-color: transparent;
+}
+
+.closeIcon {
+	padding: 0px 0px 0px 5px;
+}
+
+.indent10 {
+	padding-left: 10px;
+}
+
+.programsLineItemHover {
+	background-color: white;
+	cursor: pointer;
+}
+
+.menuPanel {
+	padding: 10px 10px 10px 10px;
+	background-color: #F0F0F0;
+	border: 1px solid black;
+}
+
+.friendsName {
+	font-size: 16px;
+}
+
+.menuH1 {
+	font-size: 16px;
+}
+
+.menuH2 {
+	font-size: 14px;
+}
+
+.discussThread {
+	margin-top: 10px;
+	max-width: 800px;
+	background-color: #F0F0F0;
+}
+
+.discussTimeAgo {
+	color: #000080;
+}
+
+.codeTextarea {
+	white-space: pre;
+    overflow: scroll;
+}
+
+#console {
+	font: normal 13px consolas, monospace ! important;
+	padding: 4px 4px 4px 4px;
+}
+
+.consoleStderr {
+	color: red;
+}
+
+.pythonModuleTd {
+	padding: 1px 5px 1px 5px;
+}
+
+/* loginBox
+*******************************************************************/
+.loginBox {
+	margin-top: 20px;
+	background-color: #F0F0F0;
+	border: 1px solid gray;
+	padding: 10px 10px 10px 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.loginBox .h1 {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.loginBox .errors {
+	color: red;
+}
+
+
+/* Home Panel
+*******************************************************************/
+
+#homePanelTop .welcome {
+	font-weight: bold;
+	font-size: 20px;
+}
+
+#homePanelTop .bullets {
+	font-weight: normal;
+	font-size: 16px;
+}

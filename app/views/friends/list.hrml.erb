@@ -1,0 +1,33 @@
+
+<% if @friends.length == 0 %>
+	No friends yet!
+<% else %>
+	<table>
+		<% for i in @friends %>
+			<tr>
+				<td>
+					<div class="friendsName">
+						<%= i.name %>
+					</div>
+				</td>
+				<td>
+					<img class="closeIcon" src="/static/images/tabclose.png" onclick="friendsDeleteById('<%= i.id %>')"/>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div style="margin-left: 5px;">
+						<% for j in i.programs %>
+							<div>
+								<a style="cursor:pointer;" onclick="friendsOpenModule( '<%= j.id -%>' )">
+									<%= j.name %>
+								</a>
+							</div>
+						<% end %>
+					</div>
+				</td>
+			</tr>
+		<% end %>
+	</table>
+<% end %>
+

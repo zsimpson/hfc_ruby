@@ -1,0 +1,43 @@
+<div id="loadProgramMenuPanel" class="menuPanel">
+	<div class="menuH1">
+		Your modules:
+	</div>
+	<div class="indent10">
+		<table>
+			<% for p in @programs %>
+				<tr>
+					<td style="min-width:70px;">
+						<div id="loadProgramLine-<%= p.name -%>" class="programLineItem" moduleId="<%= p.id -%>">
+							<%= p.name -%>
+						</div>
+					</td>
+					<td>
+						<img class="closeIcon"' src="/images/tabclose.png" onclick="codeFileDelete('<%= p.id -%>','<%= p.name -%>')"/>
+					</td>
+				</tr>
+			<% end %>
+		</table>
+	</div>
+
+	<% if false %>
+		<div class="menuH1">
+			Friend's modules:
+		</div>
+		<div class="indent10">
+			{% for i in @friends %}
+				<div class="menuH2">
+					{{ friends[i]['name'] }}
+				</div>
+				<div class="indent10">
+					{% for j in friends[i]['modules'] %}
+						<div class="moduleLineItem" moduleId="{{ j['_id'] }}">
+							{{ j['name'] }}
+						</div>
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
+
+	<% end %>
+</div>
+

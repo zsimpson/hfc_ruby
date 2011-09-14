@@ -1,0 +1,85 @@
+<script type="text/javascript">
+	$(document).ready( function() {
+		$("#mainTabs").tabs();
+
+// TEMP HACK uyntil I figure out why the tabsshow is not getting called on startup
+friendsTabSelected();
+discussTabSelected();
+
+		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
+			if( event.target.id != "mainTabs" ) {
+				return;
+			}
+			if( ui.panel.id == 'codePanel' ) {
+				codeTabSelected();
+			}
+			if( ui.panel.id == 'friendsPanel' ) {
+				friendsTabSelected();
+			}
+			if( ui.panel.id == 'discussPanel' ) {
+				discussTabSelected();
+			}
+			if( ui.panel.id == 'pythonModulesPanel' ) {
+				pythonModulesTabSelected();
+			}
+
+			setCookie( "mainTabsSelected", ui.index );
+		});
+
+		var tab = getCookie( "mainTabsSelected" );
+		if( typeof(tab) != "undefined" ) {
+			$("#mainTabs").tabs( "select", parseInt(tab) );
+		}
+	});
+
+	function mainTabsSelect( which ) {
+		$("#mainTabs").tabs( "select", "#"+which );
+	}
+
+</script>
+
+
+<div id="programToLoad" style="display:none;"><%=@program_to_load-%></div>
+
+<div id="mainTabs">
+	<ul>
+		<li><a href="#homePanel"><span class="tabLabel">Home</span></a></li>
+		<li><a href="#codePanel"><span class="tabLabel">Code</span></a></li>
+		<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
+		<li><a href="#friendsPanel"><span class="tabLabel">Friends</span></a></li>
+		<li><a href="#helpPanel"><span class="tabLabel">Help</span></a></li>
+		<li><a href="#artPanel"><span class="tabLabel">Art</span></a></li>
+		<li><a href="#tutorialsPanel"><span class="tabLabel">Tutorials</span></a></li>
+	</ul>
+
+	<div>
+		<div id="homePanel">
+			<%= render 'home_panel.html' %>
+		</div>
+	
+		<div id="codePanel">
+			<%= render 'code_panel.html' %>
+		</div>
+		
+		<div id="discussPanel">
+			<%= render 'discuss_panel.html' %>
+		</div>
+
+		<div id="friendsPanel">
+			<%= render 'friends_panel.html' %>
+		</div>
+
+		<div id="helpPanel">
+			Help for various things will go here
+		</div>
+		
+		<div id="artPanel">
+			Art interface will go here
+		</div>
+
+		<div id="tutorialsPanel">
+			Tutorials will go here
+		</div>
+		
+	</div>
+</div>

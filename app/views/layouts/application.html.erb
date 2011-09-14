@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Happy Fun Coding</title>
+	<%= stylesheet_link_tag :all %>
+	<%= csrf_meta_tag %>
+
+	<link href="/stylesheets/hfc.css" rel="stylesheet" type="text/css"/>
+	<link href="/stylesheets/custom-theme/jquery-ui-1.8.1.custom.min.css" rel="stylesheet" type="text/css"/>
+	
+	<script src="/javascripts/jquery.js"></script>
+	<script src="/javascripts/jquery-ui.js"></script>
+	<script src="/javascripts/jquery.filetabs.js"></script>
+	<script src="/javascripts/hfc_common.js"></script>
+</head>
+<body>
+
+<table cellpadding="0" cellspacing="0">
+	<tr>
+		<td id="mainHeaderLogo" style="width:100%;">
+			Happy Fun Coding <span style="font-size:10px;">ver 1.2</span>
+			<span style="font-size:12px;">by <a href="http://www.mine-control.com/zack">Zack Booth Simpson</a> and <a href="http://robsresume.com/">Rob Corell</a>
+		</td>
+		<td>
+			<% if User.current_user %>
+				Current&nbsp;user:&nbsp;<span style="font-weight:bold;"><%= User.current_user.name %></span>&nbsp;&nbsp;<a href="/logout">Logout</a>
+			<% else %>
+				Current&nbsp;user:&nbsp;<span style="font-weight:bold;">Anonymous</span>&nbsp;|&nbsp;<a href="/login">Login</a>&nbsp;|&nbsp;<a href="/users/new">Create&nbsp;account</a>
+			<% end %>
+		</td>
+	</tr>
+</table>
+
+<div>
+	<%= yield %>
+</div>
+
+<%= debug(params) if Rails.env.development? %>
+
+</body>
+</html>

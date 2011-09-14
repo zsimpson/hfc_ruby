@@ -1,0 +1,28 @@
+<script type="text/javascript">
+  function discussTabSelected() {
+//    discussLoad();
+  }
+  
+  function discussLoad() {
+//    $("#discussList").load( "/posts/list", function() {
+//      commonSetupElements();
+//    });
+  }
+
+  function discussNew() {
+//    document.location = "/posts/new"
+  }
+</script>
+
+<div id="discussControlPanel" class="controlPanel">
+  <div id="discussErrors">
+  </div>
+    <button id="newTopicButton" onclick="discussNew()" <%= User.current_user ? "" : "disabled" -%> >New topic</button>
+    <% if false %>
+      <input type="text" id="discussSearchFor"/>
+      <button onclick="discussSearch()">Search</button>
+    <% end %>
+</div>
+
+<div id="discussList">
+</div>
