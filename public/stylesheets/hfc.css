@@ -189,6 +189,14 @@ textarea {
 	padding-left: 10px;
 }
 
+.indent20 {
+	padding-left: 20px;
+}
+
+.indent30 {
+	padding-left: 30px;
+}
+
 .programsLineItemHover {
 	background-color: white;
 	cursor: pointer;
@@ -274,3 +282,22 @@ textarea {
 	font-weight: normal;
 	font-size: 16px;
 }
+
+/* Programs and Friends
+*******************************************************************/
+
+#programsAndFriendsPanel .h1 {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+#programsAndFriendsPanel .friendName {
+	padding-left: 10px;
+	font-weight: bold;
+}
+
+#programsAndFriendsPanel .friendPrograms {
+	padding-left: 40px;
+}
+
+

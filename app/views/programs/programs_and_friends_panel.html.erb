@@ -1,4 +1,4 @@
-<table>
+<table id="programsAndFriendsPanel">
 	<tr>
 		<td style="vertical-align:top; width:50%;">
 			<div class="h1">
@@ -10,6 +10,7 @@
 					You have no programs yet.
 				<% else %>
 					<% for p in @programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+						<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="programDeleteById(<%= p.id %>)"/>
 						<%= p.name -%><br/>
 					<% end %>
 				<% end %>
@@ -25,10 +26,13 @@
 					You have no friends yet.
 				<% else %>
 					<% for f in @friends.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
-						<div>
-							<%= f.name -%>
-							<div class="indent10">
-								<% for p in f.programs %>
+						<div class="indent10">
+							<div class="friendName">
+								<img id="delete-friend-<%=f.name-%>" class="closeIcon friendDeleteButton" src="/images/tabclose.png" onclick="programsFriendDeleteById(<%= f.id %>)"/>
+								<%= f.name -%>
+							</div>
+							<div class="friendPrograms">
+								<% for p in f.programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
 									<%= p.name -%><br/>
 								<% end %>
 							</div>

@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
-	protect_from_forgery
+	#protect_from_forgery
+	# Note that to use this you need to use the ruby forms_for stuff everywhere.
+	# I don't do that in all cases so I have this turned off for now
 
 	before_filter :load_user
 	before_filter :browser_type

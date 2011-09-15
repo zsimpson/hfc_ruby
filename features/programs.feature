@@ -34,15 +34,66 @@ Feature: View programs and friends
 
 	@javascript
     Scenario: Existing user should be able to see their friends' programs
-		Given pending
+		Given I am logged in as test
+		And there exists a user named "zack" with password "password"
+		And user "zack" has a program called "hello_world"
+		When I follow "Programs"
+		And I fill in "programFriendAddName" with "zack"
+		And I press "Add friend"
+		Then inside "#friendsList" I should see "zack"
+		And inside "#friendsList" I should see "hello_world"
+
+	@javascript
+    Scenario: Existing user should not be able to add themselves as a friend
+		Given I am logged in as test
+		When I follow "Programs"
+		And I fill in "programFriendAddName" with "test"
+		And I press "Add friend"
+		Then inside "#friendsList" I should not see "test"
+		And inside "#programFriendsErrors" I should see "trying to add self as friend"
+
+	@javascript
+    Scenario: Existing user should not be able to add non-existing person as a friend
+		Given I am logged in as test
+		When I follow "Programs"
+		And I fill in "programFriendAddName" with "oinkoink"
+		And I press "Add friend"
+		Then inside "#friendsList" I should not see "oinkoink"
+		And inside "#programFriendsErrors" I should see "Friend not found"
+
+	@javascript
+    Scenario: Existing user should not be able to add same friend twice
+		Given I am logged in as test
+		And there exists a user named "zack" with password "password"
+		When I follow "Programs"
+		And I fill in "programFriendAddName" with "zack"
+		And I press "Add friend"
+		Then inside "#friendsList" I should see "zack"
+		And I fill in "programFriendAddName" with "zack"
+		And I press "Add friend"
+		And inside "#programFriendsErrors" I should see "duplicate"
 
 	@javascript
     Scenario: Existing user should be able to delete their own program
-		Given pending
+		Given I am logged in as test
+		And user "test" has a program called "hello_world"
+		When I follow "Programs"
+		Then inside "#programsList" I should see "hello_world"
+		When I click on div "#delete-program-test-hello_world"
+		And I wait 1 second
+		And inside "#programsList" I should not see "hello_world"
 
 	@javascript
     Scenario: Existing user should be able to delete a friend
-		Given pending
+		Given I am logged in as test
+		And there exists a user named "zack" with password "password"
+		When I follow "Programs"
+		And I fill in "programFriendAddName" with "zack"
+		And I press "Add friend"
+		Then inside "#friendsList" I should see "zack"
+		When I click on div "#delete-friend-zack"
+		And I wait 1 second
+		Then inside "#friendsList" I should not see "zack"
 
 	@javascript
     Scenario: Existing user should be able to go to their own program
@@ -50,17 +101,5 @@ Feature: View programs and friends
 
 	@javascript
     Scenario: Existing user should be able to go to a friend's program
-		Given pending
-
-	@javascript
-    Scenario: Existing user should not be able to themselves as a friend
-		Given pending
-
-	@javascript
-    Scenario: Existing user should not be able to add non-existing person as a friend
-		Given pending
-
-	@javascript
-    Scenario: Existing user should not be able to add same friend twice
 		Given pending
 

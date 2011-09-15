@@ -45,6 +45,24 @@
 		mainTabsSelect( "codePanel" );
 		codeLoadFileById( programId );
 	}
+	
+	function programDeleteById( programId ) {
+		$.ajax({
+			url: "/programs/"+id,
+			type: "DELETE",
+			success: function(data) {
+				if( data.success ) {
+					programsLoad();
+				}
+				else {
+					alert( data.error );
+				}
+			},
+			error: function() {
+				alert( "delete failed" );
+			}
+		});
+	}
 
 </script>
 
