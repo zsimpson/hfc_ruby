@@ -17,7 +17,8 @@
 	var codeMirrorFunction = null;
 	var codeMirrorStart = null;
 	var codeMirrorLoop = null;
-	var codeCurrentProgramName = "";
+	var codeCurrentProgramName = "Un-named";
+	var codeCurrentProgramId = 0;
 
 	$(document).ready( function() {
 		$("#codeFunctionCodeDivDrag").mousedown( function(event) {
@@ -70,6 +71,15 @@
 		codeMirrorFunction = CodeMirror.fromTextArea( document.getElementById("codeFunctionEditor"), codeMirrorOptions );
 		codeMirrorStart    = CodeMirror.fromTextArea( document.getElementById("codeStartEditor"   ), codeMirrorOptions );
 		codeMirrorLoop     = CodeMirror.fromTextArea( document.getElementById("codeLoopEditor"    ), codeMirrorOptions );
+
+		var startCode = getCookie( "startCode" );
+		if( startCode )  {
+			codeMirrorStart.setValue( startCode );
+		}
+		var loopCode = getCookie( "loopCode" );
+		if( loopCode )  {
+			codeMirrorLoop.setValue( loopCode );
+		}
 	});
 
 	$(window).resize( codeResize );
@@ -109,13 +119,15 @@
 		$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
 	}
 
-	function codeLoadBySymbol( symbol ) {
-		$.get( "/programs/load_by_symbol", { symbol:symbol }, function(data) {
+	function codeLoad( symbol ) {
+		$.get( "/programs/load", { symbol:symbol }, function(data) {
 			if( data.success ) {
-				codeMirrorStart.setValue( data.startCode );
-				codeMirrorLoop.setValue( data.loopCode );
+				codeCurrentProgramIsNew = false;
 				codeCurrentProgramName = data.name;
+				codeCurrentProgramId = data.id;
 				$("#codeCurrentProgramName").html( codeCurrentProgramName );
+				codeMirrorStart.setValue( data.start_code ? data.start_code : "" );
+				codeMirrorLoop.setValue( data.loop_code ? data.loop_code : "" );
 			}
 			else {
 				alert( data.error );
@@ -124,14 +136,16 @@
 	}
 
 	function codeNew() {
+		// STOP the program
+		// @TODO
+		
 		// CLEAR the editors
 		codeMirrorFunction.setValue("");
 		codeMirrorStart.setValue("");
 		codeMirrorLoop.setValue("");
+		codeCurrentProgramId = 0;
 		codeCurrentProgramName = "Un-named";
 		$("#codeCurrentProgramName").html( codeCurrentProgramName );
-
-		// STOP the program
 	}
 		
 	function codeSave() {
@@ -139,21 +153,26 @@
 			codeSaveAs();
 		}
 		else {
-			$.ajax({
-				url:"/programs/"+codeCurrentProgramName,
-				type:"PUT",
-				success:function(data) {
+			$.post(
+				"/programs/save",
+				{id:codeCurrentProgramId, name:codeCurrentProgramName, loop_code:codeMirrorLoop.getValue(), start_code:codeMirrorStart.getValue() },
+				function(data) {
 					if( data.success ) {
+						codeCurrentProgramId = data.id;
+						codeCurrentProgramName = data.name;
+						$("#codeCurrentProgramName").html( codeCurrentProgramName );
 					}
 					else {
 						alert( data.error );
 					}
 				}
-			});
+			);
 		}
 	}
 	
 	function codeSaveAs() {
+		codeCurrentProgramId = 0;
+		$("#codeSaveAsName").val( codeCurrentProgramName );
 		$("#codeMainControls").css( "display", "none" );
 		$("#codeSaveAsDialog").css( "display", "block" );
 	}
@@ -170,6 +189,12 @@
 		$("#codeSaveAsDialog").css( "display", "none" );
 	}
 	
+	function codeLoginToSave() {
+		setCookie( "startCode", codeMirrorStart.getValue() );
+		setCookie( "loopCode", codeMirrorLoop.getValue() );
+		document.location = "/login";
+	}
+	
 	
 </script>
 
@@ -180,29 +205,36 @@
 		<button onclick="codeNew()">
 			New
 		</button>
-
-		<button onclick="codeSave()">
-			Save
-		</button>
 		
-		<button onclick="codeSaveAs()">
-			Save As...
-		</button>
+		<% if User.current_user %>
+
+			<button onclick="codeSave()">
+				Save
+			</button>
+			
+			<button onclick="codeSaveAs()">
+				Save As...
+			</button>
+			
+			Version:
+
+			<button onclick="codeVersionPrev()">
+				Previous
+			</button>
+
+			<button onclick="codeVersionNext()">
+				Next
+			</button>
+
+			<button onclick="codeVersionLatest()">
+				Latest
+			</button>
+		<% else %>
 		
-		Version:
-
-		<button onclick="codeVersionPrev()">
-			Previous
-		</button>
-
-		<button onclick="codeVersionNext()">
-			Next
-		</button>
-
-		<button onclick="codeVersionLatest()">
-			Latest
-		</button>
-
+			<a id="codeLoginToSaveLink" onclick="codeLoginToSave()">Login to save</a>
+		
+		<% end %>
+		
 		<span style="float:right;">
 			<button onclick="codeVersionLatest()">
 				Pause
@@ -240,7 +272,7 @@
 	<div id="codeSaveAsDialog" style="display:none;">
 		<span class="areaLabel">Save as:</span>
 		<input id="codeSaveAsName" type="text" style="width:150px;">
-		<button onlcick="codeSaveAsOk()">
+		<button onclick="codeSaveAsOk()">
 			Save
 		</button>
 		<button onclick="codeSaveAsCancel()">

@@ -5,7 +5,8 @@ HfcRuby::Application.routes.draw do
   match '/logout' => "users#logout"
 
   match "/programs/programs_and_friends_panel" => "programs#programs_and_friends_panel"
-  match "/programs/load_by_symbol" => "programs#load_by_symbol"
+  match "/programs/load" => "programs#load"
+  match "/programs/save" => "programs#save"
   resources :programs
   
   resources :friends

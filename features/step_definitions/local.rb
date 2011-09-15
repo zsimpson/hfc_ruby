@@ -78,6 +78,11 @@ Given /^user "([^"]*)" has a program called "([^"]*)"/ do |name,program|
 	p.user_id = u.id
 	p.name = program
 	p.save!
+	pv = ProgramVersion.new
+	pv.program_id = p.id
+	pv.start_code = "// this is start code"
+	pv.loop_code = "// this is loop code"
+	pv.save!
 end
 
 Then /^"([^\"]*)" should be disabled$/ do |id|
@@ -88,3 +93,13 @@ Then /^I wait (.*) second(s)?$/ do |secs,plural|
 	sleep( secs.to_i )
 end
 
+When /^I fill in the main code areas with "([^"]*)" and "([^"]*)"$/ do |startval,loopval|
+	page.execute_script( "codeMirrorStart.setValue('"+startval+"'); codeMirrorLoop.setValue('"+loopval+"');" )
+end
+
+Then /^the main code areas should contain "([^"]*)" and "([^"]*)"$/ do |startval,loopval|
+	start_val = page.evaluate_script( "codeMirrorStart.getValue()" )
+	loop_val = page.evaluate_script( "codeMirrorLoop.getValue()" )
+	startval.should == start_val
+	loopval.should == loop_val
+end

@@ -13,47 +13,6 @@ class ProgramsController < ApplicationController
 		end
 	end
 
-	def create
-		if User.current_user
-			@program = Program.find_by_user_id_and_name( User.current_user.id, params[:name] )
-			if @program
-				render :json => { :error=>"Duplicate program found" } 
-			else
-				@program = Program.new
-				@program.user_id = User.current_user.id
-				@program.name = params[:name]
-				@program.save!
-
-				@program_version = ProgramVersion.new
-				@program_version.program_id = @program.id
-				@program_version.code = params[:code]
-				@program_version.save!
-
-				render :json => { :id=>@program.id, :name=>@program.name, :code=>@program_version.code } 
-			end
-		else
-			render :json => { :error=>"Not logged in" } 
-		end
-	end
-
-	def update
-		if User.current_user
-			@program = Program.find( params[:id] )
-			if @program
-				@program_version = ProgramVersion.new
-				@program_version.program_id = @program.id
-				@program_version.loop_code = params[:loop_code]
-				@program_version.start_code = params[:start_code]
-				@program_version.save!
-				render :json => { :id=>@program.id, :loop_code=>@program_version.loop_code, :start_code=>@program_version.start_code, :name=>@program.name } 
-			else
-				render :json => { :error=>"Program not found" } 
-			end
-		else
-			render :json => { :error=>"Not logged in" } 
-		end
-	end
-	
 	def destroy
 		@program = Program.find( params[:id] )
 		if User.current_user && User.current_user.id == @program.user_id
@@ -81,7 +40,7 @@ class ProgramsController < ApplicationController
 		render :layout=>false
 	end
 	
-	def load_by_symbol
+	def load
 		if params[:symbol].match( /^[0-9]+$/ )
 			@program = Program.find( params[:symbol] )
 		else
@@ -98,7 +57,14 @@ class ProgramsController < ApplicationController
 		if @program
 			program_version = @program.get_latest_version
 			if program_version
-				render :json=>{ :success=>true, :name=>@program.name, :startCode=>program_version.start_code, :loopCode=>program_version.loop_code }
+				if ! program_version.start_code
+					program_version.start_code = ""
+				end
+				if ! program_version.loop_code
+					program_version.loop_code = ""
+				end
+				logger.debug "** load, start="+program_version.start_code+" loop="+program_version.loop_code
+				render :json=>{ :success=>true, :id=>@program.id, :name=>@program.name, :start_code=>program_version.start_code, :loop_code=>program_version.loop_code }
 			else
 				render :json=>{ :error=>"Program version not found" }
 			end
@@ -107,4 +73,93 @@ class ProgramsController < ApplicationController
 		end
 	end
 	
+	def save
+		if params[:id] && params[:id].to_i != 0
+			# We're saving an existing program
+			@program = Program.find( params[:id] )
+			if @program
+				@program_version = ProgramVersion.new
+				@program_version.program_id = @program.id
+				@program_version.loop_code = params[:loop_code]
+				@program_version.start_code = params[:start_code]
+				@program_version.save!
+				render :json => { :success=>true, :id=>params[:id], :name=>@program.name } 
+			else
+				render :json=>{ :error=>"Program not found" }
+			end
+		else
+			# Either we're saving something new that had no idea or we're doing a save as to make a new program
+			if User.current_user
+				params[:name].gsub!( ' ', '_' )
+				params[:name].gsub!( /[^A-Za-z0-9_-]/, '' )
+			
+				if Program.find_by_name( params[:name] )
+					render :json=>{ :error=>"Duplicate name" }
+				else
+					@program = Program.new
+					@program.user_id = User.current_user.id
+					@program.name = params[:name]
+					@program.save!
+					@program_version = ProgramVersion.new
+					@program_version.program_id = @program.id
+					@program_version.loop_code = params[:loop_code]
+					@program_version.start_code = params[:start_code]
+					@program_version.save!
+					render :json => { :success=>true, :id=>params[:id], :name=>@program.name } 
+				end
+			else
+				render :json=>{ :error=>"Not logged in" }
+			end
+		end
+	end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+	def new
+		@program = Program.new
+		@program.save!
+		@program.name = "Program-"+@program.id.to_s
+		@program.user_id = User.current_user ? User.current_user.id : 0
+		@program.save!
+		
+		@program_version = ProgramVersion.new
+		@program_version.program_id = @program.id
+		@program_version.user_id = @program.user_id
+		@program_version.save!
+		
+		render :json => { :success=>true, :id=>@program.id, :name=>@program.name } 
+	end
+	
+	def update
+		if User.current_user
+			@program = Program.find( params[:id] )
+			if @program
+				@program.name = params[:name]
+				if @program.user_id == 0
+					@program.user_id = User.current_user.id
+					@program.save!
+				end
+				@program_version = ProgramVersion.new
+				@program_version.program_id = @program.id
+				@program_version.loop_code = params[:loop_code]
+				@program_version.start_code = params[:start_code]
+				@program_version.save!
+				render :json => { :success=>true, :id=>@program.id, :loop_code=>@program_version.loop_code, :start_code=>@program_version.start_code, :name=>@program.name } 
+			else
+				render :json => { :error=>"Program not found" } 
+			end
+		else
+			render :json => { :error=>"Not logged in" } 
+		end
+	end
+	
