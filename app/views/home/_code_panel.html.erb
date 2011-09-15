@@ -4,42 +4,247 @@
 <link rel="stylesheet" href="/javascripts/codemirror-2.13/theme/default.css">
 
 <script type="text/javascript">
+
+	var codeMirrorFunction = null;
+	var codeMirrorStart = null;
+	var codeMirrorLoop = null;
+
+	$(document).ready( function() {
+		$("#codeFunctionCodeDivDrag").mousedown( function(event) {
+			$("body").mousemove( function(event) {
+				var top = $("#codeFunctionCodeDiv").offset().top;
+				$("#codeFunctionCodeDiv").css( "height", event.pageY - top );
+				$("#codeFunctionEditor").css( "height", $("#codeFunctionCodeDiv").height() - $("#codeFunctionEditor").position().top );
+				resize();
+			});
+			$("body").mouseup( function() {
+				$(this).unbind( "mousemove" );
+			});
+		});
+		
+		$("#codeStartCodeDivDrag").mousedown( function(event) {
+			$("body").mousemove( function(event) {
+				var top = $("#codeStartCodeDiv").offset().top;
+				$("#codeStartCodeDiv").css( "height", event.pageY - top );
+				$("#codeStartEditor").css( "height", event.pageY - top - 30 );
+				resize();
+			});
+			$("body").mouseup( function() {
+				$(this).unbind( "mousemove" );
+			});
+		});
+
+		$("#codeLoopCodeDivDrag").mousedown( function(event) {
+			var top = $("#codeLoopCodeDiv").offset().top;
+			$("body").mousemove( function(event) {
+				$("#codeLoopCodeDiv").css( "height", event.pageY - top );
+				$("#codeLoopEditor").css( "height", event.pageY - top - 20 );
+				resize();
+			});
+			$("body").mouseup( function() {
+				$(this).unbind( "mousemove" );
+			});
+		});
+
+		codeMirrorFunction = CodeMirror.fromTextArea( document.getElementById("codeFunctionEditor"), {tabMode:"shift",indentUnit:4,matchBrackets:true,mode:{name:"javascript"} } );
+		codeMirrorStart    = CodeMirror.fromTextArea( document.getElementById("codeStartEditor"   ), {tabMode:"shift",indentUnit:4,matchBrackets:true,mode:{name:"javascript"} } );
+		codeMirrorLoop     = CodeMirror.fromTextArea( document.getElementById("codeLoopEditor"    ), {tabMode:"shift",indentUnit:4,matchBrackets:true,mode:{name:"javascript"} } );
+		
+		//codeMirrorStart.setOption( "theme", "night" );
+		
+	});
+
+	$(window).resize( codeResize );
+	
+	function codeTabSelected() {
+		codeResize();
+	}
+
+	function codeResize() {
+		// ARRANGE all the divs
+		var pageW = $(window).width();
+		var pageH = $(window).height();
+		var mcTop = $("#codeMainDiv").offset().top;
+		var h = pageH - mcTop - 25;
+		
+		$("#codeMainDiv").css( "position", "relative" );
+		$("#codeMainDiv").css( "width", "100%" );
+		$("#codeMainDiv").css( "height", h );
+		
+		var mainW = $("#codeMainDiv").width() - 20;  // 20 for the scroll bar
+		var spacing = 5;
+		var col2W = 350;
+		var col1W = mainW - col2W - spacing;
+		var col1L = 0;
+		var col2L = col1L + col1W + spacing;
+
+		$("#codeMainCol1").css( "position", "absolute" );
+		$("#codeMainCol1").css( "width", col1W );
+		$("#codeMainCol1").css( "height", h );
+		$("#codeMainCol1").css( "left", col1L );
+		
+		$("#codeMainCol2").css( "position", "absolute" );
+		$("#codeMainCol2").css( "width", col2W );
+		$("#codeMainCol2").css( "height", h );
+		$("#codeMainCol2").css( "left", col2L );
+
+		$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
+	}
+
+	function codeNew() {
+		// CLEAR the editors
+		// STOP the program
+	}
+	
+	
 </script>
 
-
-<div id="graphShow">
-</div>
-
-<div id="programsLoadMenu">
-</div>
-
 <div id="codeControlPanel" class="controlPanel">
-	<button>
+	Current program: <span id="codeCurrentProgramName"></span>
+
+	<button onclick="codeNew()">
 		New
 	</button>
 
-	<button>
+	<button onclick="codeSave()">
 		Save
+	</button>
+	
+	<button onclick="codeSaveAs()">
+		Save As...
 	</button>
 	
 	Version:
 
-	<button>
-		Prev.
+	<button onclick="codeVersionPrev()">
+		Previous
 	</button>
 
-	<button>
+	<button onclick="codeVersionNext()">
 		Next
 	</button>
 
-	<button>
-		Curr.
+	<button onclick="codeVersionHead()">
+		Head
 	</button>
 
+	<span style="float:right;">
+		<button onclick="codeVersionHead()">
+			Pause
+		</button>
+
+		<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
+		<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
+		<span id="codeFps" style="width:20px;"></span>
+		<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
+		<span>Frame rate: </span>
+	</span>
+	
+	<% if false %>
+		<div id="codeDebugDiv">
+			<div class="areaLabel toggleableDiv">
+				<span class="expandIcon">+</span> Debug<span class="regularFont"> (trace from debug function)</span>
+			</div>
+			<div class="thinBorder grayBackground toggleableDivContents" id="debugStream" style="display:none; white-space:nowrap; overflow:auto; width:100%; height:150px;">
+			</div>
+		</div>
+
+		<div>
+			<div class="areaLabel toggleableDiv">
+				<span class="expandIcon">+</span> Comments<span class="regularFont" id="programCommentsCount"></span>
+				<% if ! @user %>
+					<span class="regularFont">Login to post</span>
+				<% end %>
+			</div>
+			<div class="toggleableDivContents" id="programComments" style="display:none;">
+			</div>
+		</div>
+	<% end %>
+	
 </div>
 
 <div id="codeErrors">
 </div>
 
-<div id="codeMain">
+<div id="codeMainDiv" cellpadding="0" cellspacing="5" style="width:100%; overflow-x:hidden; overflow-y:scroll;">
+
+	<div id="codeMainCol1" style="vertical-align:top;">
+			
+		<div id="codeFunctionCodeDiv" style="display:none;">
+			<div>
+				<span id="codeMasterErrorState" class="areaLabel" style="background-color:red; color:white;">
+				</span>
+			</div>
+			<div id="codeFunctionCodeErrorState">
+				<span class="areaLabel">
+					Function
+				</span>
+				<button onclick="saveFunction()">Done</button>
+				<button onclick="cancelFunction()">Cancel</button>
+				<span class="areaLabel">
+					Version:
+				</span>
+				<button onclick="changeVersionFunction('prev')">Previous</button>
+				<button onclick="changeVersionFunction('next')">Next</button>
+				<button onclick="changeVersionFunction('curr')">Head</button>
+				<div id="functionVersionLabel"></div>
+			</div>
+			<textarea id="codeFunctionEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
+		</div>
+
+		<div id="codeFunctionCodeDivDrag" class="dragBar" style="text-align:center; display:none; height:5px; width:100%; cursor:move;">
+			<img src="/images/drag.png"/ style="position:relative; top:3px;">
+		</div>
+
+		<div id="codeStartCodeDiv">
+			<span class="areaLabel">Start code</span>
+			<span id="startCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
+			<button style="visibility:hidden;">W</button>
+			<textarea id="codeStartEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;">Write Javascript here that runs once</textarea>
+		</div>
+
+		<div id="codeStartCodeDivDrag" class="dragBar" style="text-align:center; height:5px; width:100%; cursor:move;">
+			<img src="/images/drag.png"/ style="position:relative; top:3px;">
+		</div>
+
+		<div id="codeLoopCodeDiv">
+			<span class="areaLabel">Loop code</span>
+			<span id="codeLoopCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
+			<textarea id="codeLoopEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:300px;">Write Javascript here that runs over and over</textarea>
+		</div>
+
+		<div id="codeLoopCodeDivDrag" class="dragBar" style="text-align:center; display:block; height:5px; width:100%; cursor:move;">
+			<img src="/images/drag.png"/ style="position:relative; top:3px;">
+		</div>
+
+
+	</div>
+
+	<div id="codeMainCol2" style="vertical-align:top; height:350px;">
+		<div>
+			<span class="areaLabel">Canvas</span>
+		</div>
+
+		<div style="position:relative; height:350px; width:350px;">
+			<canvas id="codeMainCanvas0" class="thinBorder" style="background-color:blue; width:350px; height:350px; position:absolute; left:0; top:0;">
+			</canvas>
+			<canvas id="codeMainCanvas1" class="thinBorder" style="background-color:blue; width:350px; height:350px; position:absolute; left:0; top:0;">
+			</canvas>
+		</div>
+
+		<div id="codeTwiddlersArea" style="padding-top:5px;">
+			<div class="areaLabel">
+				Twiddlers 
+			</div>
+			<div class="thinBorder grayBackground">
+				<div id="codeCreateATwiddlerNote" style="padding:5px 5px 5px 5px;">
+					Create a twiddler by starting a variable name with underscore
+				</div>
+				<table id="codeTwiddlers">
+				</table>
+			</div>
+		</div>
+
+	</div>
+
 </div>

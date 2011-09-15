@@ -2,9 +2,11 @@
 	$(document).ready( function() {
 		$("#mainTabs").tabs();
 
-// TEMP HACK uyntil I figure out why the tabsshow is not getting called on startup
-programsTabSelected();
-discussTabSelected();
+		// TEMP HACK until I figure out why the tabsshow is not getting called on startup
+		programsTabSelected();
+		discussTabSelected();
+		codeTabSelected();
+		// END HACK
 
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
 			if( event.target.id != "mainTabs" ) {
@@ -35,7 +37,6 @@ discussTabSelected();
 
 </script>
 
-
 <div id="programToLoad" style="display:none;"><%=@program_to_load-%></div>
 
 <div id="mainTabs">
@@ -43,7 +44,7 @@ discussTabSelected();
 		<li><a href="#homePanel"><span class="tabLabel">Home</span></a></li>
 		<li><a href="#codePanel"><span class="tabLabel">Code</span></a></li>
 		<li><a href="#programsPanel"><span class="tabLabel">Programs</span></a></li>
-		<li><a href="#functionsPanel"><span class="tabLabel">Functions</span></a></li>
+		<li><a href="#functionsPanel"><span class="tabLabel">Globals</span></a></li>
 		<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
 		<li><a href="#helpPanel"><span class="tabLabel">Help</span></a></li>
 		<li><a href="#artPanel"><span class="tabLabel">Art</span></a></li>

@@ -1,7 +1,4 @@
 class FriendsController < ApplicationController
-	def show
-	end
-	
 	def create
 		if User.current_user
 			@friendship = Friendship.new
