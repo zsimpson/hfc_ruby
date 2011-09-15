@@ -4,6 +4,6 @@ class Program < ActiveRecord::Base
 	has_many :program_versions, :dependent=>:destroy
 	
 	def get_latest_version
-		ProgramVersion.first( :conditions=>{ :program_id => self.id }, :order=>"created_at DESC" )
+		pv = ProgramVersion.first( :conditions=>{ :program_id => self.id }, :order=>"created_at DESC" )
 	end
 end

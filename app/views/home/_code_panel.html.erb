@@ -164,6 +164,7 @@
 					}
 					else {
 						alert( data.error );
+						codeCurrentProgramName = "Un-named";
 					}
 				}
 			);
@@ -316,10 +317,9 @@
 		</div>
 
 		<div id="codeStartCodeDiv">
-			<span class="areaLabel">Start code</span>
+			<span class="areaLabel">Start code</span>&nbsp;<span>(Write code here that runs once)</span>
 			<span id="startCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
-			<button style="visibility:hidden;">W</button>
-			<textarea id="codeStartEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;">Write Javascript here that runs once</textarea>
+			<textarea id="codeStartEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
 		</div>
 
 		<div id="codeStartCodeDivDrag" class="dragBar" style="text-align:center; height:5px; width:100%; cursor:move;">
@@ -327,9 +327,9 @@
 		</div>
 
 		<div id="codeLoopCodeDiv">
-			<span class="areaLabel">Loop code</span>
+			<span class="areaLabel">Loop code</span>&nbsp;<span>(Write code here that runs over and over)</span>
 			<span id="codeLoopCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
-			<textarea id="codeLoopEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:300px;">Write Javascript here that runs over and over</textarea>
+			<textarea id="codeLoopEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:300px;"></textarea>
 		</div>
 
 		<div id="codeLoopCodeDivDrag" class="dragBar" style="text-align:center; display:block; height:5px; width:100%; cursor:move;">

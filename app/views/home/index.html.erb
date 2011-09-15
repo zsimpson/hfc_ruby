@@ -6,6 +6,7 @@
 		programsTabSelected();
 		discussTabSelected();
 		codeTabSelected();
+		helpTabSelected();
 		// END HACK
 
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
@@ -20,6 +21,9 @@
 			}
 			if( ui.panel.id == 'discussPanel' ) {
 				discussTabSelected();
+			}
+			if( ui.panel.id == 'helpPanel' ) {
+				helpTabSelected();
 			}
 
 			setCookie( "mainTabsSelected", ui.index );
@@ -73,7 +77,7 @@
 		</div>
 
 		<div id="helpPanel">
-			Help for various things will go here
+			<%= render 'help_panel.html' %>
 		</div>
 		
 		<div id="artPanel">
