@@ -10,8 +10,8 @@
 					You have no programs yet.
 				<% else %>
 					<% for p in @programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
-						<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="programDeleteById(<%= p.id %>)"/>
-						<%= p.name -%><br/>
+						<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="programsDeleteById(<%= p.id %>)"/>
+						<a onclick="programsOpenById(<%=p.id-%>)"><%= p.name -%></a><br/>
 					<% end %>
 				<% end %>
 			</div>
@@ -33,7 +33,7 @@
 							</div>
 							<div class="friendPrograms">
 								<% for p in f.programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
-									<%= p.name -%><br/>
+									<a onclick="programsOpenById(<%=p.id-%>)"><%= p.name -%></a><br/>
 								<% end %>
 							</div>
 						</div>

@@ -1,13 +1,23 @@
 <script src="/javascripts/codemirror-2.13/lib/codemirror.js"></script>
 <link rel="stylesheet" href="/javascripts/codemirror-2.13/lib/codemirror.css">
-<script src="/javascripts/codemirror-2.13/mode/python/python.js"></script>
+<script src="/javascripts/codemirror-2.13/mode/javascript/javascript.js"></script>
 <link rel="stylesheet" href="/javascripts/codemirror-2.13/theme/default.css">
+<link rel="stylesheet" href="/javascripts/codemirror-2.13/theme/night.css">
+<link rel="stylesheet" href="/javascripts/codemirror-2.13/theme/elegant.css">
+<link rel="stylesheet" href="/javascripts/codemirror-2.13/theme/neat.css">
+
+<style>
+	.CodeMirror {
+		background-color: #F0F0F0;
+	}
+</style>
 
 <script type="text/javascript">
 
 	var codeMirrorFunction = null;
 	var codeMirrorStart = null;
 	var codeMirrorLoop = null;
+	var codeCurrentProgramName = "";
 
 	$(document).ready( function() {
 		$("#codeFunctionCodeDivDrag").mousedown( function(event) {
@@ -27,6 +37,7 @@
 				var top = $("#codeStartCodeDiv").offset().top;
 				$("#codeStartCodeDiv").css( "height", event.pageY - top );
 				$("#codeStartEditor").css( "height", event.pageY - top - 30 );
+				$(codeMirrorStart.getScrollerElement()).css( "height", event.pageY - top - 30 );
 				resize();
 			});
 			$("body").mouseup( function() {
@@ -39,6 +50,7 @@
 			$("body").mousemove( function(event) {
 				$("#codeLoopCodeDiv").css( "height", event.pageY - top );
 				$("#codeLoopEditor").css( "height", event.pageY - top - 20 );
+				$(codeMirrorLoop.getScrollerElement()).css( "height", event.pageY - top - 30 );
 				resize();
 			});
 			$("body").mouseup( function() {
@@ -46,12 +58,18 @@
 			});
 		});
 
-		codeMirrorFunction = CodeMirror.fromTextArea( document.getElementById("codeFunctionEditor"), {tabMode:"shift",indentUnit:4,matchBrackets:true,mode:{name:"javascript"} } );
-		codeMirrorStart    = CodeMirror.fromTextArea( document.getElementById("codeStartEditor"   ), {tabMode:"shift",indentUnit:4,matchBrackets:true,mode:{name:"javascript"} } );
-		codeMirrorLoop     = CodeMirror.fromTextArea( document.getElementById("codeLoopEditor"    ), {tabMode:"shift",indentUnit:4,matchBrackets:true,mode:{name:"javascript"} } );
-		
-		//codeMirrorStart.setOption( "theme", "night" );
-		
+		var codeMirrorOptions = {
+			enterMode:"keep",
+			tabMode:"shift",
+			indentUnit:4,
+			matchBrackets:true,
+			mode:{name:"javascript"},
+			lineNumbers:true,
+			theme:"neat",
+		}
+		codeMirrorFunction = CodeMirror.fromTextArea( document.getElementById("codeFunctionEditor"), codeMirrorOptions );
+		codeMirrorStart    = CodeMirror.fromTextArea( document.getElementById("codeStartEditor"   ), codeMirrorOptions );
+		codeMirrorLoop     = CodeMirror.fromTextArea( document.getElementById("codeLoopEditor"    ), codeMirrorOptions );
 	});
 
 	$(window).resize( codeResize );
@@ -91,75 +109,144 @@
 		$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
 	}
 
+	function codeLoadBySymbol( symbol ) {
+		$.get( "/programs/load_by_symbol", { symbol:symbol }, function(data) {
+			if( data.success ) {
+				codeMirrorStart.setValue( data.startCode );
+				codeMirrorLoop.setValue( data.loopCode );
+				codeCurrentProgramName = data.name;
+				$("#codeCurrentProgramName").html( codeCurrentProgramName );
+			}
+			else {
+				alert( data.error );
+			}
+		});
+	}
+
 	function codeNew() {
 		// CLEAR the editors
+		codeMirrorFunction.setValue("");
+		codeMirrorStart.setValue("");
+		codeMirrorLoop.setValue("");
+		codeCurrentProgramName = "Un-named";
+		$("#codeCurrentProgramName").html( codeCurrentProgramName );
+
 		// STOP the program
+	}
+		
+	function codeSave() {
+		if( codeCurrentProgramName == "Un-named" ) {
+			codeSaveAs();
+		}
+		else {
+			$.ajax({
+				url:"/programs/"+codeCurrentProgramName,
+				type:"PUT",
+				success:function(data) {
+					if( data.success ) {
+					}
+					else {
+						alert( data.error );
+					}
+				}
+			});
+		}
+	}
+	
+	function codeSaveAs() {
+		$("#codeMainControls").css( "display", "none" );
+		$("#codeSaveAsDialog").css( "display", "block" );
+	}
+	
+	function codeSaveAsOk() {
+		$("#codeMainControls").css( "display", "block" );
+		$("#codeSaveAsDialog").css( "display", "none" );
+		codeCurrentProgramName = $("#codeSaveAsName").val();
+		codeSave();
+	}
+	
+	function codeSaveAsCancel() {
+		$("#codeMainControls").css( "display", "block" );
+		$("#codeSaveAsDialog").css( "display", "none" );
 	}
 	
 	
 </script>
 
 <div id="codeControlPanel" class="controlPanel">
-	Current program: <span id="codeCurrentProgramName"></span>
+	<div id="codeMainControls">
+		Current program: <span id="codeCurrentProgramName" style="font-weight:bold;">Un-named</span>
 
-	<button onclick="codeNew()">
-		New
-	</button>
-
-	<button onclick="codeSave()">
-		Save
-	</button>
-	
-	<button onclick="codeSaveAs()">
-		Save As...
-	</button>
-	
-	Version:
-
-	<button onclick="codeVersionPrev()">
-		Previous
-	</button>
-
-	<button onclick="codeVersionNext()">
-		Next
-	</button>
-
-	<button onclick="codeVersionHead()">
-		Head
-	</button>
-
-	<span style="float:right;">
-		<button onclick="codeVersionHead()">
-			Pause
+		<button onclick="codeNew()">
+			New
 		</button>
 
-		<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
-		<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
-		<span id="codeFps" style="width:20px;"></span>
-		<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
-		<span>Frame rate: </span>
-	</span>
-	
-	<% if false %>
-		<div id="codeDebugDiv">
-			<div class="areaLabel toggleableDiv">
-				<span class="expandIcon">+</span> Debug<span class="regularFont"> (trace from debug function)</span>
-			</div>
-			<div class="thinBorder grayBackground toggleableDivContents" id="debugStream" style="display:none; white-space:nowrap; overflow:auto; width:100%; height:150px;">
-			</div>
-		</div>
+		<button onclick="codeSave()">
+			Save
+		</button>
+		
+		<button onclick="codeSaveAs()">
+			Save As...
+		</button>
+		
+		Version:
 
-		<div>
-			<div class="areaLabel toggleableDiv">
-				<span class="expandIcon">+</span> Comments<span class="regularFont" id="programCommentsCount"></span>
-				<% if ! @user %>
-					<span class="regularFont">Login to post</span>
-				<% end %>
+		<button onclick="codeVersionPrev()">
+			Previous
+		</button>
+
+		<button onclick="codeVersionNext()">
+			Next
+		</button>
+
+		<button onclick="codeVersionLatest()">
+			Latest
+		</button>
+
+		<span style="float:right;">
+			<button onclick="codeVersionLatest()">
+				Pause
+			</button>
+
+			<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
+			<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
+			<span id="codeFps" style="width:20px;"></span>
+			<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
+			<span>Frame rate: </span>
+		</span>
+		
+		<% if false %>
+			<div id="codeDebugDiv">
+				<div class="areaLabel toggleableDiv">
+					<span class="expandIcon">+</span> Debug<span class="regularFont"> (trace from debug function)</span>
+				</div>
+				<div class="thinBorder grayBackground toggleableDivContents" id="debugStream" style="display:none; white-space:nowrap; overflow:auto; width:100%; height:150px;">
+				</div>
 			</div>
-			<div class="toggleableDivContents" id="programComments" style="display:none;">
+
+			<div>
+				<div class="areaLabel toggleableDiv">
+					<span class="expandIcon">+</span> Comments<span class="regularFont" id="programCommentsCount"></span>
+					<% if ! @user %>
+						<span class="regularFont">Login to post</span>
+					<% end %>
+				</div>
+				<div class="toggleableDivContents" id="programComments" style="display:none;">
+				</div>
 			</div>
-		</div>
-	<% end %>
+		<% end %>
+	</div>
+
+	<div id="codeSaveAsDialog" style="display:none;">
+		<span class="areaLabel">Save as:</span>
+		<input id="codeSaveAsName" type="text" style="width:150px;">
+		<button onlcick="codeSaveAsOk()">
+			Save
+		</button>
+		<button onclick="codeSaveAsCancel()">
+			Cancel
+		</button>
+	</div>
 	
 </div>
 
@@ -186,7 +273,7 @@
 				</span>
 				<button onclick="changeVersionFunction('prev')">Previous</button>
 				<button onclick="changeVersionFunction('next')">Next</button>
-				<button onclick="changeVersionFunction('curr')">Head</button>
+				<button onclick="changeVersionFunction('curr')">Latest</button>
 				<div id="functionVersionLabel"></div>
 			</div>
 			<textarea id="codeFunctionEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
@@ -226,9 +313,9 @@
 		</div>
 
 		<div style="position:relative; height:350px; width:350px;">
-			<canvas id="codeMainCanvas0" class="thinBorder" style="background-color:blue; width:350px; height:350px; position:absolute; left:0; top:0;">
+			<canvas id="codeMainCanvas0" class="thinBorder" style="background-color:white; width:350px; height:350px; position:absolute; left:0; top:0;">
 			</canvas>
-			<canvas id="codeMainCanvas1" class="thinBorder" style="background-color:blue; width:350px; height:350px; position:absolute; left:0; top:0;">
+			<canvas id="codeMainCanvas1" class="thinBorder" style="background-color:white; width:350px; height:350px; position:absolute; left:0; top:0;">
 			</canvas>
 		</div>
 

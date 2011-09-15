@@ -14,13 +14,13 @@ class ProgramsController < ApplicationController
 	end
 
 	def create
-		if current_user
-			@program = Program.find_by_user_id_and_name( current_user.id, params[:name] )
+		if User.current_user
+			@program = Program.find_by_user_id_and_name( User.current_user.id, params[:name] )
 			if @program
 				render :json => { :error=>"Duplicate program found" } 
 			else
 				@program = Program.new
-				@program.user_id = current_user.id
+				@program.user_id = User.current_user.id
 				@program.name = params[:name]
 				@program.save!
 
@@ -37,15 +37,15 @@ class ProgramsController < ApplicationController
 	end
 
 	def update
-		logger.debug params
-		if current_user
+		if User.current_user
 			@program = Program.find( params[:id] )
 			if @program
 				@program_version = ProgramVersion.new
 				@program_version.program_id = @program.id
-				@program_version.code = params[:code]
+				@program_version.loop_code = params[:loop_code]
+				@program_version.start_code = params[:start_code]
 				@program_version.save!
-				render :json => { :id=>@program.id, :code=>@program_version.code, :name=>@program.name } 
+				render :json => { :id=>@program.id, :loop_code=>@program_version.loop_code, :start_code=>@program_version.start_code, :name=>@program.name } 
 			else
 				render :json => { :error=>"Program not found" } 
 			end
@@ -56,8 +56,11 @@ class ProgramsController < ApplicationController
 	
 	def destroy
 		@program = Program.find( params[:id] )
-		if current_user && current_user.id == @program.user_id
+		if User.current_user && User.current_user.id == @program.user_id
 			@program.destroy
+			render :json => { :success=>true } 
+		else
+			render :json => { :error=>"Not your to delete" } 
 		end
 	end
 
@@ -76,6 +79,32 @@ class ProgramsController < ApplicationController
 		end
 
 		render :layout=>false
+	end
+	
+	def load_by_symbol
+		if params[:symbol].match( /^[0-9]+$/ )
+			@program = Program.find( params[:symbol] )
+		else
+			user_name = User.current_user ? User.current_user.name : ""
+			prog_name = params[:symbol]
+			match = params[:symbol].match( /^([^:]+):(.*)$/ )
+			if match
+				user_name = match[1]
+				prog_name = match[2]
+			end
+			@program = Program.find_by_sql( [ "select programs.id from programs, users where programs.name = ? and programs.user_id = users.id and users.name = ?", prog_name, user_name ] ) 
+		end
+
+		if @program
+			program_version = @program.get_latest_version
+			if program_version
+				render :json=>{ :success=>true, :name=>@program.name, :startCode=>program_version.start_code, :loopCode=>program_version.loop_code }
+			else
+				render :json=>{ :error=>"Program version not found" }
+			end
+		else
+			render :json=>{ :error=>"Program not found" }
+		end
 	end
 	
 end

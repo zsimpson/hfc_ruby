@@ -23,45 +23,49 @@
 	}
 
 	function programsFriendDeleteById( id ) {
-		$.ajax({
-			url: "/friends/"+id,
-			type: "DELETE",
-			success: function(data) {
-				if( data.success ) {
-					programsLoad();
+		if( confirm( "Are you sure you want to un-friend this user?" ) ) {
+			$.ajax({
+				url: "/friends/"+id,
+				type: "DELETE",
+				success: function(data) {
+					if( data.success ) {
+						programsLoad();
+					}
+					else {
+						alert( data.error );
+					}
+				},
+				error: function() {
+					alert( "delete failed" );
 				}
-				else {
-					alert( data.error );
-				}
-			},
-			error: function() {
-				alert( "delete failed" );
-			}
-			
-		});
+				
+			});
+		}
 	}
 
-	function programsOpen( programId ) {
+	function programsOpenById( programId ) {
 		mainTabsSelect( "codePanel" );
-		codeLoadFileById( programId );
+		codeLoadBySymbol( programId );
 	}
 	
-	function programDeleteById( programId ) {
-		$.ajax({
-			url: "/programs/"+id,
-			type: "DELETE",
-			success: function(data) {
-				if( data.success ) {
-					programsLoad();
+	function programsDeleteById( programId ) {
+		if( confirm( "Are you sure you want to delete this program?" ) ) {
+			$.ajax({
+				url: "/programs/"+programId,
+				type: "DELETE",
+				success: function(data) {
+					if( data.success ) {
+						programsLoad();
+					}
+					else {
+						alert( data.error );
+					}
+				},
+				error: function() {
+					alert( "delete failed" );
 				}
-				else {
-					alert( data.error );
-				}
-			},
-			error: function() {
-				alert( "delete failed" );
-			}
-		});
+			});
+		}
 	}
 
 </script>
