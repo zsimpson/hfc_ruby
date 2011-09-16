@@ -1,6 +1,6 @@
 
 
-function Hfc( options ) {
+function HfcRunner( options ) {
 	var frameComplete = true;
 	var frameNum = 0;
 	var doubleBuffer = false;

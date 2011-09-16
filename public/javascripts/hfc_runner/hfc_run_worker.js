@@ -403,7 +403,6 @@ with( Math ) {
 		$.send( { "cmd":"pop" } );
 	}
 
-
 }
 
 
