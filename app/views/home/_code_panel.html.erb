@@ -166,6 +166,9 @@
 		codeCurrentProgramId = 0;
 		codeCurrentProgramName = "Un-named";
 		$("#codeCurrentProgramName").html( codeCurrentProgramName );
+		codeCurrentProgramVersionNumber = 0;
+		codeCurrentProgramVersionCount = 0;
+		$("#codeVersionNumber").html( "" );
 	}
 		
 	function codeSave() {
@@ -240,7 +243,7 @@
 				Save As...
 			</button>
 			
-			Version <span id="codeVersionNumber"></span>:
+			Version <span id="codeVersionNumber" style="font-weight:bold;"></span>:
 
 			<button onclick="codeLoadPreviousVersion()">
 				Previous
