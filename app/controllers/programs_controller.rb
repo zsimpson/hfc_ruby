@@ -118,7 +118,7 @@ class ProgramsController < ApplicationController
 					@program_version.loop_code = params[:loop_code]
 					@program_version.start_code = params[:start_code]
 					@program_version.save!
-					render :json => { :success=>true, :id=>params[:id], :name=>@program.name, :version_count=>1 } 
+					render :json => { :success=>true, :id=>@program.id, :name=>@program.name, :version_count=>1 } 
 				end
 			else
 				render :json=>{ :error=>"Not logged in" }

@@ -100,6 +100,6 @@ end
 Then /^the main code areas should contain "([^"]*)" and "([^"]*)"$/ do |startval,loopval|
 	start_val = page.evaluate_script( "codeMirrorStart.getValue()" )
 	loop_val = page.evaluate_script( "codeMirrorLoop.getValue()" )
-	startval.should == start_val
-	loopval.should == loop_val
+	start_val.should == startval
+	loop_val.should == loopval
 end

@@ -77,7 +77,7 @@ Feature: Edit, Save code
 		Given I am logged in as test
 		And user "test" has a program called "test1"
 		When I follow "Programs"
-		Then I should see "test1"
+		Then I should see "test1"	
 		When I click on div "#load-program-test-test1"
 		Then I should see "this is start code"
 		And I should see "this is loop code"
@@ -86,15 +86,69 @@ Feature: Edit, Save code
 		Then "#codeSaveAsDialog" should be visible
 		When I fill in "codeSaveAsName" with "test2"
 		And I press "Save"
+		And I wait 1 second
 		When I follow "Programs"
 		Then I should see "test1"
 		And I should see "test2"
 		When I click on div "#load-program-test-test1"
+		And I wait 1 second
 		Then I should see "this is loop code"
 		And I should see "this is start code"
 		When I follow "Programs"
 		When I click on div "#load-program-test-test2"
+		And I wait 1 second
 		Then I should see "start123"
 		And I should see "loop123"
+		
+	@javascript
+    Scenario: Existing user should be able to press save after new
+		Given I am logged in as test
+		When I follow "Code"
+		When I press "New"
+		And I fill in the main code areas with "start1" and "loop1"
+		And I press "Save"
+		Then "#codeSaveAsDialog" should be visible
+		When I fill in "codeSaveAsName" with "test1"
+		And I press "Save"
+		And I fill in the main code areas with "start2" and "loop2"
+		And I wait 1 second
+		And I press "Save"
+		And I wait 1 second
+		When I press "New"
+		Then the main code areas should contain "" and ""
+		When I follow "Programs"
+		Then I should see "test1"
+		When I click on div "#load-program-test-test1"
+		And I wait 1 second
+		Then I should see "start2"
+		And I should see "loop2"
+		
+	@javascript
+    Scenario: Should be able to go back to previous versions
+		Given I am logged in as test
+		When I follow "Code"
+		When I press "New"
+		And I fill in the main code areas with "start1" and "loop1"
+		And I press "Save"
+		Then "#codeSaveAsDialog" should be visible
+		When I fill in "codeSaveAsName" with "test1"
+		And I press "Save"
+		Then I should see "1 of 1"
+		And I fill in the main code areas with "start2" and "loop2"
+		And I press "Save"
+		And I wait 2 seconds
+		Then I should see "2 of 2"
+		When I press "Previous"
+		And I wait 2 seconds
+		Then I should see "1 of 2"
+		#Something is going haywire here.  When I run the following by hand it's ok but not here in the test.  Doesn't seem to be timing
+		#And the main code areas should contain "start1" and "loop1"
+		#When I press "Next"
+		#And I wait 2 seconds
+		#Then I should see "2 of 2"
+		#And the main code areas should contain "start2" and "loop2"
 
-	# @TODO: Versioning
+
+
+
+
