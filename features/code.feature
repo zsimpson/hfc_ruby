@@ -2,6 +2,20 @@ Feature: Edit, Save code
     As an user
     In order that I be able use my programs
     I want to be able to CRUD my programs
+	
+	@javascript
+    Scenario: Logged in user should remember what program was up with a cookie
+		Given I am logged in as test
+		And user "test" has a program called "test1"
+		When I follow "Programs"
+		And I click on div "#load-program-test-test1"
+		And I follow "Code"
+		Then I should see "this is start code"
+		And I should see "this is loop code"
+		When I go to /
+		And I wait 2 seconds
+		Then I should see "this is start code"
+		And I should see "this is loop code"
     
 	@javascript
     Scenario: Anonymous user should be able to New but not to save and be able to login without losing their work

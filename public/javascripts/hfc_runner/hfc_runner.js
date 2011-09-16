@@ -24,17 +24,9 @@ var HfcRunner = (function ($,$M) {
 			[ 0, 0, 1 ]
 		] );
 
-		this.colorToString = function( r, g, b ) {
-			r = Math.max( 1, Math.min( 255, r*255 ) );
-			g = Math.max( 1, Math.min( 255, g*255 ) );
-			b = Math.max( 1, Math.min( 255, b*255 ) );
-			var color = ( (1<<24) | (r<<16) | (g<<8) | b ).toString(16);
-			return "#" + color.substring( 1, 7 );
-		}
-		
 		this.setFill = function( r, g, b, a ) {
 			this.gradient = null
-			this.fill = this.colorToString( r, g, b )
+			this.fill = colorToString( r, g, b )
 			this.fill = "#" + this.fill.substring( 1, 7 )
 			this.fillA = a
 		}
@@ -45,7 +37,7 @@ var HfcRunner = (function ($,$M) {
 		
 		this.setStroke = function( w, r, g, b, a, cap, join ) {
 			this.lineWidth = w
-			this.stroke = this.colorToString( r, g, b )
+			this.stroke = colorToString( r, g, b )
 			this.strokeA = a
 			this.lineCap = cap
 			this.lineJoin = join
@@ -55,7 +47,7 @@ var HfcRunner = (function ($,$M) {
 			this.shadowX = x
 			this.shadowY = y
 			this.shadowBlur = blur
-			this.shadowColor = this.colorToString( r, g, b )
+			this.shadowColor = colorToString( r, g, b )
 		}
 
 		this.setFont = function( name, size ) {
@@ -121,6 +113,13 @@ var HfcRunner = (function ($,$M) {
 	}
 	
 	var HfcFunctions = {
+		clear: function( r, g, b ) {
+			currentContext.setTransform( 1, 0, 0, 1, 0, 0 );
+			currentContext.fillStyle = colorToString( r, g, b );
+			currentContext.globalAlpha = 1;
+			currentContext.fillRect( 0, 0, canvasW, canvasH );
+		},
+	
 		circle: function( x, y, r ) {
 			drawState.loadStrokeState( currentContext );
 			currentContext.beginPath();
@@ -146,6 +145,14 @@ var HfcRunner = (function ($,$M) {
 	var canvasH = 350;
 	var drawState = new HfcDrawState();
 
+	colorToString = function( r, g, b ) {
+		r = Math.max( 1, Math.min( 255, r*255 ) );
+		g = Math.max( 1, Math.min( 255, g*255 ) );
+		b = Math.max( 1, Math.min( 255, b*255 ) );
+		var color = ( (1<<24) | (r<<16) | (g<<8) | b ).toString(16);
+		return "#" + color.substring( 1, 7 );
+	}
+	
 	my.init = function( options ) {
 		$canvas[0] = $("#"+options["canvasId0"]);
 		$canvas[1] = $("#"+options["canvasId1"])

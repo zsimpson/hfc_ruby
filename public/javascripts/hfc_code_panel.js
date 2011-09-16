@@ -77,6 +77,12 @@ $(document).ready( function() {
 	}
 	$(codeMirrorStart.getInputField()).keyup( function(e) { restart() } );
 	$(codeMirrorLoop .getInputField()).keyup( function(e) { restart() } );
+
+	var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
+	if( lastLoadedProgramId ) {
+		codeLoad( lastLoadedProgramId );
+	}
+
 });
 
 $(window).resize( codeResize );
@@ -131,6 +137,7 @@ function codeLoad( symbol, versionNumber ) {
 			codeCurrentProgramVersionNumber = data.version_number;
 			codeCurrentProgramVersionCount = data.version_count;
 			$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
+			setCookie( "lastLoadedProgramId", data.id );
 		}
 		else {
 			alert( data.error );
