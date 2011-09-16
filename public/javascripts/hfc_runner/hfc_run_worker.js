@@ -8,8 +8,10 @@ with( Math ) {
 
 	// runFrame:
 	//   This function is called by the web-worker threading interface once per frame.
-	/    Because these threads can not talk to the DOM directly there is quite of bit
+	//   Because these threads can not talk to the DOM directly there is quite of bit
 	//   of messaging that has to pass state back and forth.
+	//   Firefox has a bug that prevents sending dictionaries to the worker so the
+	//   state is transferred in an ugly array
 	//==========================================================================================
 	$(function( data ) {
 
