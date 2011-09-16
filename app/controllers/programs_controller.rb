@@ -55,16 +55,28 @@ class ProgramsController < ApplicationController
 		end
 
 		if @program
-			program_version = @program.get_latest_version
-			if program_version
+			program_versions = @program.get_sorted_versions
+			if program_versions && program_versions.length > 0
+				version_number = params[:version_number].to_i
+				version_number = [ program_versions.length-1, version_number ].min
+				version_number = [ 0, version_number ].max
+				program_version = program_versions[ version_number ]
+				version_count = program_versions.length
 				if ! program_version.start_code
 					program_version.start_code = ""
 				end
 				if ! program_version.loop_code
 					program_version.loop_code = ""
 				end
-				logger.debug "** load, start="+program_version.start_code+" loop="+program_version.loop_code
-				render :json=>{ :success=>true, :id=>@program.id, :name=>@program.name, :start_code=>program_version.start_code, :loop_code=>program_version.loop_code }
+				render :json=>{
+					:success=>true,
+					:id=>@program.id,
+					:name=>@program.name,
+					:start_code=>program_version.start_code,
+					:loop_code=>program_version.loop_code,
+					:version_number=>version_number,
+					:version_count=>version_count
+				}
 			else
 				render :json=>{ :error=>"Program version not found" }
 			end
@@ -78,12 +90,13 @@ class ProgramsController < ApplicationController
 			# We're saving an existing program
 			@program = Program.find( params[:id] )
 			if @program
+				program_versions = @program.get_sorted_versions
 				@program_version = ProgramVersion.new
 				@program_version.program_id = @program.id
 				@program_version.loop_code = params[:loop_code]
 				@program_version.start_code = params[:start_code]
 				@program_version.save!
-				render :json => { :success=>true, :id=>params[:id], :name=>@program.name } 
+				render :json => { :success=>true, :id=>params[:id], :name=>@program.name, :version_count=>program_versions.length+1 } 
 			else
 				render :json=>{ :error=>"Program not found" }
 			end
@@ -105,7 +118,7 @@ class ProgramsController < ApplicationController
 					@program_version.loop_code = params[:loop_code]
 					@program_version.start_code = params[:start_code]
 					@program_version.save!
-					render :json => { :success=>true, :id=>params[:id], :name=>@program.name } 
+					render :json => { :success=>true, :id=>params[:id], :name=>@program.name, :version_count=>1 } 
 				end
 			else
 				render :json=>{ :error=>"Not logged in" }
@@ -114,52 +127,3 @@ class ProgramsController < ApplicationController
 	end
 end
 
-
-
-
-
-
-
-
-
-
-
-
-	def new
-		@program = Program.new
-		@program.save!
-		@program.name = "Program-"+@program.id.to_s
-		@program.user_id = User.current_user ? User.current_user.id : 0
-		@program.save!
-		
-		@program_version = ProgramVersion.new
-		@program_version.program_id = @program.id
-		@program_version.user_id = @program.user_id
-		@program_version.save!
-		
-		render :json => { :success=>true, :id=>@program.id, :name=>@program.name } 
-	end
-	
-	def update
-		if User.current_user
-			@program = Program.find( params[:id] )
-			if @program
-				@program.name = params[:name]
-				if @program.user_id == 0
-					@program.user_id = User.current_user.id
-					@program.save!
-				end
-				@program_version = ProgramVersion.new
-				@program_version.program_id = @program.id
-				@program_version.loop_code = params[:loop_code]
-				@program_version.start_code = params[:start_code]
-				@program_version.save!
-				render :json => { :success=>true, :id=>@program.id, :loop_code=>@program_version.loop_code, :start_code=>@program_version.start_code, :name=>@program.name } 
-			else
-				render :json => { :error=>"Program not found" } 
-			end
-		else
-			render :json => { :error=>"Not logged in" } 
-		end
-	end
-	

@@ -19,6 +19,8 @@
 	var codeMirrorLoop = null;
 	var codeCurrentProgramName = "Un-named";
 	var codeCurrentProgramId = 0;
+	var codeCurrentProgramVersionNumber = 0;
+	var codeCurrentProgramVersionCount = 0;
 
 	$(document).ready( function() {
 		$("#codeFunctionCodeDivDrag").mousedown( function(event) {
@@ -119,8 +121,11 @@
 		$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
 	}
 
-	function codeLoad( symbol ) {
-		$.get( "/programs/load", { symbol:symbol }, function(data) {
+	function codeLoad( symbol, versionNumber ) {
+		if( typeof(versionNumber) == "undefined" ) {
+			versionNumber = 0;
+		}
+		$.get( "/programs/load", { symbol:symbol, version_number:versionNumber }, function(data) {
 			if( data.success ) {
 				codeCurrentProgramIsNew = false;
 				codeCurrentProgramName = data.name;
@@ -128,11 +133,26 @@
 				$("#codeCurrentProgramName").html( codeCurrentProgramName );
 				codeMirrorStart.setValue( data.start_code ? data.start_code : "" );
 				codeMirrorLoop.setValue( data.loop_code ? data.loop_code : "" );
+				codeCurrentProgramVersionNumber = data.version_number;
+				codeCurrentProgramVersionCount = data.version_count;
+				$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
 			}
 			else {
 				alert( data.error );
 			}
 		});
+	}
+
+	function codeLoadPreviousVersion() {
+		codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber+1 )
+	}
+
+	function codeLoadNextVersion() {
+		codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber-1 )
+	}
+
+	function codeLoadLatestVersion() {
+		codeLoad( codeCurrentProgramId )
 	}
 
 	function codeNew() {
@@ -161,6 +181,9 @@
 						codeCurrentProgramId = data.id;
 						codeCurrentProgramName = data.name;
 						$("#codeCurrentProgramName").html( codeCurrentProgramName );
+						codeCurrentProgramVersionNumber = 0;
+						codeCurrentProgramVersionCount = data.version_count;
+						$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
 					}
 					else {
 						alert( data.error );
@@ -217,17 +240,17 @@
 				Save As...
 			</button>
 			
-			Version:
+			Version <span id="codeVersionNumber"></span>:
 
-			<button onclick="codeVersionPrev()">
+			<button onclick="codeLoadPreviousVersion()">
 				Previous
 			</button>
 
-			<button onclick="codeVersionNext()">
+			<button onclick="codeLoadNextVersion()">
 				Next
 			</button>
 
-			<button onclick="codeVersionLatest()">
+			<button onclick="codeLoadLatestVersion()">
 				Latest
 			</button>
 		<% else %>
