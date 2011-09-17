@@ -26,6 +26,10 @@
 			New
 		</button>
 		
+		<button onclick="codeSwitchToPrograms()">
+			Load
+		</button>
+		
 		<% if User.current_user %>
 
 			<button onclick="codeSave()">
@@ -56,10 +60,6 @@
 		<% end %>
 		
 		<span style="float:right; min-width:150px;">
-			<button onclick="codeVersionLatest()">
-				Pause
-			</button>
-
 			<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
 			<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
 			<span>Frame rate: </span>
@@ -137,7 +137,7 @@
 
 		<div id="codeStartCodeDiv">
 			<span class="areaLabel">Start code</span>&nbsp;<span>(Write code here that runs once)</span>
-			<span id="startCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
+			<span id="codeStartCodeErrorState" class="areaLabel" style="background-color:red; color:white;">TESTING</span>
 			<textarea id="codeStartEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
 		</div>
 

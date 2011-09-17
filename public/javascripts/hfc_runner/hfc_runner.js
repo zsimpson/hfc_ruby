@@ -341,6 +341,7 @@ var HfcRunner = (function ($,$M) {
 	var frameRates = [];
 	var startFrameTime = new Date().getTime();
 	var frameCallback = null;
+	var errorStateCallback = null;
 	var twiddlers = {};
 	
 	colorToString = function( r, g, b ) {
@@ -350,7 +351,7 @@ var HfcRunner = (function ($,$M) {
 		var color = ( (1<<24) | (r<<16) | (g<<8) | b ).toString(16);
 		return "#" + color.substring( 1, 7 );
 	}
-
+	
 	my.init = function( options ) {
 		$canvas[0] = $("#"+options["canvasId0"]);
 		$canvas[1] = $("#"+options["canvasId1"])
@@ -368,6 +369,7 @@ var HfcRunner = (function ($,$M) {
 		$canvas[1].css( "left", $canvas[0].position().left );
 		$canvas[1].css( "top", $canvas[0].position().top );
 		frameCallback = options.frameCallback;
+		errorStateCallback = options.errorStateCallback;
 	};
 	
 	my.stop = function() {
@@ -385,6 +387,50 @@ var HfcRunner = (function ($,$M) {
 		context[1].globalAlpha = 1;
 		context[1].fillRect( 0, 0, canvasW, canvasH );
 		$("#mainCanvas1").css( "visibility", "hidden" );
+	}
+
+	my.restart = function( _startCode, _loopCode, _twiddlers ) {
+		startCode = _startCode;
+		loopCode = _loopCode;
+		twiddlers = _twiddlers;
+		
+		drawState.reset();
+
+		// DELETE the old thread
+		$.Hive.destroy();
+
+		frameNum = 0;
+		currentContext = context[0];
+
+		// CHECK for clear to determine if we are double buffering
+		$canvas[1].css( "visibility", "hidden" );
+		doubleBuffer = loopCode.match( "^\\s*clear\\s*(\\s*)" ) ? true : false;
+
+		// LAUNCH a new thread
+		$.Hive.create({
+			count: 1,
+			worker: '/javascripts/hfc_runner/hfc_run_worker.js',
+			receive: function (data) {
+				if( data.cmd == "done" ) {
+					errorStateCallback( data.args[0], data.args[1], data.args[2] );
+					errorInLoopCode = data.args[1] && data.args[0] == "Loop code";
+					frameComplete = true;
+				}
+				else {
+					HfcFunctions[data.cmd].apply( this, data.args );
+				}
+			}
+		});
+
+		codeBlocks = [];
+		codeBlockNames = [];
+		codeBlocks.push( startCode );
+		codeBlockNames.push( "Start code" );
+
+		// TELL the thread to run the startup block(s)
+		$.Hive.get(0).send( [codeBlockNames,codeBlocks,null,0,0,false,null,null,[]/*imageDims*/,false] );
+		frameComplete = false;
+		setTimeout( runFrame, 1 );
 	}
 
 	runFrame = function() {
@@ -428,53 +474,6 @@ var HfcRunner = (function ($,$M) {
 		setTimeout( runFrame, 1 );
 	}
 	
-	my.restart = function( _startCode, _loopCode, _twiddlers ) {
-		//
-		// Kills off any previous running thread and starts the thread again
-		//
-		
-		startCode = _startCode;
-		loopCode = _loopCode;
-		twiddlers = _twiddlers;
-		
-		drawState.reset();
-
-		// DELETE the old thread
-		$.Hive.destroy();
-
-		frameNum = 0;
-		currentContext = context[0];
-
-		// CHECK for clear to determine if we are double buffering
-		$canvas[1].css( "visibility", "hidden" );
-		doubleBuffer = loopCode.match( "^\\s*clear\\s*(\\s*)" ) ? true : false;
-
-		// LAUNCH a new thread
-		$.Hive.create({
-			count: 1,
-			worker: '/javascripts/hfc_runner/hfc_run_worker.js',
-			receive: function (data) {
-				if( data.cmd == "done" ) {
-					//setErrorState( data.args[0], data.args[1], data.args[2] );
-					frameComplete = true;
-				}
-				else {
-					HfcFunctions[data.cmd].apply( this, data.args );
-				}
-			}
-		});
-
-		codeBlocks = [];
-		codeBlockNames = [];
-		codeBlocks.push( startCode );
-		codeBlockNames.push( "Start code" );
-
-		// TELL the thread to run the startup block(s)
-		$.Hive.get(0).send( [codeBlockNames,codeBlocks,null,0,0,false,null,null,[]/*imageDims*/,false] );
-		frameComplete = false;
-		setTimeout( runFrame, 1 );
-	}
-
-	return my
+	return my;
 }($,$M));
 

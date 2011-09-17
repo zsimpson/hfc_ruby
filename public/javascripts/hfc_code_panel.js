@@ -76,9 +76,7 @@ $(document).ready( function() {
 		frameCallback: function(fps) {
 			$("#codeFps").html( fps.toFixed(0) );
 		},
-		errorStateCallback: function( funcError, startError, loopError ) {
-			// This will display the errors
-		},
+		errorStateCallback: codeSetErrorState,
 	}); 
 
 	$(codeMirrorStart.getInputField()).keyup( function(e) { codeRestart() } );
@@ -92,6 +90,29 @@ $(document).ready( function() {
 });
 
 $(window).resize( codeResize );
+
+function codeSetErrorState( blockName, exceptMessage, exceptLine ) {
+	var header = "";	
+	if( blockName == "Start code" ) {
+		header = exceptLine ? ("Line "+exceptLine+": ") : ""
+		div = "codeStartCodeErrorState";
+	}
+	else if( blockName == "Loop code" ) {
+		header = exceptLine ? ("Line "+exceptLine+": ") : ""
+		div = "codeLoopCodeErrorState";
+	}
+	else {
+		header = blockName + ": " + (exceptLine ? (" line "+exceptLine+": ") : "");
+		div = "codeMasterErrorState";
+	}
+
+	if( exceptMessage ) {
+		$("#"+div).html( header + exceptMessage );
+	}
+	else {
+		$("#"+div).html( "" );
+	}
+}
 
 var codeTwiddlers = {};
 var codeTwiddlerChecks = {};
@@ -262,6 +283,10 @@ function codeNew() {
 	codeStop();
 }
 	
+function codeSwitchToPrograms() {
+	mainTabsSelect( "programsPanel" );
+}
+
 function codeSave() {
 	if( codeCurrentProgramName == "Un-named" ) {
 		codeSaveAs();
