@@ -7,6 +7,7 @@
 		discussTabSelected();
 		codeTabSelected();
 		helpTabSelected();
+		artTabSelected();
 		// END HACK
 
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
@@ -24,6 +25,9 @@
 			}
 			if( ui.panel.id == 'helpPanel' ) {
 				helpTabSelected();
+			}
+			if( ui.panel.id == 'artPanel' ) {
+				artTabSelected();
 			}
 
 			setCookie( "mainTabsSelected", ui.index );
@@ -81,7 +85,7 @@
 		</div>
 		
 		<div id="artPanel">
-			Art interface will go here
+			<%= render 'art_panel.html' %>
 		</div>
 
 		<div id="tutorialsPanel">

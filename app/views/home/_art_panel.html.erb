@@ -1,0 +1,15 @@
+<script type="text/javascript">
+	function artTabSelected() {
+		artLoad();
+	}
+
+	function artLoad() {
+		$("#artContent").load( "/assets/get_art_page", function() {
+			commonSetupElements();
+		});
+	}
+
+</script>
+
+<div id="artContent">
+</div>

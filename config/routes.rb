@@ -9,6 +9,10 @@ HfcRuby::Application.routes.draw do
   match "/programs/save" => "programs#save"
   resources :programs
   
+  match "/assets/get_art_page" => "assets#get_art_page"
+  match "/assets/show_by_name" => "assets#show_by_name"
+  resources :assets
+  
   resources :friends
   
   root :to => "home#index"

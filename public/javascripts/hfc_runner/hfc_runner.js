@@ -217,7 +217,7 @@ var HfcRunner = (function ($,$M) {
 					i.src = url;
 				}
 				else {
-					i.src = "/home/get_asset?name=" + url;
+					i.src = "/assets/show_by_name?name=" + url;
 				}
 				i.onload = getImageDims;
 				images[ url ] = i;
@@ -343,6 +343,12 @@ var HfcRunner = (function ($,$M) {
 	var frameCallback = null;
 	var errorStateCallback = null;
 	var twiddlers = {};
+	var mouseX = 0;
+	var mouseY = 0;
+	var mouseDown = false;
+	var keyDown = null;
+	var imageDims = {};
+	var images = {};
 	
 	colorToString = function( r, g, b ) {
 		r = Math.max( 1, Math.min( 255, r*255 ) );
@@ -350,6 +356,12 @@ var HfcRunner = (function ($,$M) {
 		b = Math.max( 1, Math.min( 255, b*255 ) );
 		var color = ( (1<<24) | (r<<16) | (g<<8) | b ).toString(16);
 		return "#" + color.substring( 1, 7 );
+	}
+
+	getImageDims = function() {
+		for( var i in images ) {
+			imageDims[i] = [ images[i].width, images[i].height ];
+		}
 	}
 	
 	my.init = function( options ) {
@@ -370,6 +382,33 @@ var HfcRunner = (function ($,$M) {
 		$canvas[1].css( "top", $canvas[0].position().top );
 		frameCallback = options.frameCallback;
 		errorStateCallback = options.errorStateCallback;
+
+		$(window).mousemove( function(event) {
+			var off = $canvas[0].offset();
+			mouseX = event.pageX - off.left;
+			mouseY = event.pageY - off.top;
+		});
+
+		$canvas[0].mousedown( function(event) {
+			mouseDown = true;
+		});
+
+		$canvas[1].mousedown( function(event) {
+			mouseDown = true;
+		});
+
+		$(window).mouseup( function(event) {
+			mouseDown = false;
+		});
+
+		$(document).keydown( function(event) {
+			keyDown = event.which;
+		});
+
+		$(document).keyup( function(event) {
+			keyDown = null;
+		});
+		
 	};
 	
 	my.stop = function() {
@@ -428,7 +467,7 @@ var HfcRunner = (function ($,$M) {
 		codeBlockNames.push( "Start code" );
 
 		// TELL the thread to run the startup block(s)
-		$.Hive.get(0).send( [codeBlockNames,codeBlocks,null,0,0,false,null,null,[]/*imageDims*/,false] );
+		$.Hive.get(0).send( [codeBlockNames, codeBlocks, null, 0, 0, false, null, null, imageDims, false] );
 		frameComplete = false;
 		setTimeout( runFrame, 1 );
 	}
@@ -456,8 +495,7 @@ var HfcRunner = (function ($,$M) {
 				}
 
 				// TELL the server to run the loop code
-//				$.Hive.get(0).send( [ ["Loop code"], [loopCode], keyDown, mouseX, mouseY, mouseDown, null, twiddlerArray, imageDims, true ] );
-				$.Hive.get(0).send( [ ["Loop code"], [loopCode], false, 0, 0, false, null, twiddlerArray, [], true ] );
+				$.Hive.get(0).send( [ ["Loop code"], [loopCode], keyDown, mouseX, mouseY, mouseDown, null, twiddlerArray, imageDims, true ] );
 				frameComplete = false;
 			}
 
