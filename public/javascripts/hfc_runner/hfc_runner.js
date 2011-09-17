@@ -368,6 +368,23 @@ var HfcRunner = (function ($,$M) {
 		$canvas[1].css( "top", $canvas[0].position().top );
 		frameCallback = options.frameCallback;
 	};
+	
+	my.stop = function() {
+		startCode = "";
+		loopCode = "";
+		$("#mainCanvas0").css( "visibility", "visible" );
+		$("#mainCanvas1").css( "visibility", "hidden" );
+		context[0].setTransform( 1, 0, 0, 1, 0, 0 );
+		context[0].fillStyle = "#FFFFFF";
+		context[0].globalAlpha = 1;
+		context[0].fillRect( 0, 0, canvasW, canvasH );
+		$("#mainCanvas1").css( "visibility", "visible" );
+		context[1].setTransform( 1, 0, 0, 1, 0, 0 );
+		context[1].fillStyle = "#FFFFFF";
+		context[1].globalAlpha = 1;
+		context[1].fillRect( 0, 0, canvasW, canvasH );
+		$("#mainCanvas1").css( "visibility", "hidden" );
+	}
 
 	my.restart = function( _startCode, _loopCode ) {
 		//
@@ -385,8 +402,34 @@ var HfcRunner = (function ($,$M) {
 		frameNum = 0;
 		currentContext = context[0];
 
+		// CHECK for clear to determine if we are double buffering
 		$canvas[1].css( "visibility", "hidden" );
 		doubleBuffer = loopCode.match( "^\\s*clear\\s*(\\s*)" ) ? true : false;
+
+		// SETUP the twiddlerValsHash
+/*
+		$("#twiddlers").html( "<tr><td><b>Name</b></td><td><b>Value</b></td><td><b>Restart</b></td></tr>" );
+		$("#createATwiddlerNote").css( "display", "block" );
+		twiddlers = [];
+		var lines = startCode.split( "\n" );
+		var twiddlerCount = 0;
+		for( var i in lines ) {
+			var m = lines[i].match( "^(_\\S+)\\s*=\\s*(\\S+)" )
+			if( m ) {
+				$("#createATwiddlerNote").css( "display", "none" );
+				twiddlers[m[1]] = m[2];
+				$("#twiddlers").append( "<tr><td>"+m[1]+"</td><td><input class='twiddler' varName='"+m[1]+"' type='text' id='" + m[1] + "' value='"+m[2]+"'></td><td><input type='checkbox' class='twiddlerRestartCheck' varName='"+m[1]+"' id='"+m[1]+"_restart" + "'"+ (twiddlerChecks && twiddlerChecks[m[1]] ? "checked" : "") +"/></td></tr>" );
+				twiddlerCount++;
+			}
+		}
+		if( twiddlerCount > 0 ) {
+			$("#twiddlers").prepend( "<tr><td colspan='2'>Click and drag mouse up and down on field to change value</td></tr>" );
+		}
+		else {
+			$("#twiddlers").html("");
+		}
+		setupTwiddlers();
+*/
 
 		// LAUNCH a new thread
 		$.Hive.create({
@@ -414,7 +457,7 @@ var HfcRunner = (function ($,$M) {
 		setTimeout( my.runFrame, 1 );
 	}
 
-	my.runFrame = function( state ) {
+	my.runFrame = function() {
 		// POLL to see if the thread has completed a frame.  If so, send a message telling the
 		// thread of the current state and it will then run one more frame.
 		if( frameComplete ) {
@@ -430,9 +473,17 @@ var HfcRunner = (function ($,$M) {
 				frameCallback( avgFrameRate / 20 )
 				startFrameTime = new Date().getTime();
 
+				twiddlerArray = [];
+				/*
+				for( i in twiddlerValueHash ) {
+					twiddlerArray.push( i );
+					twiddlerArray.push( parseFloat(twiddlers[i]) );
+				}
+				*/
+
 				// TELL the server to run the loop code
 //				$.Hive.get(0).send( [ ["Loop code"], [loopCode], keyDown, mouseX, mouseY, mouseDown, null, twiddlerArray, imageDims, true ] );
-				$.Hive.get(0).send( [ ["Loop code"], [loopCode], false, 0, 0, false, null, [], [], true ] );
+				$.Hive.get(0).send( [ ["Loop code"], [loopCode], false, 0, 0, false, null, twiddlerArray, [], true ] );
 				frameComplete = false;
 			}
 

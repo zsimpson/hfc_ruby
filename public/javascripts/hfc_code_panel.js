@@ -75,7 +75,13 @@ $(document).ready( function() {
 		canvasId1: "codeMainCanvas1",
 		frameCallback: function(fps) {
 			$("#codeFps").html( fps.toFixed(0) );
-		}
+		},
+		twiddlersCallback: function( twiddlerHash ) {
+			// This will setup the twiddler UI
+		},
+		errorStateCallback: function( funcError, startError, loopError ) {
+			// This will display the errors
+		},
 	}); 
 
 	$(codeMirrorStart.getInputField()).keyup( function(e) { codeRestart() } );
@@ -92,6 +98,10 @@ $(window).resize( codeResize );
 
 function codeRestart() {
 	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue() );
+}
+
+function codeStop() {
+	hfcRunner.stop();
 }
 
 function codeTabSelected() {
@@ -166,9 +176,6 @@ function codeLoadLatestVersion() {
 }
 
 function codeNew() {
-	// STOP the program
-	// @TODO
-	
 	// CLEAR the editors
 	codeMirrorFunction.setValue("");
 	codeMirrorStart.setValue("");
@@ -179,6 +186,7 @@ function codeNew() {
 	codeCurrentProgramVersionNumber = 0;
 	codeCurrentProgramVersionCount = 0;
 	$("#codeVersionNumber").html( "" );
+	codeStop();
 }
 	
 function codeSave() {
