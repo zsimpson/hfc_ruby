@@ -4,10 +4,11 @@
 
 		// TEMP HACK until I figure out why the tabsshow is not getting called on startup
 		programsTabSelected();
-		discussTabSelected();
-		codeTabSelected();
-		helpTabSelected();
-		artTabSelected();
+		//discussTabSelected();
+		//codeTabSelected();
+		//helpTabSelected();
+		//artTabSelected();
+		globalsTabSelected();
 		// END HACK
 
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
@@ -28,6 +29,9 @@
 			}
 			if( ui.panel.id == 'artPanel' ) {
 				artTabSelected();
+			}
+			if( ui.panel.id == 'globalsPanel' ) {
+				globalsTabSelected();
 			}
 
 			setCookie( "mainTabsSelected", ui.index );
@@ -52,7 +56,7 @@
 		<li><a href="#homePanel"><span class="tabLabel">Home</span></a></li>
 		<li><a href="#codePanel"><span class="tabLabel">Code</span></a></li>
 		<li><a href="#programsPanel"><span class="tabLabel">Programs</span></a></li>
-		<li><a href="#functionsPanel"><span class="tabLabel">Globals</span></a></li>
+		<li><a href="#globalsPanel"><span class="tabLabel">Globals</span></a></li>
 		<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
 		<li><a href="#helpPanel"><span class="tabLabel">Help</span></a></li>
 		<li><a href="#artPanel"><span class="tabLabel">Art</span></a></li>
@@ -72,8 +76,8 @@
 			<%= render 'programs_panel.html' %>
 		</div>
 
-		<div id="functionsPanel">
-			Public funcions will go here
+		<div id="globalsPanel">
+			<%= render 'globals_panel.html' %>
 		</div>
 
 		<div id="discussPanel">

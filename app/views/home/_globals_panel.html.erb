@@ -1,0 +1,16 @@
+<script type="text/javascript">
+	function globalsTabSelected() {
+		globalsLoad();
+	}
+
+	function globalsLoad() {
+		$("#globals").load( "/public_functions/list.html", function() {
+			commonSetupElements();
+		});
+	}
+
+</script>
+
+<div id="globals">
+</div>
+
