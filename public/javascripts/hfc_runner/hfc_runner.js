@@ -113,13 +113,42 @@ var HfcRunner = (function ($,$M) {
 	}
 	
 	var HfcFunctions = {
-		clear: function( r, g, b ) {
-			currentContext.setTransform( 1, 0, 0, 1, 0, 0 );
-			currentContext.fillStyle = colorToString( r, g, b );
-			currentContext.globalAlpha = 1;
-			currentContext.fillRect( 0, 0, canvasW, canvasH );
+		addColorStop: function( a, b, c, d ) {
+			drawState.addColorStop( a, b, c, d );
 		},
-	
+		
+        align: function( a, b ) {
+			drawState.setAlign( a, b );
+        },
+		
+		alpha: function( a ) {
+			drawState.setAlpha( a );
+		},
+		
+		arc: function( x, y, r, a0, a1, dir ) {
+			drawState.loadStrokeState( currentContext );
+			currentContext.beginPath();
+			currentContext.arc( x, y, r, a0, a1, dir );
+			currentContext.stroke();
+		},
+
+		arcTo: function( a, b, c, d, e ) {
+			currentContext.arcTo( a, b, c, d, e );
+		},
+		
+		beginPath: function() {
+			currentContext.beginPath();
+		},
+		
+		bezierTo: function( cx0, cy0, cx1, cy1, x, y ) {
+			currentContext.bezierCurveTo( cx0, cy0, cx1, cy1, x, y );
+		},
+		
+		box: function( x0, y0, w, h ) {
+			drawState.loadStrokeState( currentContext );
+			currentContext.strokeRect( x0, y0, w, h );
+		},
+
 		circle: function( x, y, r ) {
 			drawState.loadStrokeState( currentContext );
 			currentContext.beginPath();
@@ -128,8 +157,172 @@ var HfcRunner = (function ($,$M) {
 			currentContext.stroke();
 		},
 
-		box: function( x, y, w, h ) {
-		}
+		clear: function( r, g, b ) {
+			currentContext.setTransform( 1, 0, 0, 1, 0, 0 );
+			currentContext.fillStyle = colorToString( r, g, b );
+			currentContext.globalAlpha = 1;
+			currentContext.fillRect( 0, 0, canvasW, canvasH );
+		},
+	
+		closePath: function() {
+			currentContext.closePath();
+		},
+		
+		composite: function( a ) {
+			drawState.setComposite( a );
+		},
+		
+		curveTo: function( x, y, a, b ) {
+			currentContext.quadraticCurveTo( x, y, a, b );
+		},
+		
+		disc: function( x, y, r ) {
+			drawState.loadFillState( context[frameNum%2] );
+			currentContext.beginPath();
+			currentContext.arc( x, y, r, 0, 3.14*2, false );
+			currentContext.closePath();
+			currentContext.fill();
+		},
+
+		fill: function( r, g, b, a ) {
+			drawState.setFill( r, g, b, a );
+        },
+		
+		fillPath: function() {
+			drawState.loadFillState( currentContext );
+			currentContext.fill();
+		},
+		
+		font: function( t, s ) {
+			drawState.setFont( t, s );
+        },
+		
+		gradient: function( x0, y0, x1, y1 ) {
+			drawState.createGradient( x0, y0, x1, y1 );
+		},
+		
+		gradientRadial: function( x0, y0, r0, x1, y1, r1 ) {
+			drawState.createGradientRadial( x0, y0, r0, x1, y1, r1 );
+		},
+		
+		identity: function() {
+			currentContext.setTransform( defaultMat.e(1,1), defaultMat.e(2,1), defaultMat.e(1,2), defaultMat.e(2,2), defaultMat.e(1,3), defaultMat.e(2,3) );
+		},
+		
+		image: function( url, x, y, w, h, sx, sy, sw, sh ) {
+			var i = images[ url ];
+			if( ! i ) {
+				i = new Image();
+				if( url.match( /http(s)?:/ ) ) {
+					i.src = url;
+				}
+				else {
+					i.src = "/home/get_asset?name=" + url;
+				}
+				i.onload = getImageDims;
+				images[ url ] = i;
+			}
+			if( sx != null ) {
+				currentContext.drawImage( i, sx, sy, sw, sh, x, y, w, h );
+			}
+			else if( w != null ) {
+				currentContext.drawImage( i, x, y, w, h );
+			}
+			else {
+				currentContext.drawImage( i, x, y );
+			}
+		},
+		
+		line: function( x0, y0, x1, y1 ) {
+			drawState.loadStrokeState( currentContext );
+			currentContext.beginPath();
+			currentContext.moveTo( x0, y0 );
+			currentContext.lineTo( x1, y1 );
+			currentContext.stroke();
+		},
+
+		lineTo: function( x, y ) {
+			currentContext.lineTo( x, y );
+		},
+		
+		moveTo: function( x, y ) {
+			currentContext.moveTo( x, y );
+		},
+		
+		pathArc: function( a, b, c, d, e, f ) {
+			currentContext.arc( a, b, c, d, e, f );
+		},
+		
+		push: function() {
+			currentContext.save();
+		},
+		
+		pop: function() {
+			currentContext.restore();
+		},
+		
+		rect: function( x0, y0, w, h ) {
+			drawState.loadFillState( currentContext );
+			currentContext.fillRect( x0, y0, w, h );
+		},
+
+		rotate: function( a ) {
+			currentContext.rotate( a );
+		},
+		
+		scale: function( x, y ) {
+			currentContext.scale( x, y );
+		},
+		
+        shadow: function( x, y, blur, r, g, b ) {
+			drawState.setShadow( x, y, blur, r, g, b );
+		},
+		
+        stroke: function( w, r, g, b, a, cap, join ) {
+			drawState.setStroke( w, r, g, b, a, cap, join );
+        },
+		
+		strokePath: function() {
+			drawState.loadStrokeState( currentContext );
+			currentContext.stroke();
+		},
+		
+		strokeText: function( s, x, y ) {
+			drawState.loadStrokeState( currentContext );
+			drawState.loadFontState( currentContext );
+			currentContext.strokeText( s, x, y );
+		},
+		
+		text: function( s, x, y ) {
+			drawState.loadFillState( currentContext );
+			drawState.loadFontState( currentContext );
+			currentContext.fillText( s, x, y );
+		},
+
+		translate: function( x, y ) {
+			currentContext.translate( x, y );
+		},
+		
+		window: function( a, b, c, d, e, f ) {
+			defaultMat = $M( [
+				[ a, c, e ], 
+				[ b, d, f ], 
+				[ 0, 0, 1 ]
+			] ) 
+			currentContext.setTransform( a, b, c, d, e, f );
+		},
+		
+		
+		//unresponsiveOverride: function() {
+		//	unresponsiveOverride = true;
+		//},
+
+//		else if( data.cmd == "debug" ) {
+//			$("#debugStream").append( data.args[0] + "<br/>" );
+//			$("#debugStream").scrollTop($("#debugStream")[0].scrollHeight);
+//			console.log( data.args[0] );
+//		}
+
 	};
 
 	var frameComplete = true;
@@ -144,7 +337,11 @@ var HfcRunner = (function ($,$M) {
 	var canvasW = 350;
 	var canvasH = 350;
 	var drawState = new HfcDrawState();
-
+	var errorInLoopCode = false;
+	var frameRates = [];
+	var startFrameTime = new Date().getTime();
+	var frameCallback = null;
+	
 	colorToString = function( r, g, b ) {
 		r = Math.max( 1, Math.min( 255, r*255 ) );
 		g = Math.max( 1, Math.min( 255, g*255 ) );
@@ -152,7 +349,7 @@ var HfcRunner = (function ($,$M) {
 		var color = ( (1<<24) | (r<<16) | (g<<8) | b ).toString(16);
 		return "#" + color.substring( 1, 7 );
 	}
-	
+
 	my.init = function( options ) {
 		$canvas[0] = $("#"+options["canvasId0"]);
 		$canvas[1] = $("#"+options["canvasId1"])
@@ -169,6 +366,7 @@ var HfcRunner = (function ($,$M) {
 		$canvas[1].css( "position", "absolute" );
 		$canvas[1].css( "left", $canvas[0].position().left );
 		$canvas[1].css( "top", $canvas[0].position().top );
+		frameCallback = options.frameCallback;
 	};
 
 	my.restart = function( _startCode, _loopCode ) {
@@ -186,6 +384,9 @@ var HfcRunner = (function ($,$M) {
 
 		frameNum = 0;
 		currentContext = context[0];
+
+		$canvas[1].css( "visibility", "hidden" );
+		doubleBuffer = loopCode.match( "^\\s*clear\\s*(\\s*)" ) ? true : false;
 
 		// LAUNCH a new thread
 		$.Hive.create({
@@ -218,14 +419,25 @@ var HfcRunner = (function ($,$M) {
 		// thread of the current state and it will then run one more frame.
 		if( frameComplete ) {
 			if( $.Hive.get(0) ) {
+				// COMPUTE FPS
+				var stopFrameTime = new Date().getTime();
+				var frameRate = 1000.0 / (stopFrameTime - startFrameTime);
+				frameRates[ frameNum % 20 ] = frameRate;
+				var avgFrameRate = 0;
+				for( var i=0; i<20; i++ ) {
+					avgFrameRate += frameRates[i];
+				}
+				frameCallback( avgFrameRate / 20 )
+				startFrameTime = new Date().getTime();
+
 				// TELL the server to run the loop code
 //				$.Hive.get(0).send( [ ["Loop code"], [loopCode], keyDown, mouseX, mouseY, mouseDown, null, twiddlerArray, imageDims, true ] );
 				$.Hive.get(0).send( [ ["Loop code"], [loopCode], false, 0, 0, false, null, [], [], true ] );
 				frameComplete = false;
 			}
 
+			frameNum++;
 			if( doubleBuffer && ! errorInLoopCode ) {
-				frameNum++;
 				$canvas[1].css( "visibility", frameNum % 2 == 0 ? "visible" : "hidden" );
 				currentContext = context[ frameNum % 2 ];
 			}

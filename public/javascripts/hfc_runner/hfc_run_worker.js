@@ -318,10 +318,10 @@ with( Math ) {
 		$.send( { "cmd":"text", "args":[a,x,y] } );
 	}
 
-	function stroketext( a, x, y ) {
+	function strokeText( a, x, y ) {
 		if( typeof(x) == "undefined" ) x = 0;
 		if( typeof(y) == "undefined" ) y = 0;
-		$.send( { "cmd":"stroketext", "args":[a,x,y] } );
+		$.send( { "cmd":"strokeText", "args":[a,x,y] } );
 	}
 
 	function font( size, name ) {

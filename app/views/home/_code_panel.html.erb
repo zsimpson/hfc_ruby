@@ -55,16 +55,16 @@
 		
 		<% end %>
 		
-		<span style="float:right;">
+		<span style="float:right; min-width:150px;">
 			<button onclick="codeVersionLatest()">
 				Pause
 			</button>
 
 			<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
 			<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
-			<span id="codeFps" style="width:20px;"></span>
-			<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
 			<span>Frame rate: </span>
+			<span id="codeFps"></span>
+			<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
 		</span>
 		
 		<% if false %>

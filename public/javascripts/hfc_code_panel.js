@@ -70,13 +70,16 @@ $(document).ready( function() {
 		codeMirrorLoop.setValue( loopCode );
 	}
 
-	hfcRunner.init( { canvasId0:"codeMainCanvas0", canvasId1:"codeMainCanvas1" } ); 
+	hfcRunner.init({
+		canvasId0: "codeMainCanvas0",
+		canvasId1: "codeMainCanvas1",
+		frameCallback: function(fps) {
+			$("#codeFps").html( fps.toFixed(0) );
+		}
+	}); 
 
-	function restart() {
-		hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue() );
-	}
-	$(codeMirrorStart.getInputField()).keyup( function(e) { restart() } );
-	$(codeMirrorLoop .getInputField()).keyup( function(e) { restart() } );
+	$(codeMirrorStart.getInputField()).keyup( function(e) { codeRestart() } );
+	$(codeMirrorLoop .getInputField()).keyup( function(e) { codeRestart() } );
 
 	var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
 	if( lastLoadedProgramId ) {
@@ -86,6 +89,10 @@ $(document).ready( function() {
 });
 
 $(window).resize( codeResize );
+
+function codeRestart() {
+	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue() );
+}
 
 function codeTabSelected() {
 	codeResize();
@@ -138,6 +145,7 @@ function codeLoad( symbol, versionNumber ) {
 			codeCurrentProgramVersionCount = data.version_count;
 			$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
 			setCookie( "lastLoadedProgramId", data.id );
+			codeRestart();
 		}
 		else {
 			alert( data.error );
