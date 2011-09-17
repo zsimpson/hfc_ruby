@@ -76,9 +76,6 @@ $(document).ready( function() {
 		frameCallback: function(fps) {
 			$("#codeFps").html( fps.toFixed(0) );
 		},
-		twiddlersCallback: function( twiddlerHash ) {
-			// This will setup the twiddler UI
-		},
 		errorStateCallback: function( funcError, startError, loopError ) {
 			// This will display the errors
 		},
@@ -96,8 +93,84 @@ $(document).ready( function() {
 
 $(window).resize( codeResize );
 
+var codeTwiddlers = {};
+var codeTwiddlerChecks = {};
+
+function codeSetVarFromTwiddler( varName ) {
+	var startCode = codeMirrorStart.getValue();
+	var lines = startCode.split( "\n" );
+	for( var i in lines ) {
+		var m = lines[i].match( "^(_\\S+)\\s*=\\s*(\\S+)" )
+		if( m ) {
+			for( var j in codeTwiddlers ) {
+				if( j == m[1] ) {
+					lines[i] = "" + m[1] + " = " + codeTwiddlers[j];
+					break;
+				}
+			}
+		}
+	}
+	var newStr = lines.join( "\n" );
+	codeMirrorStart.setValue( newStr );
+	if( $("#"+varName+"_restart").attr( "checked" ) ) {
+		codeRestart();
+	}
+}
+
 function codeRestart() {
-	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue() );
+	// PARSE for twiddlers
+	$("#codeTwiddlers").html( "<tr><td><b>Name</b></td><td><b>Value</b></td><td><b>Restart</b></td></tr>" );
+	$("#codeCreateATwiddlerNote").css( "display", "block" );
+	codeTwiddlers = [];
+	var startCode = codeMirrorStart.getValue();
+	var lines = startCode.split( "\n" );
+	var twiddlerCount = 0;
+	for( var i in lines ) {
+		var m = lines[i].match( "^(_\\S+)\\s*=\\s*(\\S+)" )
+		if( m ) {
+			$("#codeCreateATwiddlerNote").css( "display", "none" );
+			codeTwiddlers[m[1]] = m[2];
+			$("#codeTwiddlers").append( "<tr><td>"+m[1]+"</td><td><input class='twiddler' varName='"+m[1]+"' type='text' id='" + m[1] + "' value='"+m[2]+"'></td><td><input type='checkbox' class='twiddlerRestartCheck' varName='"+m[1]+"' id='"+m[1]+"_restart" + "'"+ (codeTwiddlerChecks && codeTwiddlerChecks[m[1]] ? "checked" : "") +"/></td></tr>" );
+			twiddlerCount++;
+		}
+	}
+	if( twiddlerCount > 0 ) {
+		$("#codeTwiddlers").prepend( "<tr><td colspan='2'>Click and drag mouse up and down on field to change value</td></tr>" );
+	}
+	else {
+		$("#codeTwiddlers").html("");
+	}
+	
+	// SETUP the twiddlers
+	$(".twiddler").mousedown( function(event) {
+		var startVal = Number( $(this).val() );
+		startVal = Math.max( 0.001, startVal );
+		var startY = Number( event.pageY );
+		var varName = $(this).attr( "varName" );
+		var deThis = this;
+		$("body").mousemove( function(event) {
+			var newVal = Number( startVal * Math.exp( (startY - event.pageY)/50 ) );
+			newVal = newVal.toPrecision( 4 );
+			$(deThis).val( newVal );
+			codeTwiddlers[varName] = newVal;
+			codeSetVarFromTwiddler( varName );
+		});
+		$("body").mouseup( function() {
+			$(this).unbind( "mousemove" );
+		});
+	});
+
+	$(".twiddler").change( function(event) {
+		var varName = $(this).attr( "varName" );
+		codeTwiddlers[varName] = $(this).val();
+		codeSetVarFromTwiddler( varName );
+	});
+	
+	$(".twiddlerRestartCheck").change( function(event) {
+		codeTwiddlerChecks[ $(this).attr( "varName" ) ] = $(this).attr( "checked" ); 
+	});
+
+	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), codeTwiddlers );
 }
 
 function codeStop() {
