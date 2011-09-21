@@ -233,11 +233,11 @@ function codeResize() {
 	$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
 }
 
-function codeLoad( symbol, versionNumber ) {
+function codeLoad( id, versionNumber ) {
 	if( typeof(versionNumber) == "undefined" ) {
-		versionNumber = 0;
+		versionNumber = -1;
 	}
-	$.get( "/programs/load", { symbol:symbol, version_number:versionNumber }, function(data) {
+	$.get( "/programs/"+id, { version:versionNumber }, function(data) {
 		if( data.success ) {
 			codeCurrentProgramIsNew = false;
 			codeCurrentProgramName = data.name;
@@ -245,9 +245,9 @@ function codeLoad( symbol, versionNumber ) {
 			$("#codeCurrentProgramName").html( codeCurrentProgramName );
 			codeMirrorStart.setValue( data.start_code ? data.start_code : "" );
 			codeMirrorLoop.setValue( data.loop_code ? data.loop_code : "" );
-			codeCurrentProgramVersionNumber = data.version_number;
+			codeCurrentProgramVersionNumber = data.version;
 			codeCurrentProgramVersionCount = data.version_count;
-			$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
+			$("#codeVersionNumber").html( (data.version+1) + " of " + data.version_count );
 			setCookie( "lastLoadedProgramId", data.id );
 			codeRestart();
 		}
@@ -258,11 +258,11 @@ function codeLoad( symbol, versionNumber ) {
 }
 
 function codeLoadPreviousVersion() {
-	codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber+1 )
+	codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber-1 )
 }
 
 function codeLoadNextVersion() {
-	codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber-1 )
+	codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber+1 )
 }
 
 function codeLoadLatestVersion() {
@@ -292,10 +292,11 @@ function codeSave() {
 		codeSaveAs();
 	}
 	else {
-		$.post(
-			"/programs/save",
-			{id:codeCurrentProgramId, name:codeCurrentProgramName, loop_code:codeMirrorLoop.getValue(), start_code:codeMirrorStart.getValue() },
-			function(data) {
+		$.ajax({
+			type: "PUT",
+			url: "/programs/"+codeCurrentProgramId,
+			data:{name:codeCurrentProgramName, loop_code:codeMirrorLoop.getValue(), start_code:codeMirrorStart.getValue() },
+			success:function(data) {
 				if( data.success ) {
 					codeCurrentProgramId = data.id;
 					codeCurrentProgramName = data.name;
@@ -309,7 +310,7 @@ function codeSave() {
 					codeCurrentProgramName = "Un-named";
 				}
 			}
-		);
+		});
 	}
 }
 

@@ -44,5 +44,27 @@ class User < ActiveRecord::Base
 		a.action = action
 		a.save!
 	end
-			
+	
+	def get_friends_programs
+		programs_by_friend = {}
+
+		friends_user_ids_by_name = {}
+		programs = Program.find_by_sql(["select users.id as user_id, users.name as user_name, programs.id as program_id, programs.name as program_name from friendships,  programs, users where friendships.friend_id = programs.user_id and friendships.user_id = ? and users.id = friendships.friend_id order by upper(users.name)", self.id])
+		for i in programs
+			programs_by_friend[ i[:user_id] ] ||= {} 
+			programs_by_friend[ i[:user_id] ][ :user_name ] = i[:user_name]
+			(programs_by_friend[ i[:user_id] ][ :programs ] ||= []).push( {:program_id=>i[:program_id], :program_name=>i[:program_name]} )
+			friends_user_ids_by_name[ i[:user_name] ] = i[:user_id]
+		end
+		
+		# MAKE a nice list of names with a list of their programs
+		friends_programs = []
+		for f in friends_user_ids_by_name.keys.sort{ |a,b| a.downcase <=> b.downcase }
+			user_id = friends_user_ids_by_name[ f ]
+			friends_programs.push( {:user_name=>f, :user_id=>user_id, :programs=>programs_by_friend[user_id][:programs] } )
+		end
+		
+		return friends_programs
+	end
+				
 end
