@@ -64,6 +64,7 @@ class ProgramsController < ApplicationController
 			@my_programs = Program.find_all_by_user_id( @user.id )
 			@friends_programs = @user.get_friends_programs
 		end
+		@recent_programs = Program.find_recent( 100 )
 		render :layout=>false
 	end
 	

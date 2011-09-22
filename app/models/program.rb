@@ -41,6 +41,10 @@ class Program < ActiveRecord::Base
 		p.program_version, p.version, p.version_count = p.get_version( version )
 		return p
 	end
+	
+	def self.find_recent( count )
+		return Program.order( "created_at desc" ).limit( count ) 
+	end
 
 	def self.normalize_name( name )
 		name.gsub!( ' ', '_' )

@@ -30,13 +30,26 @@ class PublicFunction < ActiveRecord::Base
 	end
 
 	def new_version( code, user_id )
-		fv = FunctionVersion.new( :public_function_id=>self.id, :code=>code, :user_id=>user_id )
+		fv = FunctionVersion.new( :public_function_id=>self.id, :code=>PublicFunction.clean_code(code), :user_id=>user_id )
 		fv.save!
 		return get_version_count
 	end
 	
+	def self.clean_code( code )
+		lines = code.split( "\n" )
+		out_lines = []
+		for l in lines
+			m = l.match( /^(\s*\$[A-Za-z0-9_]+\s*=\s*)(function.*)/ )
+			if m
+				out_lines.push( m[2] )
+			else
+				out_lines.push( l )
+			end
+		end
+		return out_lines.join( "\n" )
+	end
+	
 	def self.find_by_name_and_version( name, version )
-logger.debug "*** #{name} #{version}"
 		p = self.find_by_name( name )
 		if ! p
 			raise ActiveRecord::RecordNotFound
@@ -56,7 +69,7 @@ logger.debug "*** #{name} #{version}"
 		f = self.new( :user_id=>user_id, :name=>name )
 		f.save!
 
-		fv = FunctionVersion.new( :public_function_id=>f.id, :code=>code, :user_id=>user_id )
+		fv = FunctionVersion.new( :public_function_id=>f.id, :code=>self.clean_code(code), :user_id=>user_id )
 		fv.save!
 
 		return f

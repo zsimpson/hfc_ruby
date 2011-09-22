@@ -1,6 +1,6 @@
 <table id="programsAndFriendsPanel">
 	<tr>
-		<td style="vertical-align:top; width:50%;">
+		<td style="vertical-align:top;">
 			<div class="h1">
 				Your programs
 			</div>
@@ -17,7 +17,7 @@
 			</div>
 		</td>
 
-		<td style="vertical-align:top; width:50%;">
+		<td style="vertical-align:top;">
 			<div class="h1">
 				Your friends' programs
 			</div>
@@ -34,11 +34,26 @@
 							</div>
 							<div class="friendPrograms">
 								<% for p in record[:programs] %>
-									<a onclick="programsOpenById(<%=p[:program_id]-%>)"><%= p[:program_name] -%></a><br/>
+									<div style="min-height:18px;">
+										<a onclick="codeLoad(<%=p[:program_id]-%>)"><%= p[:program_name] -%></a><br/>
+									</div>
 								<% end %>
 							</div>
 						</div>
 					<% end %>
+				<% end %>
+			</div>
+		</td>
+
+		<td style="vertical-align:top;">
+			<div class="h1">
+				Recent programs
+			</div>
+
+			<div id="">
+				<% for p in @recent_programs %>
+					<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
+					<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeLoad(<%=p.id-%>)"><%= p.name -%></a><br/>
 				<% end %>
 			</div>
 		</td>

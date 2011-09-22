@@ -27,7 +27,7 @@
 		</button>
 		
 		<button onclick="codeShowPrograms()">
-			Load
+			Load...
 		</button>
 		
 		<% if User.current_user %>
@@ -60,7 +60,7 @@
 		<% end %>
 		
 		<button onclick="codeShowGlobals()" style="margin-left:30px;">
-			Globals
+			Globals...
 		</button>
 
 		<span style="float:right; min-width:150px;">
@@ -133,35 +133,34 @@
 
 	<div id="codeMainCol1" style="vertical-align:top;">
 			
-		<div id="codeFunctionCodeDiv" style="display:none;">
-			<div>
+		<div id="codeGlobalCodeDiv" style="display:none;">
+			<div style="min-height:20px;">
 				<span id="codeMasterErrorState" class="areaLabel" style="background-color:red; color:white;">
 				</span>
 			</div>
-			<div id="codeFunctionCodeErrorState">
+			<div id="codeGlobalControlPanel">
 				<span class="areaLabel">
-					Function
+					Global editor
 				</span>
-				<button onclick="saveFunction()">Done</button>
-				<button onclick="cancelFunction()">Cancel</button>
-				<span class="areaLabel">
-					Version:
+				<button onclick="codeSaveGlobal()">Save</button>
+				<button onclick="codeCancelGlobal()">Cancel</button>
+				<span>
+					Version: <span style="font-weight:bold;" id="codeGlobalVersionLabel"></span>
 				</span>
-				<button onclick="changeVersionFunction('prev')">Previous</button>
-				<button onclick="changeVersionFunction('next')">Next</button>
-				<button onclick="changeVersionFunction('curr')">Latest</button>
-				<div id="functionVersionLabel"></div>
+				<button onclick="codeGlobalPreviousVersion()">Previous</button>
+				<button onclick="codeGlobalNextVersion()">Next</button>
+				<button onclick="codeGlobalLatestVersion()">Latest</button>
 			</div>
-			<textarea id="codeFunctionEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
+			<textarea id="codeGlobalEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
 		</div>
 
-		<div id="codeFunctionCodeDivDrag" class="dragBar" style="text-align:center; display:none; height:5px; width:100%; cursor:move;">
+		<div id="codeGlobalCodeDivDrag" class="dragBar" style="text-align:center; display:none; height:5px; width:100%; cursor:move;">
 			<img src="/images/drag.png"/ style="position:relative; top:3px;">
 		</div>
 
 		<div id="codeStartCodeDiv">
-			<span class="areaLabel">Start code</span>&nbsp;<span>(Write code here that runs once)</span>
-			<span id="codeStartCodeErrorState" class="areaLabel" style="background-color:red; color:white;">TESTING</span>
+			<span class="areaLabel">Start code editor</span>
+			<span id="codeStartCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
 			<textarea id="codeStartEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:100px;"></textarea>
 		</div>
 
@@ -170,7 +169,7 @@
 		</div>
 
 		<div id="codeLoopCodeDiv">
-			<span class="areaLabel">Loop code</span>&nbsp;<span>(Write code here that runs over and over)</span>
+			<span class="areaLabel">Loop code editor
 			<span id="codeLoopCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
 			<textarea id="codeLoopEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:300px;"></textarea>
 		</div>

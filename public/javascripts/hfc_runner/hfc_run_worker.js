@@ -159,21 +159,30 @@ with( Math ) {
 
 	// Graphics
 	//=======================================================================================
+	
+	var sizeW = 350;
+	var sizeH = 350;
+	
+	function size( w, h ) {
+		sizeW = w;
+		sizeH = h;
+		$.send( { "cmd":"size", "args":[w,h] } );
+	}
 
 	function width() {
-		return 350;
+		return sizeW;
 	}
 
 	function height() {
-		return 350;
+		return sizeH;
 	}
 
 	function cenX() {
-		return 175;
+		return sizeW / 2;
 	}
 
 	function cenY() {
-		return 175;
+		return sizeH / 2;
 	}
 
 	function fill( r, g, b, a ) {

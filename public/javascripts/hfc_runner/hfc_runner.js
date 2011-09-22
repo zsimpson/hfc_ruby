@@ -278,6 +278,12 @@ var HfcRunner = (function ($,$M) {
 			drawState.setShadow( x, y, blur, r, g, b );
 		},
 		
+		size: function( w, h ) {
+			canvasW = w;
+			canvasH = h;
+			resizeCanvas( w, h );
+		},
+		
         stroke: function( w, r, g, b, a, cap, join ) {
 			drawState.setStroke( w, r, g, b, a, cap, join );
         },
@@ -343,6 +349,7 @@ var HfcRunner = (function ($,$M) {
 	var startFrameTime = new Date().getTime();
 	var frameCallback = null;
 	var errorStateCallback = null;
+	var sizeCallback = null;
 	var twiddlers = {};
 	var mouseX = 0;
 	var mouseY = 0;
@@ -364,20 +371,33 @@ var HfcRunner = (function ($,$M) {
 			imageDims[i] = [ images[i].width, images[i].height ];
 		}
 	}
+
+	resizeCanvas = function( w, h ) {
+		$canvas[0].css( "width", w );
+		$canvas[0].css( "height", h );
+		$canvas[1].css( "width", w );
+		$canvas[1].css( "height", h );
+		var mainCanvas0 = document.getElementById( "codeMainCanvas0" );
+		var mainCanvas1 = document.getElementById( "codeMainCanvas1" );
+		mainCanvas0.setAttribute( "width", w );
+		mainCanvas0.setAttribute( "height", h );
+		mainCanvas0.width = mainCanvas0.width; // forces a reset
+		mainCanvas1.setAttribute( "width", w );
+		mainCanvas1.setAttribute( "height", h );
+		mainCanvas1.width = mainCanvas1.width; // forces a reset
+		sizeCallback( w, h );
+	}
+
 	
 	my.init = function( options ) {
+		sizeCallback = options.sizeCallback;
 		$canvas[0] = $("#"+options["canvasId0"]);
 		$canvas[1] = $("#"+options["canvasId1"])
-		var mainCanvas0 = document.getElementById( options["canvasId0"] );
-		var mainCanvas1 = document.getElementById( options["canvasId1"] );
+		resizeCanvas( 350, 350 );
+		var mainCanvas0 = document.getElementById( "codeMainCanvas0" );
+		var mainCanvas1 = document.getElementById( "codeMainCanvas1" );
 		context[0] = mainCanvas0.getContext("2d");
 		context[1] = mainCanvas1.getContext("2d");
-		mainCanvas0.setAttribute( "width", canvasW );
-		mainCanvas0.setAttribute( "height", canvasH );
-		mainCanvas0.width = mainCanvas0.width; // forces a reset
-		mainCanvas1.setAttribute( "width", canvasW );
-		mainCanvas1.setAttribute( "height", canvasH );
-		mainCanvas1.width = mainCanvas1.width; // forces a reset
 		$canvas[1].css( "position", "absolute" );
 		$canvas[1].css( "left", $canvas[0].position().left );
 		$canvas[1].css( "top", $canvas[0].position().top );
@@ -473,6 +493,8 @@ var HfcRunner = (function ($,$M) {
 		}
 		codeBlocks.push( startCode );
 		codeBlockNames.push( "Start code" );
+
+		errorStateCallback( "", "", "" );
 
 		// TELL the thread to run the startup block(s)
 		$.Hive.get(0).send( [codeBlockNames, codeBlocks, null, 0, 0, false, null, null, imageDims, false] );

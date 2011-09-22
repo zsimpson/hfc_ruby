@@ -1,5 +1,5 @@
 <% for f in @public_functions.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
 	<div>
-		<a><%= f.name -%></a>
+		<a onclick="codeGlobalEdit( '<%=f.name-%>' )"><%= f.name -%></a>
 	</div>
 <% end %>

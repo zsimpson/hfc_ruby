@@ -1,20 +1,21 @@
-var codeMirrorFunction = null;
+var codeMirrorGlobal = null;
 var codeMirrorStart = null;
 var codeMirrorLoop = null;
 var codeCurrentProgramName = "Un-named";
 var codeCurrentProgramId = 0;
 var codeCurrentProgramVersionNumber = 0;
 var codeCurrentProgramVersionCount = 0;
-
 var hfcRunner = HfcRunner;
+var codeCanvasW = 350;
+var codeCanvasH = 350;
 
 $(document).ready( function() {
 
-	$("#codeFunctionCodeDivDrag").mousedown( function(event) {
+	$("#codeGlobalCodeDivDrag").mousedown( function(event) {
 		$("body").mousemove( function(event) {
 			var top = $("#codeFunctionCodeDiv").offset().top;
-			$("#codeFunctionCodeDiv").css( "height", event.pageY - top );
-			$("#codeFunctionEditor").css( "height", $("#codeFunctionCodeDiv").height() - $("#codeFunctionEditor").position().top );
+			$("#codeGlobalCodeDiv").css( "height", event.pageY - top );
+			$("#codeGlobalEditor").css( "height", $("#codeGlobalCodeDiv").height() - $("#codeGlobalEditor").position().top );
 			resize();
 		});
 		$("body").mouseup( function() {
@@ -57,9 +58,9 @@ $(document).ready( function() {
 		lineNumbers:true,
 		theme:"neat",
 	}
-	codeMirrorFunction = CodeMirror.fromTextArea( document.getElementById("codeFunctionEditor"), codeMirrorOptions );
-	codeMirrorStart    = CodeMirror.fromTextArea( document.getElementById("codeStartEditor"   ), codeMirrorOptions );
-	codeMirrorLoop     = CodeMirror.fromTextArea( document.getElementById("codeLoopEditor"    ), codeMirrorOptions );
+	codeMirrorGlobal = CodeMirror.fromTextArea( document.getElementById("codeGlobalEditor"), codeMirrorOptions );
+	codeMirrorStart  = CodeMirror.fromTextArea( document.getElementById("codeStartEditor" ), codeMirrorOptions );
+	codeMirrorLoop   = CodeMirror.fromTextArea( document.getElementById("codeLoopEditor"  ), codeMirrorOptions );
 
 	var startCode = getCookie( "startCode" );
 	if( startCode )  {
@@ -77,19 +78,25 @@ $(document).ready( function() {
 			$("#codeFps").html( fps.toFixed(0) );
 		},
 		errorStateCallback: codeSetErrorState,
+		sizeCallback: function( w, h ) {
+			codeCanvasW = w;
+			codeCanvasH = h;
+			codeResize();
+		}
 	}); 
 
-	$(codeMirrorStart.getInputField()).keyup( function(e) { codeRestart() } );
-	$(codeMirrorLoop .getInputField()).keyup( function(e) { codeRestart() } );
+	$(codeMirrorGlobal.getInputField()).keyup( function(e) { codeRestart() } );
+	$(codeMirrorStart .getInputField()).keyup( function(e) { codeRestart() } );
+	$(codeMirrorLoop  .getInputField()).keyup( function(e) { codeRestart() } );
 
 	var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
 	if( lastLoadedProgramId ) {
 		codeLoad( lastLoadedProgramId );
 	}
 
-});
+	$(window).resize( codeResize );
 
-$(window).resize( codeResize );
+});
 
 function codeSetErrorState( blockName, exceptMessage, exceptLine ) {
 	var header = "";	
@@ -195,9 +202,11 @@ function codeRestart() {
 		codeTwiddlerChecks[ $(this).attr( "varName" ) ] = $(this).attr( "checked" ); 
 	});
 	
+	codeUpdateGlobalCode();
+	
 	// BUILD a list of all the code that's running and the currently bound globals
 	var loopCode = codeMirrorLoop.getValue();
-	var globalCode = "";//codeMirrorGlobal.getValue();
+	var globalCode = codeMirrorGlobal.getValue();
 	var source = [ startCode, loopCode, globalCode ];
 	for( i in globals ) {
 		source.push( globals[i] );
@@ -239,7 +248,7 @@ function codeResize() {
 	
 	var mainW = $("#codeMainPanel").width() - 20;  // 20 for the scroll bar
 	var spacing = 5;
-	var col2W = 350;
+	var col2W = Math.max( 250, codeCanvasW );
 	var col1W = mainW - col2W - spacing;
 	var col1L = 0;
 	var col2L = col1L + col1W + spacing;
@@ -297,7 +306,7 @@ function codeLoadLatestVersion() {
 
 function codeNew() {
 	// CLEAR the editors
-	codeMirrorFunction.setValue("");
+	codeMirrorGlobal.setValue("");
 	codeMirrorStart.setValue("");
 	codeMirrorLoop.setValue("");
 	codeCurrentProgramId = 0;
@@ -431,8 +440,12 @@ function codeDeleteById( programId ) {
 	}
 }
 
+var globals = [];
+var globalsLoad = [];
+var globalsEditting = "";
+
 function codeShowGlobals() {
-	$("#codeGlobalsPanel").load( "/public_functions/list.html", commonSetupElements );
+	$("#codeGlobalsPanel").load( "/public_functions", commonSetupElements );
 	$("#codeGlobalsPanel").css( "display", "block" );
 	$("#codeGlobalsControlPanel").css( "display", "block" );
 	$("#codeMainPanel").css( "display", "none" );
@@ -442,23 +455,40 @@ function codeShowGlobals() {
 function codeHideGlobals() {
 	$("#codeGlobalsPanel").css( "display", "none" );
 	$("#codeGlobalsControlPanel").css( "display", "none" );
+	codeMirrorGlobal.refresh();
 	$("#codeMainPanel").css( "display", "block" );
 	$("#codeMainControlPanel").css( "display", "block" );
 }
 
-var globals = [];
-var globalsLoad = [];
-var globalsEditting = "";
+function codeShowGlobalEditor() {
+	$("#codeGlobalCodeDiv").slideDown();
+	$("#codeGlobalCodeDivDrag").slideDown();
+}
 
-function codeClearGlobals() {
-	globals = [];
-	globalsLoad = [];
-	globalsEditting = "";
-	//codeMirrorGlobals.setValue( "" );
+function codeHideGlobalEditor() {
+	$("#codeGlobalCodeDiv").slideUp();
+	$("#codeGlobalCodeDivDrag").slideUp();
+}
+
+function codeSaveGlobal() {
+	$.ajax({
+		url:"/public_functions/"+globalsEditting,
+		type:"PUT",
+		data:{ code:codeMirrorGlobal.getValue() },
+		success: function(data) {
+			if( data.success ) {
+				codeHideGlobalEditor();
+			}
+		}
+	});
+}
+
+function codeCancelGlobal() {
+	codeHideGlobalEditor();
 }
 
 function codeUpdateGlobalCode() {
-	globals[ globalsEditting ] = codeMirrorGlobals.getValue();
+	globals[ globalsEditting ] = codeMirrorGlobal.getValue();
 }
 
 function codeBindGlobal( name ) {
@@ -472,4 +502,34 @@ function codeBindGlobal( name ) {
 		});
 	}
 }
+
+function codeGlobalEdit( name, version ) {
+	if( typeof(version) == "undefined" ) {
+		version = -1;
+	}
+	$.get( "/public_functions/"+name, {version:version}, function(data) {
+		if( data.success ) {
+			codeShowGlobalEditor();
+			codeMirrorGlobal.setValue( data.name + " = " + data.code );
+			codeMirrorGlobal.refresh();
+			codeHideGlobals();
+			globalsEditting = data.name;
+			$("#codeGlobalVersionLabel").html( (data.version+1) + " of " + data.version_count );
+			codeGlobalVersionNumber = data.version;
+		}
+	});
+}
+
+function codeGlobalPreviousVersion() {
+	codeGlobalEdit( globalsEditting, codeGlobalVersionNumber-1 );
+}
+
+function codeGlobalNextVersion() {
+	codeGlobalEdit( globalsEditting, codeGlobalVersionNumber+1 );
+}
+
+function codeGlobalLatestVersion() {
+	codeGlobalEdit( globalsEditting, -1 );
+}
+
 
