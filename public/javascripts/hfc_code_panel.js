@@ -114,6 +114,10 @@ function codeSetErrorState( blockName, exceptMessage, exceptLine ) {
 	}
 }
 
+function codeTabSelected() {
+	codeResize();
+}
+
 var codeTwiddlers = {};
 var codeTwiddlerChecks = {};
 
@@ -140,7 +144,7 @@ function codeSetVarFromTwiddler( varName ) {
 
 function codeRestart() {
 	// PARSE for twiddlers
-	$("#codeTwiddlers").html( "<tr><td><b>Name</b></td><td><b>Value</b></td><td><b>Restart</b></td></tr>" );
+	$("#codeTwiddlers").html( "<tr><td><b>Name</b></td><td><b>Value</b></td></tr>" );
 	$("#codeCreateATwiddlerNote").css( "display", "block" );
 	codeTwiddlers = [];
 	var startCode = codeMirrorStart.getValue();
@@ -151,7 +155,7 @@ function codeRestart() {
 		if( m ) {
 			$("#codeCreateATwiddlerNote").css( "display", "none" );
 			codeTwiddlers[m[1]] = m[2];
-			$("#codeTwiddlers").append( "<tr><td>"+m[1]+"</td><td><input class='twiddler' varName='"+m[1]+"' type='text' id='" + m[1] + "' value='"+m[2]+"'></td><td><input type='checkbox' class='twiddlerRestartCheck' varName='"+m[1]+"' id='"+m[1]+"_restart" + "'"+ (codeTwiddlerChecks && codeTwiddlerChecks[m[1]] ? "checked" : "") +"/></td></tr>" );
+			$("#codeTwiddlers").append( "<tr><td>"+m[1]+"</td><td><input class='twiddler' varName='"+m[1]+"' type='text' id='" + m[1] + "' value='"+m[2]+"'></td></tr>" );
 			twiddlerCount++;
 		}
 	}
@@ -190,30 +194,50 @@ function codeRestart() {
 	$(".twiddlerRestartCheck").change( function(event) {
 		codeTwiddlerChecks[ $(this).attr( "varName" ) ] = $(this).attr( "checked" ); 
 	});
+	
+	// BUILD a list of all the code that's running and the currently bound globals
+	var loopCode = codeMirrorLoop.getValue();
+	var globalCode = "";//codeMirrorGlobal.getValue();
+	var source = [ startCode, loopCode, globalCode ];
+	for( i in globals ) {
+		source.push( globals[i] );
+	}
 
-	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), codeTwiddlers );
+	// SEARCH all those sources for references to globals
+	var matches = [];
+	for( var i=0; i<source.length; i++ ) {
+		var str = source[i];
+		var regex = /(\$[a-zA-Z0-9_]+)/img;
+		var match = regex.exec( str );
+		while( match instanceof Array ) {
+			matches.push( match );
+			match = regex.exec( str );
+		}
+	}
+	
+	for( i in matches ) {
+		codeBindGlobal( matches[i][1] );
+	}
+
+	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), globals, codeTwiddlers );
 }
 
 function codeStop() {
 	hfcRunner.stop();
 }
 
-function codeTabSelected() {
-	codeResize();
-}
-
 function codeResize() {
 	// ARRANGE all the divs
 	var pageW = $(window).width();
 	var pageH = $(window).height();
-	var mcTop = $("#codeMainDiv").offset().top;
+	var mcTop = $("#codeMainPanel").offset().top;
 	var h = pageH - mcTop - 25;
 	
-	$("#codeMainDiv").css( "position", "relative" );
-	$("#codeMainDiv").css( "width", "100%" );
-	$("#codeMainDiv").css( "height", h );
+	$("#codeMainPanel").css( "position", "relative" );
+	$("#codeMainPanel").css( "width", "100%" );
+	$("#codeMainPanel").css( "height", h );
 	
-	var mainW = $("#codeMainDiv").width() - 20;  // 20 for the scroll bar
+	var mainW = $("#codeMainPanel").width() - 20;  // 20 for the scroll bar
 	var spacing = 5;
 	var col2W = 350;
 	var col1W = mainW - col2W - spacing;
@@ -238,6 +262,8 @@ function codeLoad( id, versionNumber ) {
 		versionNumber = -1;
 	}
 	$.get( "/programs/"+id, { version:versionNumber }, function(data) {
+		codeHidePrograms();
+	
 		if( data.success ) {
 			codeCurrentProgramIsNew = false;
 			codeCurrentProgramName = data.name;
@@ -283,10 +309,6 @@ function codeNew() {
 	codeStop();
 }
 	
-function codeSwitchToPrograms() {
-	mainTabsSelect( "programsPanel" );
-}
-
 function codeSave() {
 	if( codeCurrentProgramName == "Un-named" ) {
 		codeSaveAs();
@@ -317,25 +339,137 @@ function codeSave() {
 function codeSaveAs() {
 	codeCurrentProgramId = 0;
 	$("#codeSaveAsName").val( codeCurrentProgramName );
-	$("#codeMainControls").css( "display", "none" );
-	$("#codeSaveAsDialog").css( "display", "block" );
+	$("#codeMainControlPanel").css( "display", "none" );
+	$("#codeSaveAsControlPanel").css( "display", "block" );
 }
 
 function codeSaveAsOk() {
-	$("#codeMainControls").css( "display", "block" );
-	$("#codeSaveAsDialog").css( "display", "none" );
+	$("#codeMainControlPanel").css( "display", "block" );
+	$("#codeSaveAsControlPanel").css( "display", "none" );
 	codeCurrentProgramName = $("#codeSaveAsName").val();
 	codeSave();
 }
 
 function codeSaveAsCancel() {
-	$("#codeMainControls").css( "display", "block" );
-	$("#codeSaveAsDialog").css( "display", "none" );
+	$("#codeMainControlPanel").css( "display", "block" );
+	$("#codeSaveAsControlPanel").css( "display", "none" );
 }
 
 function codeLoginToSave() {
 	setCookie( "startCode", codeMirrorStart.getValue() );
 	setCookie( "loopCode", codeMirrorLoop.getValue() );
 	document.location = "/login";
+}
+
+function codeShowPrograms() {
+	$("#codeProgramsPanel").load( "/programs/programs_and_friends_panel", commonSetupElements );
+	$("#codeProgramsPanel").css( "display", "block" );
+	$("#codeProgramsControlPanel").css( "display", "block" );
+	$("#codeMainPanel").css( "display", "none" );
+	$("#codeMainControlPanel").css( "display", "none" );
+}
+
+function codeHidePrograms() {
+	$("#codeProgramsPanel").css( "display", "none" );
+	$("#codeProgramsControlPanel").css( "display", "none" );
+	$("#codeMainPanel").css( "display", "block" );
+	$("#codeMainControlPanel").css( "display", "block" );
+}
+
+
+function codeFriendAddByTextField() {
+	$("#codeFriendsErrors").html( "" );
+	var name = $("#codeFriendAddName").val();
+	$.post( "/friends", {name:name}, function(data) {
+		if( data.success ) {
+			codeShowPrograms();
+		}
+		else {
+			$("#codeFriendsErrors").html( data.error );
+		}
+	});
+}
+
+function codeFriendDeleteById( id ) {
+	if( confirm( "Are you sure you want to un-friend this user?" ) ) {
+		$.ajax({
+			url: "/friends/"+id,
+			type: "DELETE",
+			success: function(data) {
+				if( data.success ) {
+					codeShowPrograms();
+				}
+				else {
+					alert( data.error );
+				}
+			},
+			error: function() {
+				alert( "delete failed" );
+			}
+			
+		});
+	}
+}
+
+function codeDeleteById( programId ) {
+	if( confirm( "Are you sure you want to delete this program?" ) ) {
+		$.ajax({
+			url: "/programs/"+programId,
+			type: "DELETE",
+			success: function(data) {
+				if( data.success ) {
+					codeShowPrograms();
+				}
+				else {
+					alert( data.error );
+				}
+			},
+			error: function() {
+				alert( "delete failed" );
+			}
+		});
+	}
+}
+
+function codeShowGlobals() {
+	$("#codeGlobalsPanel").load( "/public_functions/list.html", commonSetupElements );
+	$("#codeGlobalsPanel").css( "display", "block" );
+	$("#codeGlobalsControlPanel").css( "display", "block" );
+	$("#codeMainPanel").css( "display", "none" );
+	$("#codeMainControlPanel").css( "display", "none" );
+}
+
+function codeHideGlobals() {
+	$("#codeGlobalsPanel").css( "display", "none" );
+	$("#codeGlobalsControlPanel").css( "display", "none" );
+	$("#codeMainPanel").css( "display", "block" );
+	$("#codeMainControlPanel").css( "display", "block" );
+}
+
+var globals = [];
+var globalsLoad = [];
+var globalsEditting = "";
+
+function codeClearGlobals() {
+	globals = [];
+	globalsLoad = [];
+	globalsEditting = "";
+	//codeMirrorGlobals.setValue( "" );
+}
+
+function codeUpdateGlobalCode() {
+	globals[ globalsEditting ] = codeMirrorGlobals.getValue();
+}
+
+function codeBindGlobal( name ) {
+	if( ! globalsLoad[name] ) {
+		globalsLoad[name] = true;
+		$.get( "/public_functions/"+name, function(data) {
+			if( data.success ) {
+				globals[data.name] = data.name + " = " + data.code;
+				codeRestart();
+			}
+		});
+	}
 }
 

@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
 		return name=="zack" || name == "rcorell"
 	end
 	
-	def log_action action
+	def log_action( action )
 		a = Action.new
 		a.user_id = self.id
 		a.action = action
@@ -47,8 +47,8 @@ class User < ActiveRecord::Base
 	
 	def get_friends_programs
 		programs_by_friend = {}
-
 		friends_user_ids_by_name = {}
+
 		programs = Program.find_by_sql(["select users.id as user_id, users.name as user_name, programs.id as program_id, programs.name as program_name from friendships,  programs, users where friendships.friend_id = programs.user_id and friendships.user_id = ? and users.id = friendships.friend_id order by upper(users.name)", self.id])
 		for i in programs
 			programs_by_friend[ i[:user_id] ] ||= {} 

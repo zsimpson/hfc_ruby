@@ -10,8 +10,8 @@
 					You have no programs yet.
 				<% else %>
 					<% for p in @my_programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
-						<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="programsDeleteById(<%= p.id %>)"/>
-						<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="programsOpenById(<%=p.id-%>)"><%= p.name -%></a><br/>
+						<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
+						<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeLoad(<%=p.id-%>)"><%= p.name -%></a><br/>
 					<% end %>
 				<% end %>
 			</div>
@@ -29,7 +29,7 @@
 					<% @friends_programs.each do |record| %>
 						<div class="indent10">
 							<div class="friendName">
-								<img id="delete-friend-<%=record[:user_name]-%>" class="closeIcon friendDeleteButton" src="/images/tabclose.png" onclick="programsFriendDeleteById(<%= record[:user_id] %>)"/>
+								<img id="delete-friend-<%=record[:user_name]-%>" class="closeIcon friendDeleteButton" src="/images/tabclose.png" onclick="codeFriendDeleteById(<%= record[:user_id] %>)"/>
 								<%= record[:user_name] -%>
 							</div>
 							<div class="friendPrograms">

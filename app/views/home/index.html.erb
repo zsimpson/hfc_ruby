@@ -2,24 +2,12 @@
 	$(document).ready( function() {
 		$("#mainTabs").tabs();
 
-		// TEMP HACK until I figure out why the tabsshow is not getting called on startup
-		programsTabSelected();
-		//discussTabSelected();
-		//codeTabSelected();
-		//helpTabSelected();
-		//artTabSelected();
-		globalsTabSelected();
-		// END HACK
-
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
 			if( event.target.id != "mainTabs" ) {
 				return;
 			}
 			if( ui.panel.id == 'codePanel' ) {
 				codeTabSelected();
-			}
-			if( ui.panel.id == 'programsPanel' ) {
-				programsTabSelected();
 			}
 			if( ui.panel.id == 'discussPanel' ) {
 				discussTabSelected();
@@ -29,9 +17,6 @@
 			}
 			if( ui.panel.id == 'artPanel' ) {
 				artTabSelected();
-			}
-			if( ui.panel.id == 'globalsPanel' ) {
-				globalsTabSelected();
 			}
 
 			setCookie( "mainTabsSelected", ui.index );
@@ -54,13 +39,11 @@
 <div id="mainTabs">
 	<ul>
 		<li><a href="#homePanel"><span class="tabLabel">Home</span></a></li>
+		<li><a href="#tutorialsPanel"><span class="tabLabel">Tutorials</span></a></li>
 		<li><a href="#codePanel"><span class="tabLabel">Code</span></a></li>
-		<li><a href="#programsPanel"><span class="tabLabel">Programs</span></a></li>
-		<li><a href="#globalsPanel"><span class="tabLabel">Globals</span></a></li>
 		<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
 		<li><a href="#helpPanel"><span class="tabLabel">Help</span></a></li>
 		<li><a href="#artPanel"><span class="tabLabel">Art</span></a></li>
-		<li><a href="#tutorialsPanel"><span class="tabLabel">Tutorials</span></a></li>
 	</ul>
 
 	<div>
@@ -68,18 +51,14 @@
 			<%= render 'home_panel.html' %>
 		</div>
 	
+		<div id="tutorialsPanel">
+			<%= render 'tutorials_panel.html' %>
+		</div>
+
 		<div id="codePanel">
 			<%= render 'code_panel.html' %>
 		</div>
 		
-		<div id="programsPanel">
-			<%= render 'programs_panel.html' %>
-		</div>
-
-		<div id="globalsPanel">
-			<%= render 'globals_panel.html' %>
-		</div>
-
 		<div id="discussPanel">
 			<%= render 'discuss_panel.html' %>
 		</div>
@@ -90,10 +69,6 @@
 		
 		<div id="artPanel">
 			<%= render 'art_panel.html' %>
-		</div>
-
-		<div id="tutorialsPanel">
-			<%= render 'tutorials_panel.html' %>
 		</div>
 		
 	</div>

@@ -3,27 +3,6 @@ var HfcRunner = (function ($,$M) {
 	var my = {};
 
 	function HfcDrawState() {
-		this.fill = "#000000";
-		this.fillA = 1;
-		this.lineWidth = 1;
-		this.lineCap = "butt";
-		this.lineJoin = "miter";
-		this.stroke = "#000000";
-		this.strokeA = 1;
-		this.gradient = null;
-		this.shadowX = 0;
-		this.shadowY = 0;
-		this.shadowBlur = 2;
-		this.shadowColor = "#000000";
-		this.font = "";
-		this.textAlign = "left";
-		this.textBaseline = "top";
-		this.defaultMat = $M( [
-			[ 1, 0, 0 ], 
-			[ 0, 1, 0 ], 
-			[ 0, 0, 1 ]
-		] );
-
 		this.setFill = function( r, g, b, a ) {
 			this.gradient = null
 			this.fill = colorToString( r, g, b )
@@ -104,6 +83,27 @@ var HfcRunner = (function ($,$M) {
 		}
 		
 		this.reset = function() {
+			this.fill = "#000000";
+			this.fillA = 1;
+			this.lineWidth = 1;
+			this.lineCap = "butt";
+			this.lineJoin = "miter";
+			this.stroke = "#000000";
+			this.strokeA = 1;
+			this.gradient = null;
+			this.shadowX = 0;
+			this.shadowY = 0;
+			this.shadowBlur = 2;
+			this.shadowColor = "#000000";
+			this.font = "";
+			this.textAlign = "left";
+			this.textBaseline = "top";
+			this.defaultMat = $M( [
+				[ 1, 0, 0 ], 
+				[ 0, 1, 0 ], 
+				[ 0, 0, 1 ]
+			] );
+
 			this.setFill( 0, 0, 0, 1 )
 			this.setStroke( 1, 0, 0, 0, 1, "butt", "miter" )
 			this.setShadow( 0, 0, 2, 0, 0, 0 )
@@ -206,7 +206,7 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		identity: function() {
-			currentContext.setTransform( defaultMat.e(1,1), defaultMat.e(2,1), defaultMat.e(1,2), defaultMat.e(2,2), defaultMat.e(1,3), defaultMat.e(2,3) );
+			currentContext.setTransform( drawState.defaultMat.e(1,1), drawState.defaultMat.e(2,1), drawState.defaultMat.e(1,2), drawState.defaultMat.e(2,2), drawState.defaultMat.e(1,3), drawState.defaultMat.e(2,3) );
 		},
 		
 		image: function( url, x, y, w, h, sx, sy, sw, sh ) {
@@ -333,6 +333,7 @@ var HfcRunner = (function ($,$M) {
 	var drawState = HfcDrawState;
 	var startCode = "";
 	var loopCode = "";
+	var globals = [];
 	var doubleBuffer = false;
 	var canvasW = 350;
 	var canvasH = 350;
@@ -412,8 +413,6 @@ var HfcRunner = (function ($,$M) {
 	};
 	
 	my.stop = function() {
-		startCode = "";
-		loopCode = "";
 		$("#mainCanvas0").css( "visibility", "visible" );
 		$("#mainCanvas1").css( "visibility", "hidden" );
 		context[0].setTransform( 1, 0, 0, 1, 0, 0 );
@@ -426,14 +425,18 @@ var HfcRunner = (function ($,$M) {
 		context[1].globalAlpha = 1;
 		context[1].fillRect( 0, 0, canvasW, canvasH );
 		$("#mainCanvas1").css( "visibility", "hidden" );
+		$.Hive.destroy();
 	}
 
-	my.restart = function( _startCode, _loopCode, _twiddlers ) {
+	my.restart = function( _startCode, _loopCode, _globals, _twiddlers ) {
 		startCode = _startCode;
 		loopCode = _loopCode;
+		globals = _globals;
 		twiddlers = _twiddlers;
 		
 		drawState.reset();
+		context[0].setTransform( 1, 0, 0, 1, 0, 0 )
+		context[1].setTransform( 1, 0, 0, 1, 0, 0 )
 
 		// DELETE the old thread
 		$.Hive.destroy();
@@ -461,8 +464,13 @@ var HfcRunner = (function ($,$M) {
 			}
 		});
 
+		// LOAD an array of all the code to run during startup
 		codeBlocks = [];
 		codeBlockNames = [];
+		for( var i in globals ) {
+			codeBlockNames.push( i );
+			codeBlocks.push( globals[i] );
+		}
 		codeBlocks.push( startCode );
 		codeBlockNames.push( "Start code" );
 

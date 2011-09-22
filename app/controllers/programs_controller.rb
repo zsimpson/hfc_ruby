@@ -31,13 +31,13 @@ class ProgramsController < ApplicationController
 			# We're saving an existing program so no need to be logged in
 			begin
 				p = Program.find( params[:id] )
-				version_count = p.new_version( params[:start_code], params[:loop_code] )
+				version_count = p.new_version( params[:start_code], params[:loop_code], @user.id )
 				render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1 } 
 			rescue ActiveRecord::RecordNotFound
 				render :json=>{ :error=>"Program not found" }
 			end
 		else
-			# Either we're saving something new that had no idea or we're doing a save as to make a new program
+			# Saving something new so you must be logged in
 			if @user
 				begin
 					p = Program.new_program_and_version(
@@ -60,8 +60,10 @@ class ProgramsController < ApplicationController
 	##############################################################################################
 
 	def programs_and_friends_panel
-		@my_programs = Program.find_all_by_user_id( @user.id )
-		@friends_programs = User.current_user.get_friends_programs
+		if @user
+			@my_programs = Program.find_all_by_user_id( @user.id )
+			@friends_programs = @user.get_friends_programs
+		end
 		render :layout=>false
 	end
 	

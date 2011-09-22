@@ -30,15 +30,14 @@ class Program < ActiveRecord::Base
 		return program_versions[version], version, program_versions.length
 	end
 
-	def new_version( start_code, loop_code )
-		pv = ProgramVersion.new( :program_id=>self.id, :start_code=>start_code, :loop_code=>loop_code )
+	def new_version( start_code, loop_code, user_id )
+		pv = ProgramVersion.new( :program_id=>self.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )
 		pv.save!
 		return get_version_count
 	end
 	
 	def self.find_by_id_and_version( id, version )
 		p = self.find( id )
-		logger.debug "** p.id=#{p.id}"
 		p.program_version, p.version, p.version_count = p.get_version( version )
 		return p
 	end
@@ -61,7 +60,7 @@ class Program < ActiveRecord::Base
 		p = self.new( :user_id=>user_id, :name=>self.normalize_name(name) )
 		p.save!
 
-		pv = ProgramVersion.new( :program_id=>p.id, :start_code=>start_code, :loop_code=>loop_code )
+		pv = ProgramVersion.new( :program_id=>p.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )
 		pv.save!
 
 		return p
