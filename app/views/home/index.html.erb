@@ -7,16 +7,36 @@
 
 		// Sometimes tabsshow isn't getting called.  Example.  Go to home tab.  Press reload. Switch to code. -- it doesn't call tabsshow
 		// as a result, the code isn't getting a resize call on it's first invokation
-		// To deal with this, we call codeTabSelected() here
-		codeTabSelected();
+		// To deal with this, we call have to dupliacte some of the tabsshow logic here
+
+		var programToLoad = $("#programToLoad").html();
+		if( programToLoad ) {
+			codeLoad( programToLoad );
+			mainTabsSelect( "codePanel" );
+			codeTabSelected();
+		}
+		else {
+			var tab = getCookie( "mainTabsSelected" );
+			if( typeof(tab) != "undefined" ) {
+				if( tab == 0 ) {
+					homeTabSelected();
+				}
+				if( tab == 2 ) {
+					var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
+					if( lastLoadedProgramId ) {
+						codeLoad( lastLoadedProgramId );
+					}
+					codeTabSelected();
+				}
+			}
+		}
 
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
 			if( event.target.id != "mainTabs" ) {
 				return;
 			}
 			if( ui.panel.id == 'homePanel' ) {
-				$("#homePageIframeContainer").html( "<iframe id='homePageIframe' src='/embed/28' style='width:380px; height:380px; border:none;'></iframe>" );
-				codeTabSelected();
+				homeTabSelected();
 			}
 			else {
 				$("#homePageIframe").remove();
@@ -58,6 +78,10 @@
 
 	function mainTabsSelect( which ) {
 		$("#mainTabs").tabs( "select", "#"+which );
+	}
+	
+	function homeTabSelected() {
+		$("#homePageIframeContainer").html( "<iframe id='homePageIframe' src='/embed/28' style='width:380px; height:380px; border:none;'></iframe>" );
 	}
 
 </script>

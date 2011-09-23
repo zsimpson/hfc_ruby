@@ -9,7 +9,7 @@ var codeHfcRunner = HfcRunner;
 var codeCanvasW = 350;
 var codeCanvasH = 350;
 var codeGlobals = [];
-var codeGlobalsLoad = [];
+var codeGlobalsReqestedLoad = [];
 var codeGlobalsEditting = "";
 var codeTwiddlers = {};
 var codeTwiddlerChecks = {};
@@ -88,6 +88,17 @@ $(document).ready( function() {
 			codeCanvasW = w;
 			codeCanvasH = h;
 			codeResize();
+		},
+		fetchGlobalCallback: function( name ) {
+			if( ! codeGlobalsReqestedLoad[name] ) {
+				codeGlobalsReqestedLoad[name] = true;
+				$.get( "/public_functions/"+name, function(data) {
+					if( data.success ) {
+						codeHfcRunner.updateGlobal( data.name, data.name + " = " + data.code );
+						codeRestart();
+					}
+				});
+			}
 		}
 	}); 
 
@@ -199,33 +210,11 @@ function codeRestart() {
 		codeTwiddlerChecks[ $(this).attr( "varName" ) ] = $(this).attr( "checked" ); 
 	});
 	
-	codeUpdateGlobalCode();
-	
-	// BUILD a list of all the code that's running and the currently bound globals
-	var loopCode = codeMirrorLoop.getValue();
-	var globalCode = codeMirrorGlobal.getValue();
-	var source = [ startCode, loopCode, globalCode ];
-	for( i in codeGlobals ) {
-		source.push( codeGlobals[i] );
-	}
-
-	// SEARCH all those sources for references to globals
-	var matches = [];
-	for( var i=0; i<source.length; i++ ) {
-		var str = source[i];
-		var regex = /(\$[a-zA-Z0-9_]+)/img;
-		var match = regex.exec( str );
-		while( match instanceof Array ) {
-			matches.push( match );
-			match = regex.exec( str );
-		}
+	if( codeGlobalsEditting ) {
+		codeHfcRunner.updateGlobal( codeGlobalsEditting, codeMirrorGlobal.getValue() );
 	}
 	
-	for( i in matches ) {
-		codeBindGlobal( matches[i][1] );
-	}
-
-	codeHfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), codeGlobals, codeTwiddlers );
+	codeHfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), codeTwiddlers );
 }
 
 function codeResizeCanvasToDefault() {
@@ -520,22 +509,6 @@ function codeSaveGlobal() {
 
 function codeCancelGlobal() {
 	codeHideGlobalEditor();
-}
-
-function codeUpdateGlobalCode() {
-	codeGlobals[ codeGlobalsEditting ] = codeMirrorGlobal.getValue();
-}
-
-function codeBindGlobal( name ) {
-	if( ! codeGlobalsLoad[name] ) {
-		codeGlobalsLoad[name] = true;
-		$.get( "/public_functions/"+name, function(data) {
-			if( data.success ) {
-				codeGlobals[data.name] = data.name + " = " + data.code;
-				codeRestart();
-			}
-		});
-	}
 }
 
 function codeGlobalEdit( name, version ) {

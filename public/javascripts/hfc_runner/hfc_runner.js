@@ -335,7 +335,6 @@ var HfcRunner = (function ($,$M) {
 	var context = [];
 	var currentContext = null;
 	var drawState = HfcDrawState;
-	var startCode = "";
 	var loopCode = "";
 	var globals = [];
 	var doubleBuffer = false;
@@ -348,6 +347,7 @@ var HfcRunner = (function ($,$M) {
 	var frameCallback = null;
 	var errorStateCallback = null;
 	var sizeCallback = null;
+	var fetchGlobalCallback = null;
 	var twiddlers = {};
 	var mouseX = 0;
 	var mouseY = 0;
@@ -402,6 +402,7 @@ var HfcRunner = (function ($,$M) {
 		$canvas[1].css( "top", $canvas[0].position().top );
 		frameCallback = options.frameCallback;
 		errorStateCallback = options.errorStateCallback;
+		fetchGlobalCallback = options.fetchGlobalCallback;
 
 		$(window).mousemove( function(event) {
 			var off = $canvas[0].offset();
@@ -431,6 +432,11 @@ var HfcRunner = (function ($,$M) {
 		
 	};
 	
+	my.updateGlobal = function( name, code ) {
+		// This is called by the app when a new global has arrived
+		globals[name] = code;
+	}
+	
 	my.resizeCanvasToDefault = function() {
 		resizeCanvas( 350, 350 );
 		$("#mainCanvas0").css( "visibility", "visible" );
@@ -452,15 +458,35 @@ var HfcRunner = (function ($,$M) {
 		$.Hive.destroy();
 	}
 
-	my.restart = function( _startCode, _loopCode, _globals, _twiddlers ) {
-		startCode = _startCode;
+	my.restart = function( startCode, _loopCode, globalCode, _twiddlers ) {
 		loopCode = _loopCode;
-		globals = _globals;
 		twiddlers = _twiddlers;
 		
 		drawState.reset();
 		context[0].setTransform( 1, 0, 0, 1, 0, 0 )
 		context[1].setTransform( 1, 0, 0, 1, 0, 0 )
+		
+		// EXTRACT the global symbol references
+		var source = [ startCode, loopCode, globalCode ];
+		for( i in globals ) {
+			source.push( globals[i] );
+		}
+
+		// SEARCH all those sources for references to globals
+		var matches = [];
+		for( var i=0; i<source.length; i++ ) {
+			var str = source[i];
+			var regex = /(\$[a-zA-Z0-9_]+)/img;
+			var match = regex.exec( str );
+			while( match instanceof Array ) {
+				matches.push( match );
+				match = regex.exec( str );
+			}
+		}
+		
+		for( i in matches ) {
+			fetchGlobalCallback( matches[i][1] );
+		}
 
 		// DELETE the old thread
 		$.Hive.destroy();

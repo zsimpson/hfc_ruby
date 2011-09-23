@@ -7,25 +7,42 @@
 	<script src="/javascripts/jquery.hive.js"></script>
 	<script src="/javascripts/hfc_runner/hfc_runner.js"></script>
 	<script type="text/javascript">
+		var codeGlobalsReqestedLoad = {};
+		var codeStartCode = {};
+		var codeLoopCode = {};
+		var codeHfcRunner = null;
 
 		$(document).ready( function() {
 			// To avoid FOUC
 			$("#mainDocumentDiv").css( "display", "block" );
 
-			var codeHfcRunner = HfcRunner;
+			codeHfcRunner = HfcRunner;
 			codeHfcRunner.init({
 				canvasId0: "codeMainCanvas0",
 				canvasId1: "codeMainCanvas1",
 				frameCallback: function(fps) {},
 				errorStateCallback: function(a,b,c) { },
 				sizeCallback: function( w, h ) {
+				},
+				fetchGlobalCallback: function( name ) {
+					if( ! codeGlobalsReqestedLoad[name] ) {
+						codeGlobalsReqestedLoad[name] = true;
+						$.get( "/public_functions/"+name, function(data) {
+							if( data.success ) {
+								codeHfcRunner.updateGlobal( data.name, data.name + " = " + data.code );
+								codeRestart()
+							}
+						});
+					}
 				}
 			}); 
 
 			$.get( "/programs/"+<%= @program_to_load -%>, { version:-1 }, function(data) {
 				// @TODO: Will have to deal with globals and binding here
 				if( data.success ) {
-					codeHfcRunner.restart( data.start_code, data.loop_code, [], [] );
+					codeStartCode = data.start_code;
+					codeLoopCode = data.loop_code;
+					codeRestart();
 				}
 				else {
 					alert( data.error );
@@ -33,7 +50,10 @@
 			});
 
 		});
-
+		
+		function codeRestart() {
+			codeHfcRunner.restart( codeStartCode, codeLoopCode, [] );
+		}
 	</script>
 
 </head>
