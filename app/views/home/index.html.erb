@@ -2,29 +2,57 @@
 	$(document).ready( function() {
 		$("#mainTabs").tabs();
 
+		// To avoid FOUC
+		$("#mainDocumentDiv").css( "display", "block" );
+
+		// Sometimes tabsshow isn't getting called.  Example.  Go to home tab.  Press reload. Switch to code. -- it doesn't call tabsshow
+		// as a result, the code isn't getting a resize call on it's first invokation
+		// To deal with this, we call codeTabSelected() here
+		codeTabSelected();
+
 		$("#mainTabs").bind( 'tabsshow', function(event, ui) {
 			if( event.target.id != "mainTabs" ) {
 				return;
 			}
-			if( ui.panel.id == 'codePanel' ) {
+			if( ui.panel.id == 'homePanel' ) {
+				$("#homePageIframeContainer").html( "<iframe id='homePageIframe' src='/embed/28' style='width:380px; height:380px; border:none;'></iframe>" );
 				codeTabSelected();
 			}
-			if( ui.panel.id == 'discussPanel' ) {
-				discussTabSelected();
-			}
-			if( ui.panel.id == 'helpPanel' ) {
-				helpTabSelected();
-			}
-			if( ui.panel.id == 'artPanel' ) {
-				artTabSelected();
+			else {
+				$("#homePageIframe").remove();
+
+				if( ui.panel.id == 'codePanel' ) {
+					codeTabSelected();
+				}
+				else if( ui.panel.id == 'discussPanel' ) {
+					discussTabSelected();
+				}
+				else if( ui.panel.id == 'helpPanel' ) {
+					helpTabSelected();
+				}
+				else if( ui.panel.id == 'artPanel' ) {
+					artTabSelected();
+				}
 			}
 
 			setCookie( "mainTabsSelected", ui.index );
 		});
 
-		var tab = getCookie( "mainTabsSelected" );
-		if( typeof(tab) != "undefined" ) {
-			$("#mainTabs").tabs( "select", parseInt(tab) );
+		var programToLoad = $("#programToLoad").html();
+		if( programToLoad ) {
+			codeLoad( programToLoad );
+			mainTabsSelect( "codePanel" );
+		}
+		else {
+			var tab = getCookie( "mainTabsSelected" );
+			if( typeof(tab) != "undefined" ) {
+				$("#mainTabs").tabs( "select", parseInt(tab) );
+			}
+
+			var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
+			if( lastLoadedProgramId ) {
+				codeLoad( lastLoadedProgramId );
+			}
 		}
 	});
 

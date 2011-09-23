@@ -27,16 +27,7 @@
 				<div class="thinBorder grayBackground padding5">
 					<table>
 						<tr>
-							<td class="func">clear(r=1,g=1,b=1)</td><td>clear the canvas</td>
-						</tr>
-						<tr>
-							<td class="func">circle(x,y,r)</td><td>draw circle centered at x, y with radius r using stroke</td>
-						</tr>
-						<tr>
-							<td class="func">disc(x,y,r)</td><td>draw circle centered at x, y with radius r using fill</td>
-						</tr>
-						<tr>
-							<td class="func">line(x0,y0,x1,y1)</td><td>draw a line from (x0,y0) to (x1,y1)</td>
+							<td class="func">align(align="left",baseline="top")</td><td>set text alignment left|right|center and baseline top|hanging|middle|alphabetic|bottom</td>
 						</tr>
 						<tr>
 							<td class="func">arc(x,y,r,a0,a1,c=false)</td><td>arc center (x,y) with (r)adius from angle a0-a1 with anticlockwise spin c (boolean)</td>
@@ -45,19 +36,37 @@
 							<td class="func">box(x,y,w,h)</td><td>draw a box outline from x, y with (w)idth and (h)eight</td>
 						</tr>
 						<tr>
-							<td class="func">rect(x,y,w,h)</td><td>draw a filled rect from x, y with (w)idth and (h)eight</td>
+							<td class="func">cenX()</td><td>horizontal center od canvas (width / 2)</td>
 						</tr>
 						<tr>
-							<td class="func">text(s,x=0,y=0)</td><td>print text string s at (x,y)</td>
+							<td class="func">cenY()</td><td>vertical center of canvas (height / 2)</td>
 						</tr>
 						<tr>
-							<td class="func">strokeText(s,x=0,y=0)</td><td>outline text string s at (x,y)</td>
+							<td class="func">circle(x,y,r)</td><td>draw circle centered at x, y with radius r using stroke</td>
+						</tr>
+						<tr>
+							<td class="func">clear(r=1,g=1,b=1)</td><td>clear the canvas</td>
+						</tr>
+						<tr>
+							<td class="func">disc(x,y,r)</td><td>draw circle centered at x, y with radius r using fill</td>
+						</tr>
+						<tr>
+							<td class="func">fill(r=0,g=0,b=0,a=1)</td><td>draw with a fill of (r)ed, (g)reen, (b)lue, and (a)lpha</td>
 						</tr>
 						<tr>
 							<td class="func">font(size=20,name="Calibri")</td><td>set font and size</td>
 						</tr>
 						<tr>
-							<td class="func">align(align="left",baseline="top")</td><td>set text alignment left|right|center and baseline top|hanging|middle|alphabetic|bottom</td>
+							<td class="func">gradient(x0,y0,x1,y1)</td><td>linear gradient from (x0,y0) to (x1,y1)</td>
+						</tr>
+						<tr>
+							<td class="func">gradientRadial(x0,y0,r0,x1,y1,r1)</td><td>radial gradient from (x0,y0) radius r0 to (x1,y1) radius r1</td>
+						</tr>
+						<tr>
+							<td class="func">gradientAddColor(p,r,g,b)</td><td>add a color p percent along the gradient with color (r,g,b)</td>
+						</tr>
+						<tr>
+							<td class="func">height()</td><td>height of the play area</td>
 						</tr>
 						<tr>
 							<td class="func">image(url,x,y)</td><td>draw image loaded from url at x, y</td>
@@ -75,34 +84,28 @@
 							<td class="func">imageHeight(url)</td><td>height of image</td>
 						</tr>
 						<tr>
-							<td class="func">fill(r=0,g=0,b=0,a=1)</td><td>draw with a fill of (r)ed, (g)reen, (b)lue, and (a)lpha</td>
+							<td class="func">line(x0,y0,x1,y1)</td><td>draw a line from (x0,y0) to (x1,y1)</td>
+						</tr>
+						<tr>
+							<td class="func">rect(x,y,w,h)</td><td>draw a filled rect from x, y with (w)idth and (h)eight</td>
+						</tr>
+						<tr>
+							<td class="func">shadow(x,y,blur=2,r=0,g=0,b=0)</td><td>draw shadows at offset x,y with blur and color r,g,b</td>
+						</tr>
+						<tr>
+							<td class="func">size(w,h)</td><td>size the canvas to (w)idth and (h)eight</td>
 						</tr>
 						<tr>
 							<td class="func">stroke(w=1, r=0, g=0, b=0, a=1, cap="butt", join="miter")</td><td>set line stroke to (w)idth, (r)ed, (g)reen, (b)lue, and (a)lpha with cap=butt|square|round and join=round|bevel|miter</td>
 						</tr>
 						<tr>
+							<td class="func">strokeText(s,x=0,y=0)</td><td>outline text string s at (x,y)</td>
+						</tr>
+						<tr>
+							<td class="func">text(s,x=0,y=0)</td><td>print text string s at (x,y)</td>
+						</tr>
+						<tr>
 							<td class="func">width()</td><td>width of the play area</td>
-						</tr>
-						<tr>
-							<td class="func">height()</td><td>height of the play area</td>
-						</tr>
-						<tr>
-							<td class="func">cenX()</td><td>horizontal center od canvas (width / 2)</td>
-						</tr>
-						<tr>
-							<td class="func">cenY()</td><td>vertical center of canvas (height / 2)</td>
-						</tr>
-						<tr>
-							<td class="func">gradient(x0,y0,x1,y1)</td><td>linear gradient from (x0,y0) to (x1,y1)</td>
-						</tr>
-						<tr>
-							<td class="func">gradientRadial(x0,y0,r0,x1,y1,r1)</td><td>radial gradient from (x0,y0) radius r0 to (x1,y1) radius r1</td>
-						</tr>
-						<tr>
-							<td class="func">gradientAddColor(p,r,g,b)</td><td>add a color p percent along the gradient with color (r,g,b)</td>
-						</tr>
-						<tr>
-							<td class="func">shadow(x,y,blur=2,r=0,g=0,b=0)</td><td>draw shadows at offset x,y with blur and color r,g,b</td>
 						</tr>
 					</table>
 				</div>
@@ -113,34 +116,34 @@
 				<div class="thinBorder grayBackground padding5">
 					<table>
 						<tr>
-							<td class="func">pathBegin()</td><td>begin path</td>
-						</tr>
-						<tr>
-							<td class="func">pathClose()</td><td>close a path (forms a closed polygon)</td>
-						</tr>
-						<tr>
-							<td class="func">pathMoveTo(x,y)</td><td>move the path pen to x, y</td>
-						</tr>
-						<tr>
-							<td class="func">pathLineTo(x,y)</td><td>draw line from current vertex to x, y</td>
-						</tr>
-						<tr>
-							<td class="func">pathCurveTo(cx,cy,x,y)</td><td>curve using control point cx, cy to x, y</td>
-						</tr>
-						<tr>
-							<td class="func">pathBezierTo(cx0,cy0,cx1,cy1,x,y)</td><td>bezier using control points cx0,cy0 and cx1,cy1 to x,y</td>
-						</tr>
-						<tr>
 							<td class="func">pathArc(x0,y0,r,a0,a1,antiClock=false)</td><td>arc center (x,y) with (r)adius from angle a0 to a1 with antiClock flag</td>
 						</tr>
 						<tr>
 							<td class="func">pathArcTo(x0,y0,x1,y1,r)</td><td>arc to (x0,y0) and (x1,y1) with (r)adius</td>
 						</tr>
 						<tr>
-							<td class="func">pathStroke()</td><td>stroke along the path using current stroke() options</td>
+							<td class="func">pathBegin()</td><td>begin path</td>
+						</tr>
+						<tr>
+							<td class="func">pathBezierTo(cx0,cy0,cx1,cy1,x,y)</td><td>bezier using control points cx0,cy0 and cx1,cy1 to x,y</td>
+						</tr>
+						<tr>
+							<td class="func">pathClose()</td><td>close a path (forms a closed polygon)</td>
+						</tr>
+						<tr>
+							<td class="func">pathCurveTo(cx,cy,x,y)</td><td>curve using control point cx, cy to x, y</td>
 						</tr>
 						<tr>
 							<td class="func">pathFill()</td><td>fill a closed polygon using current fill() options</td>
+						</tr>
+						<tr>
+							<td class="func">pathLineTo(x,y)</td><td>draw line from current vertex to x, y</td>
+						</tr>
+						<tr>
+							<td class="func">pathMoveTo(x,y)</td><td>move the path pen to x, y</td>
+						</tr>
+						<tr>
+							<td class="func">pathStroke()</td><td>stroke along the path using current stroke() options</td>
 						</tr>
 					</table>
 				</div>
@@ -151,13 +154,19 @@
 				<div class="thinBorder grayBackground padding5">
 					<table>
 						<tr>
-							<td class="func">window(x0,y0,x1,y1)</td><td>set the viewport to upper-left (x0,y0) and lower-right (x1,y1). Note, scales stroke appropriately.</td>
-						</tr>
-						<tr>
 							<td class="func">identity()</td><td>reset the transform</td>
 						</tr>
 						<tr>
-							<td class="func">translate(x,y)</td><td>move drawing center by x,y</td>
+							<td class="func">popState()</td><td>pop the transform state</td>
+						</tr>
+						<tr>
+							<td class="func">pushState()</td><td>push the transform state</td>
+						</tr>
+						<tr>
+							<td class="func">project(x,y)</td><td>project from world to screen space</td>
+						</tr>
+						<tr>
+							<td class="func">rotate(a)</td><td>rotate by a radians</td>
 						</tr>
 						<tr>
 							<td class="func">scale(x)</td><td>uniform scale drawing by x</td>
@@ -166,19 +175,13 @@
 							<td class="func">scale(x,y)</td><td>scale drawing by x, y</td>
 						</tr>
 						<tr>
-							<td class="func">rotate(a)</td><td>rotate by a radians</td>
-						</tr>
-						<tr>
-							<td class="func">pushState()</td><td>push the transform state</td>
-						</tr>
-						<tr>
-							<td class="func">popState()</td><td>pop the transform state</td>
-						</tr>
-						<tr>
-							<td class="func">project(x,y)</td><td>project from world to screen space</td>
+							<td class="func">translate(x,y)</td><td>move drawing center by x,y</td>
 						</tr>
 						<tr>
 							<td class="func">unproject(x,y)</td><td>unproject from screen to world space</td>
+						</tr>
+						<tr>
+							<td class="func">window(x0,y0,x1,y1)</td><td>set the viewport to upper-left (x0,y0) and lower-right (x1,y1). Note, scales stroke appropriately.</td>
 						</tr>
 					</table>
 				</div>
@@ -292,14 +295,19 @@
 				</div>
 				<div class="thinBorder grayBackground padding5">
 					<table>
+						<% if false %>
+						<tr>
+							<td class="func">debug(o)</td><td>log object o to console</td>
+						</tr>
+						<% end %>
 						<tr>
 							<td class="func">delay(n)</td><td>delay n milliseconds</td>
 						</tr>
 						<tr>
-							<td class="func">time()</td><td>milliseconds since Jan 1, 1970</td>
+							<td class="func">keyDown()</td><td>returns down key or null. (Note, only one key can be down at a time)</td>
 						</tr>
 						<tr>
-							<td class="func">keyDown()</td><td>returns down key or null. (Note, only one key can be down at a time)</td>
+							<td class="func">mouseDown()</td><td>true if mouse is down</td>
 						</tr>
 						<tr>
 							<td class="func">mouseX()</td><td>x position of mouse (top left = 0,0)</td>
@@ -308,18 +316,18 @@
 							<td class="func">mouseY()</td><td>y position of mouse (top left = 0,0)</td>
 						</tr>
 						<tr>
-							<td class="func">mouseDown()</td><td>true if mouse is down</td>
+							<td class="func">time()</td><td>milliseconds since Jan 1, 1970</td>
 						</tr>
-						<tr>
-							<td class="func">debug(o)</td><td>log object o to console</td>
-						</tr>
+						<% if false %>
 						<tr>
 							<td class="func">unresponsiveOverride()</td><td>stop checking for unresponsive</td>
 						</tr>
+						<% end %>
 					</table>
 
 				</div>
 
+				<% if false %>
 				<div class="areaLabel topPad5">
 					Text Editor Commands
 				</div>
@@ -355,7 +363,7 @@
 						</tr>
 					</table>
 				</div>
-
+				<% end %>
 
 			</td>
 		</tr>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="/javascripts/jquery.js"></script>
+	<script src="/javascripts/hfc_common.js"></script>
+	<script src="/javascripts/sylvester.js"></script>
+	<script src="/javascripts/jquery.hive.js"></script>
+	<script src="/javascripts/hfc_runner/hfc_runner.js"></script>
+	<script type="text/javascript">
+
+		$(document).ready( function() {
+			// To avoid FOUC
+			$("#mainDocumentDiv").css( "display", "block" );
+
+			var codeHfcRunner = HfcRunner;
+			codeHfcRunner.init({
+				canvasId0: "codeMainCanvas0",
+				canvasId1: "codeMainCanvas1",
+				frameCallback: function(fps) {},
+				errorStateCallback: function(a,b,c) { },
+				sizeCallback: function( w, h ) {
+				}
+			}); 
+
+			$.get( "/programs/"+<%= @program_to_load -%>, { version:-1 }, function(data) {
+				// @TODO: Will have to deal with globals and binding here
+				if( data.success ) {
+					codeHfcRunner.restart( data.start_code, data.loop_code, [], [] );
+				}
+				else {
+					alert( data.error );
+				}
+			});
+
+		});
+
+	</script>
+
+</head>
+<body>
+
+<div id="mainDocumentDiv" style="display:none;">
+
+	<div id="codeCanvasContainer" style="position:relative;">
+		<canvas id="codeMainCanvas0" class="thinBorder" style="background-color:white; position:absolute; left:0; top:0;">
+		</canvas>
+		<canvas id="codeMainCanvas1" class="thinBorder" style="background-color:white; position:absolute; left:0; top:0;">
+		</canvas>
+	</div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+

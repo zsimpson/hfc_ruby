@@ -15,6 +15,9 @@ HfcRuby::Application.routes.draw do
   resources :public_functions
   
   resources :friends
+
+  match "/run/:id" => "home#index"
+  match "/embed/:id" => "home#embed"
   
   root :to => "home#index"
 

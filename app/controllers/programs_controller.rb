@@ -6,6 +6,7 @@ class ProgramsController < ApplicationController
 				:success=>true,
 				:id=>p.id,
 				:name=>p.name,
+				:authorName=>User.find( p.user_id ).name,
 				:start_code=>p.program_version.start_code,
 				:loop_code=>p.program_version.loop_code,
 				:version=>p.version,

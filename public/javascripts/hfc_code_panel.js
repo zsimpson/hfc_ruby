@@ -95,13 +95,7 @@ $(document).ready( function() {
 	$(codeMirrorStart .getInputField()).keyup( function(e) { codeRestart() } );
 	$(codeMirrorLoop  .getInputField()).keyup( function(e) { codeRestart() } );
 
-	var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
-	if( lastLoadedProgramId ) {
-		codeLoad( lastLoadedProgramId );
-	}
-
 	$(window).resize( codeResize );
-
 });
 
 function codeSetErrorState( blockName, exceptMessage, exceptLine ) {
@@ -271,6 +265,20 @@ function codeResize() {
 	$("#codeMainCol2").css( "left", col2L );
 
 	$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
+
+	$( "#codeCanvasContainer" ).css( "width", codeCanvasW );
+	$( "#codeCanvasContainer" ).css( "height", codeCanvasH );
+
+	if( codeMirrorStart ) {
+		codeMirrorStart.refresh();
+	}
+	if( codeMirrorLoop ) {
+		codeMirrorLoop.refresh();
+	}
+	if( codeMirrorGlobal ) {
+		codeMirrorGlobal.refresh();
+	}
+
 }
 
 function codeLoad( id, versionNumber ) {
@@ -281,10 +289,12 @@ function codeLoad( id, versionNumber ) {
 		codeHidePrograms();
 	
 		if( data.success ) {
+			//mainTabsSelect( "codePanel" );
 			codeCurrentProgramIsNew = false;
 			codeCurrentProgramName = data.name;
 			codeCurrentProgramId = data.id;
 			$("#codeCurrentProgramName").html( codeCurrentProgramName );
+			$("#codeAuthor").html( data.authorName );
 			codeMirrorStart.setValue( data.start_code ? data.start_code : "" );
 			codeMirrorLoop.setValue( data.loop_code ? data.loop_code : "" );
 			codeCurrentProgramVersionNumber = data.version;
@@ -298,6 +308,10 @@ function codeLoad( id, versionNumber ) {
 			alert( data.error );
 		}
 	});
+}
+
+function codeGoto( id ) {
+	document.location = "/run/"+id;
 }
 
 function codeLoadPreviousVersion() {

@@ -393,8 +393,8 @@ var HfcRunner = (function ($,$M) {
 		$canvas[0] = $("#"+options["canvasId0"]);
 		$canvas[1] = $("#"+options["canvasId1"])
 		resizeCanvas( 350, 350 );
-		var mainCanvas0 = document.getElementById( "codeMainCanvas0" );
-		var mainCanvas1 = document.getElementById( "codeMainCanvas1" );
+		var mainCanvas0 = document.getElementById( options["canvasId0"] );
+		var mainCanvas1 = document.getElementById( options["canvasId1"] );
 		context[0] = mainCanvas0.getContext("2d");
 		context[1] = mainCanvas1.getContext("2d");
 		$canvas[1].css( "position", "absolute" );
