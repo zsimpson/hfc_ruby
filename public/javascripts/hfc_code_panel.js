@@ -143,6 +143,8 @@ function codeTabUnselected() {
 	codeStop();
 }
 
+
+
 function codeSetVarFromTwiddler( varName ) {
 	var startCode = codeMirrorStart.getValue();
 	var lines = startCode.split( "\n" );
@@ -163,6 +165,11 @@ function codeSetVarFromTwiddler( varName ) {
 		codeRestart();
 	}
 }
+
+function codeTwiddlersClear() {
+	$("#codeTwiddlers").html("Start a variable with underscore to create a twiddler");
+}
+
 
 function codeRestart() {
 	// PARSE for twiddlers
@@ -185,7 +192,7 @@ function codeRestart() {
 		$("#codeTwiddlers").prepend( "<tr><td colspan='2'>Click and drag mouse up and down on field to change value</td></tr>" );
 	}
 	else {
-		$("#codeTwiddlers").html("");
+		codeTwiddlersClear();
 	}
 	
 	// SETUP the twiddlers
@@ -333,6 +340,7 @@ function codeNew() {
 	codeCurrentProgramVersionNumber = 0;
 	codeCurrentProgramVersionCount = 0;
 	$("#codeVersionNumber").html( "" );
+	codeTwiddlersClear();
 	codeStop();
 }
 	
@@ -571,5 +579,14 @@ function codeGlobalDeleteById( id ) {
 				}
 			}
 		});
+	}
+}
+
+function codeHowToEmbed() {
+	if( codeCurrentProgramId > 0 ) {
+		alert( "To embed this program on another web page, copy and paste the following:\n\n<iframe style='width:350px; height:350px;' src='http://www.happyfuncoding.com/embed/"+codeCurrentProgramId+"'></iframe>" );
+	}
+	else {
+		alert( "Load or save a program first and then press this link to discover the embed code." );
 	}
 }
