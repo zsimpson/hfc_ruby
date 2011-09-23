@@ -30,7 +30,6 @@
 						$.get( "/public_functions/"+name, function(data) {
 							if( data.success ) {
 								codeHfcRunner.updateGlobal( data.name, data.name + " = " + data.code );
-								codeRestart()
 							}
 						});
 					}
@@ -40,9 +39,7 @@
 			$.get( "/programs/"+<%= @program_to_load -%>, { version:-1 }, function(data) {
 				// @TODO: Will have to deal with globals and binding here
 				if( data.success ) {
-					codeStartCode = data.start_code;
-					codeLoopCode = data.loop_code;
-					codeRestart();
+					codeHfcRunner.restart( data.start_code, data.loop_code );
 				}
 				else {
 					alert( data.error );
@@ -50,10 +47,6 @@
 			});
 
 		});
-		
-		function codeRestart() {
-			codeHfcRunner.restart( codeStartCode, codeLoopCode, [] );
-		}
 	</script>
 
 </head>

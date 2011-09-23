@@ -22,11 +22,11 @@
 					homeTabSelected();
 				}
 				if( tab == 2 ) {
+					codeTabSelected();
 					var lastLoadedProgramId = getCookie( "lastLoadedProgramId" );
 					if( lastLoadedProgramId ) {
 						codeLoad( lastLoadedProgramId );
 					}
-					codeTabSelected();
 				}
 			}
 		}
@@ -35,26 +35,31 @@
 			if( event.target.id != "mainTabs" ) {
 				return;
 			}
+
 			if( ui.panel.id == 'homePanel' ) {
 				homeTabSelected();
 			}
 			else {
-				$("#homePageIframe").remove();
-
-				if( ui.panel.id == 'codePanel' ) {
-					codeTabSelected();
-				}
-				else if( ui.panel.id == 'discussPanel' ) {
-					discussTabSelected();
-				}
-				else if( ui.panel.id == 'helpPanel' ) {
-					helpTabSelected();
-				}
-				else if( ui.panel.id == 'artPanel' ) {
-					artTabSelected();
-				}
+				homeTabUnselected();
 			}
-
+			
+			if( ui.panel.id == 'codePanel' ) {
+				codeTabSelected();
+			}
+			else {
+				codeTabUnselected();
+			}
+			
+			if( ui.panel.id == 'discussPanel' ) {
+				discussTabSelected();
+			}
+			if( ui.panel.id == 'helpPanel' ) {
+				helpTabSelected();
+			}
+			if( ui.panel.id == 'artPanel' ) {
+				artTabSelected();
+			}
+		
 			setCookie( "mainTabsSelected", ui.index );
 		});
 
@@ -80,9 +85,6 @@
 		$("#mainTabs").tabs( "select", "#"+which );
 	}
 	
-	function homeTabSelected() {
-		$("#homePageIframeContainer").html( "<iframe id='homePageIframe' src='/embed/28' style='width:380px; height:380px; border:none;'></iframe>" );
-	}
 
 </script>
 

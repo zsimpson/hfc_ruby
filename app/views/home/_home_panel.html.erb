@@ -1,3 +1,12 @@
+<script type="text/javascript">
+	function homeTabSelected() {
+		$("#homePageIframeContainer").html( "<iframe id='homePageIframe' src='/embed/28' style='width:380px; height:380px; border:none;'></iframe>" );
+	}
+
+	function homeTabUnselected() {
+		$("#homePageIframe").remove();
+	}
+</script>
 
 <div id="homePanelTop">
 	<table>
@@ -31,8 +40,18 @@
 					<div class="home_h1">
 						Featured
 					</div>
-					<div class="indent10">
+					<div class="indent10" style="font-size:16px;">
 						<a href="/run/28">Flinky</a> by zack<br/>
+						<a href="/run/12">Red flashlight</a> by rcorellk<br/>
+						<a href="/run/8">Spinner</a> by kdemarest<br/>
+						<a href="/run/7">Bouncing balls</a> by zack<br/>
+						<a href="/run/19">Mandlebrot</a> by zack<br/>
+						<a href="/run/22">Stars</a> by zack<br/>
+						<a href="/run/29">Flinky 2</a> by zack<br/>
+						<a href="/run/37">Orbits</a> by zack<br/>
+						<a href="/run/18">1D Cellulat Automata</a> by dan<br/>
+						<a href="/run/126">Swarm</a> by zack<br/>
+						<a href="/run/133">Mouse effect</a> by jasonmgrigsby<br/>
 					</div>
 
 					<% if false %>

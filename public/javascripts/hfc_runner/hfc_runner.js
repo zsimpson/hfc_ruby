@@ -335,7 +335,9 @@ var HfcRunner = (function ($,$M) {
 	var context = [];
 	var currentContext = null;
 	var drawState = HfcDrawState;
+	var startCode = "";
 	var loopCode = "";
+	var globalCode = "";
 	var globals = [];
 	var doubleBuffer = false;
 	var canvasW = 350;
@@ -435,6 +437,7 @@ var HfcRunner = (function ($,$M) {
 	my.updateGlobal = function( name, code ) {
 		// This is called by the app when a new global has arrived
 		globals[name] = code;
+		my.restart();
 	}
 	
 	my.resizeCanvasToDefault = function() {
@@ -458,9 +461,19 @@ var HfcRunner = (function ($,$M) {
 		$.Hive.destroy();
 	}
 
-	my.restart = function( startCode, _loopCode, globalCode, _twiddlers ) {
-		loopCode = _loopCode;
-		twiddlers = _twiddlers;
+	my.restart = function( _startCode, _loopCode, _globalCode, _twiddlers ) {
+		if( typeof(_startCode) != "undefined" ) {
+			startCode = _startCode;
+		}
+		if( typeof(_loopCode) != "undefined" ) {
+			loopCode = _loopCode;
+		}
+		if( typeof(_globalCode) != "undefined" ) {
+			globalCode = _globalCode;
+		}
+		if( typeof(_twiddlers) != "undefined" ) {
+			twiddlers = _twiddlers;
+		}
 		
 		drawState.reset();
 		context[0].setTransform( 1, 0, 0, 1, 0, 0 )
@@ -536,6 +549,8 @@ var HfcRunner = (function ($,$M) {
 		// POLL to see if the thread has completed a frame.  If so, send a message telling the
 		// thread of the current state and it will then run one more frame.
 		if( frameComplete ) {
+			context[0].setTransform( 1, 0, 0, 1, 0, 0 );
+			context[1].setTransform( 1, 0, 0, 1, 0, 0 );
 			if( $.Hive.get(0) ) {
 				// COMPUTE FPS
 				var stopFrameTime = new Date().getTime();

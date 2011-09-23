@@ -21,7 +21,7 @@ $(document).ready( function() {
 			var top = $("#codeFunctionCodeDiv").offset().top;
 			$("#codeGlobalCodeDiv").css( "height", event.pageY - top );
 			$("#codeGlobalEditor").css( "height", $("#codeGlobalCodeDiv").height() - $("#codeGlobalEditor").position().top );
-			resize();
+			codeResize();
 		});
 		$("body").mouseup( function() {
 			$(this).unbind( "mousemove" );
@@ -34,7 +34,7 @@ $(document).ready( function() {
 			$("#codeStartCodeDiv").css( "height", event.pageY - top );
 			$("#codeStartEditor").css( "height", event.pageY - top - 30 );
 			$(codeMirrorStart.getScrollerElement()).css( "height", event.pageY - top - 30 );
-			resize();
+			codeResize();
 		});
 		$("body").mouseup( function() {
 			$(this).unbind( "mousemove" );
@@ -47,7 +47,7 @@ $(document).ready( function() {
 			$("#codeLoopCodeDiv").css( "height", event.pageY - top );
 			$("#codeLoopEditor").css( "height", event.pageY - top - 20 );
 			$(codeMirrorLoop.getScrollerElement()).css( "height", event.pageY - top - 30 );
-			resize();
+			codeResize();
 		});
 		$("body").mouseup( function() {
 			$(this).unbind( "mousemove" );
@@ -95,7 +95,6 @@ $(document).ready( function() {
 				$.get( "/public_functions/"+name, function(data) {
 					if( data.success ) {
 						codeHfcRunner.updateGlobal( data.name, data.name + " = " + data.code );
-						codeRestart();
 					}
 				});
 			}
@@ -134,6 +133,14 @@ function codeSetErrorState( blockName, exceptMessage, exceptLine ) {
 
 function codeTabSelected() {
 	codeResize();
+	if( codeMirrorStart ) {
+		// If ready has already run
+		codeRestart();
+	}
+}
+
+function codeTabUnselected() {
+	codeStop();
 }
 
 function codeSetVarFromTwiddler( varName ) {
