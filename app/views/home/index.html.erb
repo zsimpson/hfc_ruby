@@ -41,7 +41,9 @@
 		<li><a href="#homePanel"><span class="tabLabel">Home</span></a></li>
 		<li><a href="#tutorialsPanel"><span class="tabLabel">Tutorials</span></a></li>
 		<li><a href="#codePanel"><span class="tabLabel">Code</span></a></li>
-		<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
+		<% if false %>
+			<li><a href="#discussPanel"><span class="tabLabel">Discuss</span></a></li>
+		<% end %>
 		<li><a href="#helpPanel"><span class="tabLabel">Help</span></a></li>
 		<li><a href="#artPanel"><span class="tabLabel">Art</span></a></li>
 	</ul>
@@ -59,10 +61,12 @@
 			<%= render 'code_panel.html' %>
 		</div>
 		
-		<div id="discussPanel">
-			<%= render 'discuss_panel.html' %>
-		</div>
-
+		<% if false %>
+			<div id="discussPanel">
+				<%= render 'discuss_panel.html' %>
+			</div>
+		<% end %>
+		
 		<div id="helpPanel">
 			<%= render 'help_panel.html' %>
 		</div>

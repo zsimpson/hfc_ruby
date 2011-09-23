@@ -279,8 +279,6 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		size: function( w, h ) {
-			canvasW = w;
-			canvasH = h;
 			resizeCanvas( w, h );
 		},
 		
@@ -373,6 +371,8 @@ var HfcRunner = (function ($,$M) {
 	}
 
 	resizeCanvas = function( w, h ) {
+		canvasW = w;
+		canvasH = h;
 		$canvas[0].css( "width", w );
 		$canvas[0].css( "height", h );
 		$canvas[1].css( "width", w );
@@ -387,7 +387,6 @@ var HfcRunner = (function ($,$M) {
 		mainCanvas1.width = mainCanvas1.width; // forces a reset
 		sizeCallback( w, h );
 	}
-
 	
 	my.init = function( options ) {
 		sizeCallback = options.sizeCallback;
@@ -432,7 +431,8 @@ var HfcRunner = (function ($,$M) {
 		
 	};
 	
-	my.stop = function() {
+	my.resizeCanvasToDefault = function() {
+		resizeCanvas( 350, 350 );
 		$("#mainCanvas0").css( "visibility", "visible" );
 		$("#mainCanvas1").css( "visibility", "hidden" );
 		context[0].setTransform( 1, 0, 0, 1, 0, 0 );
@@ -445,6 +445,10 @@ var HfcRunner = (function ($,$M) {
 		context[1].globalAlpha = 1;
 		context[1].fillRect( 0, 0, canvasW, canvasH );
 		$("#mainCanvas1").css( "visibility", "hidden" );
+	}
+	
+	my.stop = function() {
+		my.resizeCanvasToDefault();
 		$.Hive.destroy();
 	}
 

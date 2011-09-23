@@ -5,9 +5,14 @@ var codeCurrentProgramName = "Un-named";
 var codeCurrentProgramId = 0;
 var codeCurrentProgramVersionNumber = 0;
 var codeCurrentProgramVersionCount = 0;
-var hfcRunner = HfcRunner;
+var codeHfcRunner = HfcRunner;
 var codeCanvasW = 350;
 var codeCanvasH = 350;
+var codeGlobals = [];
+var codeGlobalsLoad = [];
+var codeGlobalsEditting = "";
+var codeTwiddlers = {};
+var codeTwiddlerChecks = {};
 
 $(document).ready( function() {
 
@@ -54,6 +59,7 @@ $(document).ready( function() {
 		tabMode:"shift",
 		indentUnit:4,
 		matchBrackets:true,
+		electricChars:false,
 		mode:{name:"javascript"},
 		lineNumbers:true,
 		theme:"neat",
@@ -71,7 +77,7 @@ $(document).ready( function() {
 		codeMirrorLoop.setValue( loopCode );
 	}
 
-	hfcRunner.init({
+	codeHfcRunner.init({
 		canvasId0: "codeMainCanvas0",
 		canvasId1: "codeMainCanvas1",
 		frameCallback: function(fps) {
@@ -124,9 +130,6 @@ function codeSetErrorState( blockName, exceptMessage, exceptLine ) {
 function codeTabSelected() {
 	codeResize();
 }
-
-var codeTwiddlers = {};
-var codeTwiddlerChecks = {};
 
 function codeSetVarFromTwiddler( varName ) {
 	var startCode = codeMirrorStart.getValue();
@@ -208,8 +211,8 @@ function codeRestart() {
 	var loopCode = codeMirrorLoop.getValue();
 	var globalCode = codeMirrorGlobal.getValue();
 	var source = [ startCode, loopCode, globalCode ];
-	for( i in globals ) {
-		source.push( globals[i] );
+	for( i in codeGlobals ) {
+		source.push( codeGlobals[i] );
 	}
 
 	// SEARCH all those sources for references to globals
@@ -228,11 +231,15 @@ function codeRestart() {
 		codeBindGlobal( matches[i][1] );
 	}
 
-	hfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), globals, codeTwiddlers );
+	codeHfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), codeGlobals, codeTwiddlers );
+}
+
+function codeResizeCanvasToDefault() {
+	codeHfcRunner.resizeCanvasToDefault();
 }
 
 function codeStop() {
-	hfcRunner.stop();
+	codeHfcRunner.stop();
 }
 
 function codeResize() {
@@ -284,6 +291,7 @@ function codeLoad( id, versionNumber ) {
 			codeCurrentProgramVersionCount = data.version_count;
 			$("#codeVersionNumber").html( (data.version+1) + " of " + data.version_count );
 			setCookie( "lastLoadedProgramId", data.id );
+			codeResizeCanvasToDefault();
 			codeRestart();
 		}
 		else {
@@ -440,10 +448,6 @@ function codeDeleteById( programId ) {
 	}
 }
 
-var globals = [];
-var globalsLoad = [];
-var globalsEditting = "";
-
 function codeShowGlobals() {
 	$("#codeGlobalsPanel").load( "/public_functions", commonSetupElements );
 	$("#codeGlobalsPanel").css( "display", "block" );
@@ -471,16 +475,33 @@ function codeHideGlobalEditor() {
 }
 
 function codeSaveGlobal() {
-	$.ajax({
-		url:"/public_functions/"+globalsEditting,
-		type:"PUT",
-		data:{ code:codeMirrorGlobal.getValue() },
-		success: function(data) {
-			if( data.success ) {
-				codeHideGlobalEditor();
+	if( codeGlobalsEditting == "" ) {
+		var code = codeMirrorGlobal.getValue();
+		var lines = code.split( "\n" );
+		for( var i in lines ) {
+			var line = lines[i];
+			var m = line.match( /^\s*(\$[A-Za-z0-9_]+)\s*=\s*function/ );
+			if( m ) {
+				codeGlobalsEditting = m[1];
+				break;
 			}
 		}
-	});
+	}
+	if( codeGlobalsEditting == "" ) {
+		alert( "You must name a global function with a $" );
+	}
+	else {
+		$.ajax({
+			url:"/public_functions/"+codeGlobalsEditting,
+			type:"PUT",
+			data:{ code:codeMirrorGlobal.getValue() },
+			success: function(data) {
+				if( data.success ) {
+					codeHideGlobalEditor();
+				}
+			}
+		});
+	}
 }
 
 function codeCancelGlobal() {
@@ -488,15 +509,15 @@ function codeCancelGlobal() {
 }
 
 function codeUpdateGlobalCode() {
-	globals[ globalsEditting ] = codeMirrorGlobal.getValue();
+	codeGlobals[ codeGlobalsEditting ] = codeMirrorGlobal.getValue();
 }
 
 function codeBindGlobal( name ) {
-	if( ! globalsLoad[name] ) {
-		globalsLoad[name] = true;
+	if( ! codeGlobalsLoad[name] ) {
+		codeGlobalsLoad[name] = true;
 		$.get( "/public_functions/"+name, function(data) {
 			if( data.success ) {
-				globals[data.name] = data.name + " = " + data.code;
+				codeGlobals[data.name] = data.name + " = " + data.code;
 				codeRestart();
 			}
 		});
@@ -513,23 +534,48 @@ function codeGlobalEdit( name, version ) {
 			codeMirrorGlobal.setValue( data.name + " = " + data.code );
 			codeMirrorGlobal.refresh();
 			codeHideGlobals();
-			globalsEditting = data.name;
+			codeGlobalsEditting = data.name;
 			$("#codeGlobalVersionLabel").html( (data.version+1) + " of " + data.version_count );
 			codeGlobalVersionNumber = data.version;
 		}
 	});
 }
 
+function codeNewGlobal() {
+	codeShowGlobalEditor();
+	codeMirrorGlobal.setValue( "" );
+	codeMirrorGlobal.refresh();
+	codeHideGlobals();
+	codeGlobalsEditting = "";
+	$("#codeGlobalVersionLabel").html( "0 of 0" );
+	codeGlobalVersionNumber = -1;
+}
+
 function codeGlobalPreviousVersion() {
-	codeGlobalEdit( globalsEditting, codeGlobalVersionNumber-1 );
+	codeGlobalEdit( codeGlobalsEditting, codeGlobalVersionNumber-1 );
 }
 
 function codeGlobalNextVersion() {
-	codeGlobalEdit( globalsEditting, codeGlobalVersionNumber+1 );
+	codeGlobalEdit( codeGlobalsEditting, codeGlobalVersionNumber+1 );
 }
 
 function codeGlobalLatestVersion() {
-	codeGlobalEdit( globalsEditting, -1 );
+	codeGlobalEdit( codeGlobalsEditting, -1 );
 }
 
-
+function codeGlobalDeleteById( id ) {
+	if( confirm( "Are you sure you want to delete this global function?" ) ) {
+		$.ajax({
+			url:"/public_functions/"+id,
+			type:"DELETE",
+			success: function(data) {
+				if( data.success ) {
+					codeShowGlobals();
+				}
+				else {
+					alert( data.error );
+				}
+			}
+		});
+	}
+}

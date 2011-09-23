@@ -1,4 +1,4 @@
-<table id="programsAndFriendsPanel">
+<table id="programsAndFriendsPanel" cellspacing="10">
 	<tr>
 		<td style="vertical-align:top;">
 			<div class="h1">
@@ -50,10 +50,11 @@
 				Recent programs
 			</div>
 
-			<div id="">
+			<div class="indent10">
 				<% for p in @recent_programs %>
-					<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
-					<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeLoad(<%=p.id-%>)"><%= p.name -%></a><br/>
+					<div style="min-height:18px;">
+						<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeLoad(<%=p.id-%>)"><%= p.name -%></a><br/>
+					</div>
 				<% end %>
 			</div>
 		</td>

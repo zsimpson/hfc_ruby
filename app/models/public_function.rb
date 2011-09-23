@@ -1,6 +1,6 @@
 class PublicFunction < ActiveRecord::Base
 	belongs_to :user
-	has_many :function_versions
+	has_many :function_versions, :dependent=>:destroy
 
 	attr_accessor :public_function_version
 	attr_accessor :version
@@ -59,18 +59,12 @@ class PublicFunction < ActiveRecord::Base
 		end
 	end
 
-	def self.new_function_and_version( user_id, name, code )
-		# DISALLOW duplicate name
-		if self.find_by_name( name )
-			raise RangeError
-			return
+	def self.locate_or_create( user_id, name )
+		f = self.find_by_name( name )
+		if ! f
+			f = self.new( :user_id=>user_id, :name=>name )
+			f.save!
 		end
-		
-		f = self.new( :user_id=>user_id, :name=>name )
-		f.save!
-
-		fv = FunctionVersion.new( :public_function_id=>f.id, :code=>self.clean_code(code), :user_id=>user_id )
-		fv.save!
 
 		return f
 	end

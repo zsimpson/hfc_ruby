@@ -22,7 +22,7 @@ class ProgramsController < ApplicationController
 			@program.destroy
 			render :json => { :success=>true } 
 		else
-			render :json => { :error=>"Not your to delete" } 
+			render :json => { :error=>"Not yours to delete" } 
 		end
 	end
 

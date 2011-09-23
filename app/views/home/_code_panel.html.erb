@@ -119,6 +119,9 @@
 		<button onclick="codeHideGlobals()">
 			Return
 		</button>
+		<button onclick="codeNewGlobal()">
+			New
+		</button>
 	</div>
 	
 </div>
@@ -126,7 +129,7 @@
 <div id="codeProgramsPanel">
 </div>
 
-<div id="codeGlobalsPanel">
+<div id="codeGlobalsPanel" class="indent10">
 </div>
 
 <div id="codeMainPanel" cellpadding="0" cellspacing="5" style="width:100%; overflow-x:hidden; overflow-y:scroll;">
@@ -169,7 +172,7 @@
 		</div>
 
 		<div id="codeLoopCodeDiv">
-			<span class="areaLabel">Loop code editor
+			<span class="areaLabel">Loop code editor</span>
 			<span id="codeLoopCodeErrorState" class="areaLabel" style="background-color:red; color:white;"></span>
 			<textarea id="codeLoopEditor" class="codeEditor thinBorder" wrap="off" style="white-space:nowrap; overflow:auto; height:300px;"></textarea>
 		</div>
