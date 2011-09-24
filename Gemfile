@@ -4,6 +4,7 @@ gem 'rake', '0.9.2'
 gem 'rails', '3.0.10'
 #gem 'mysql2', '0.2.6'
 gem 'mysql'
+gem 'spork', '~> 0.9.0.rc'
 
 # Deploy with Capistrano
 gem 'capistrano', '2.8.0'

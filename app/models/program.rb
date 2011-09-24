@@ -33,6 +33,10 @@ class Program < ActiveRecord::Base
 	def new_version( start_code, loop_code, user_id )
 		pv = ProgramVersion.new( :program_id=>self.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )
 		pv.save!
+		
+		# TOUCH the program too so that the updated_at will reflect the time that this version was created
+		self.save!
+		
 		return get_version_count
 	end
 	

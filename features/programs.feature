@@ -6,8 +6,10 @@ Feature: View programs and friends
 	@javascript
     Scenario: Anonymous user should see login
 		Given I am not logged in
-		When I follow "Programs"
-		Then I should see "Login to see your and your friends' programs"
+		When I follow "Code"
+		And I press "Load..."
+		Then I should see "Login to see your programs"
+		And I should see "Login to see your friends"
 
 	@javascript
     Scenario: New user should see no programs and no friends

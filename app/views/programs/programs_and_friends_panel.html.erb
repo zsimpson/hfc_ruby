@@ -6,12 +6,16 @@
 			</div>
 
 			<div id="programsList">
-				<% if !@my_programs %>
-					You have no programs yet.
+				<% if ! @user %>
+					Login to see your programs
 				<% else %>
-					<% for p in @my_programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
-						<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
-						<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a><br/>
+					<% if !@my_programs %>
+						You have no programs yet.
+					<% else %>
+						<% for p in @my_programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+							<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
+							<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a><br/>
+						<% end %>
 					<% end %>
 				<% end %>
 			</div>
@@ -23,23 +27,27 @@
 			</div>
 
 			<div id="friendsList">
-				<% if !@friends_programs %>
-					You have no friends yet.
+				<% if ! @user %>
+					Login to see your friends
 				<% else %>
-					<% @friends_programs.each do |record| %>
-						<div class="indent10">
-							<div class="friendName">
-								<img id="delete-friend-<%=record[:user_name]-%>" class="closeIcon friendDeleteButton" src="/images/tabclose.png" onclick="codeFriendDeleteById(<%= record[:user_id] %>)"/>
-								<%= record[:user_name] -%>
+					<% if !@friends_programs %>
+						You have no friends yet.
+					<% else %>
+						<% @friends_programs.each do |record| %>
+							<div class="indent10">
+								<div class="friendName">
+									<img id="delete-friend-<%=record[:user_name]-%>" class="closeIcon friendDeleteButton" src="/images/tabclose.png" onclick="codeFriendDeleteById(<%= record[:user_id] %>)"/>
+									<%= record[:user_name] -%>
+								</div>
+								<div class="friendPrograms">
+									<% for p in record[:programs] %>
+										<div style="min-height:18px;">
+											<a onclick="codeGoto(<%=p[:program_id]-%>)"><%= p[:program_name] -%></a><br/>
+										</div>
+									<% end %>
+								</div>
 							</div>
-							<div class="friendPrograms">
-								<% for p in record[:programs] %>
-									<div style="min-height:18px;">
-										<a onclick="codeGoto(<%=p[:program_id]-%>)"><%= p[:program_name] -%></a><br/>
-									</div>
-								<% end %>
-							</div>
-						</div>
+						<% end %>
 					<% end %>
 				<% end %>
 			</div>

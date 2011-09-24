@@ -314,7 +314,8 @@ function codeLoad( id, versionNumber ) {
 			codeRestart();
 		}
 		else {
-			alert( data.error );
+			//alert( data.error );
+			delCookie( "lastLoadedProgramId" );
 		}
 	});
 }

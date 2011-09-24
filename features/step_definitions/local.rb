@@ -61,15 +61,15 @@ Then /^inside "([^"]*)" I should see nothing$/ do |area|
 end
 
 When /^I click on div "([^"]*)"$/ do |area|
-	find(area).click()
+	find("#"+area).click()
 end
 
 Then /^"([^"]*)" should be visible$/ do |area|
-	assert page.find( area ).visible? == true
+	assert page.find( "#"+area ).visible? == true
 end
 
 Then /^"([^"]*)" should not be visible$/ do |area|
-	assert page.find( area ).visible? != true
+	assert page.find( "#"+area ).visible? != true
 end
 
 Given /^user "([^"]*)" has a program called "([^"]*)"/ do |name,program|
