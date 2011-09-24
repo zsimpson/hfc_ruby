@@ -7,6 +7,6 @@ Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb'].each { |plugin
 
 load 'config/deploy' # remove this line to skip loading any of the default tasks
 
-task :search_libs, :hosts => "www.ideasfreetogoodhome.org" do
+task :search_libs, :hosts => "www.happyfuncoding.com" do
   run "ls -x1 /usr/lib"
 end

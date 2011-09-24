@@ -6,9 +6,9 @@ set :repository,  "git@github.com:zsimpson/hfc_ruby.git"
 set :scm, "git"
 set :deploy_to, "/webapps/hfc"
 
-role :web, "ideasfreetogoodhome.org"
-role :app, "ideasfreetogoodhome.org"
-role :db,  "ideasfreetogoodhome.org", :primary => true
+role :web, "happyfuncoding.com"
+role :app, "happyfuncoding.com"
+role :db,  "happyfuncoding.com", :primary => true
 
 # if you're still using the script/reaper helper you will need
 # these http://github.com/rails/irs_process_scripts
