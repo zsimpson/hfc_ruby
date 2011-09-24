@@ -13,6 +13,8 @@ var codeGlobalsReqestedLoad = [];
 var codeGlobalsEditting = "";
 var codeTwiddlers = {};
 var codeTwiddlerChecks = {};
+var codeTwiddlersByCanvas = false;
+
 
 $(document).ready( function() {
 
@@ -143,8 +145,6 @@ function codeTabUnselected() {
 	codeStop();
 }
 
-
-
 function codeSetVarFromTwiddler( varName ) {
 	var startCode = codeMirrorStart.getValue();
 	var lines = startCode.split( "\n" );
@@ -169,7 +169,6 @@ function codeSetVarFromTwiddler( varName ) {
 function codeTwiddlersClear() {
 	$("#codeTwiddlers").html("Start a variable with underscore to create a twiddler");
 }
-
 
 function codeRestart() {
 	// PARSE for twiddlers
@@ -252,10 +251,12 @@ function codeResize() {
 	
 	var mainW = $("#codeMainPanel").width() - 20;  // 20 for the scroll bar
 	var spacing = 5;
+	var col3W = codeTwiddlersByCanvas ? 250 : 0;
 	var col2W = Math.max( 250, codeCanvasW );
-	var col1W = mainW - col2W - spacing;
+	var col1W = mainW - col2W - spacing - col3W - spacing;
 	var col1L = 0;
 	var col2L = col1L + col1W + spacing;
+	var col3L = col1L + col1W + spacing + col2W + spacing;
 
 	$("#codeMainCol1").css( "position", "absolute" );
 	$("#codeMainCol1").css( "width", col1W );
@@ -267,11 +268,16 @@ function codeResize() {
 	$("#codeMainCol2").css( "height", h );
 	$("#codeMainCol2").css( "left", col2L );
 
+	$("#codeMainCol3").css( "position", "absolute" );
+	$("#codeMainCol3").css( "width", col3W );
+	$("#codeMainCol3").css( "height", h );
+	$("#codeMainCol3").css( "left", col3L );
+
 	$(".codeEditor").css( "width", col1W - 6 ); // Not sure what's up with this exta 6 pixels.  Only seems nec. under chrome
 
 	$( "#codeCanvasContainer" ).css( "width", codeCanvasW );
 	$( "#codeCanvasContainer" ).css( "height", codeCanvasH );
-
+	
 	if( codeMirrorStart ) {
 		codeMirrorStart.refresh();
 	}
@@ -281,7 +287,6 @@ function codeResize() {
 	if( codeMirrorGlobal ) {
 		codeMirrorGlobal.refresh();
 	}
-
 }
 
 function codeLoad( id, versionNumber ) {
@@ -589,4 +594,18 @@ function codeHowToEmbed() {
 	else {
 		alert( "Load or save a program first and then press this link to discover the embed code." );
 	}
+}
+
+function codeMoveTwiddlers() {
+	if( codeTwiddlersByCanvas ) {
+		codeTwiddlersByCanvas = false;
+		$("#codeMoveTwiddelerPanelMessage").html( "Move this panel to side of canvas" );
+		$("#codeMainCol2").append( $("#codeTwiddlersArea") );
+	}
+	else {
+		codeTwiddlersByCanvas = true;
+		$("#codeMoveTwiddelerPanelMessage").html( "Move this panel below canvas" );
+		$("#codeMainCol3").append( $("#codeTwiddlersArea") );
+	}
+	codeResize();
 }
