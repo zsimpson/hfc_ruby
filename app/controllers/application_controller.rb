@@ -35,6 +35,8 @@ class ApplicationController < ActionController::Base
 	end
 
 	def load_user
+		User.current_user = nil
+		@user = nil
 		if session[:user_id]
 			User.current_user = User.find( session[:user_id] )
 			@user = User.current_user
