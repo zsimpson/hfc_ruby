@@ -3,7 +3,6 @@ source 'http://rubygems.org'
 gem "rack", '1.2.4'
 gem 'rake', '0.9.2'
 gem 'rails', '3.0.10'
-#gem 'mysql2', '0.2.6'
 gem 'mysql'
 
 # Deploy with Capistrano
