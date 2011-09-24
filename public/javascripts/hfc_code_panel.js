@@ -228,7 +228,7 @@ function codeRestart() {
 		codeHfcRunner.updateGlobal( codeGlobalsEditting, codeMirrorGlobal.getValue() );
 	}
 	
-	codeHfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), codeTwiddlers );
+	codeHfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), [], codeTwiddlers );
 }
 
 function codeResizeCanvasToDefault() {
