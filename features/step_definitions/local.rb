@@ -40,11 +40,11 @@ end
 
 #########################################################
 
-Then /^inside "([^"]*)" I should (not )?see "([^"]*)"$/ do |area,notsee,value|
+Then /^inside div "([^"]*)" I should (not )?see "([^"]*)"$/ do |area,notsee,value|
 	if notsee
-		find(area).should_not have_content( value )
+		find("#"+area).should_not have_content( value )
 	else
-		find(area).should have_content( value )
+		find("#"+area).should have_content( value )
 	end
 end
 
@@ -56,7 +56,7 @@ Then /^inside field "([^"]*)" I should (not )?see "([^"]*)"$/ do |area,notsee,va
 	end
 end
 
-Then /^inside "([^"]*)" I should see nothing$/ do |area|
+Then /^inside div "([^"]*)" I should see nothing$/ do |area|
 	find(area).should have_content( "" )
 end
 
@@ -102,4 +102,8 @@ Then /^the main code areas should contain "([^"]*)" and "([^"]*)"$/ do |startval
 	loop_val = page.evaluate_script( "codeMirrorLoop.getValue()" )
 	start_val.should == startval
 	loop_val.should == loopval
+end
+
+When /^I press the alert ok button/ do
+	page.driver.browser.switch_to.alert.accept
 end

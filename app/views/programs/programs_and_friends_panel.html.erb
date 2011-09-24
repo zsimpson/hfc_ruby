@@ -9,7 +9,7 @@
 				<% if ! @user %>
 					Login to see your programs
 				<% else %>
-					<% if !@my_programs %>
+					<% if !@my_programs || @my_programs.length == 0 %>
 						You have no programs yet.
 					<% else %>
 						<% for p in @my_programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
@@ -30,7 +30,7 @@
 				<% if ! @user %>
 					Login to see your friends
 				<% else %>
-					<% if !@friends_programs %>
+					<% if !@friends_programs || @friends_programs.length==0 %>
 						You have no friends yet.
 					<% else %>
 						<% @friends_programs.each do |record| %>

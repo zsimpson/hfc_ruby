@@ -420,14 +420,14 @@ function codeHidePrograms() {
 
 
 function codeFriendAddByTextField() {
-	$("#codeFriendsErrors").html( "" );
+	$("#codeProgramsErrors").html( "" );
 	var name = $("#codeFriendAddName").val();
 	$.post( "/friends", {name:name}, function(data) {
 		if( data.success ) {
 			codeShowPrograms();
 		}
 		else {
-			$("#codeFriendsErrors").html( data.error );
+			$("#codeProgramsErrors").html( data.error );
 		}
 	});
 }
