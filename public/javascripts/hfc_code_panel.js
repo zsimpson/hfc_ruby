@@ -590,7 +590,7 @@ function codeGlobalDeleteById( id ) {
 
 function codeHowToEmbed() {
 	if( codeCurrentProgramId > 0 ) {
-		alert( "To embed this program on another web page, copy and paste the following:\n\n<iframe style='width:350px; height:350px;' src='http://www.happyfuncoding.com/embed/"+codeCurrentProgramId+"'></iframe>" );
+		alert( "To embed this program on another web page, copy and paste the following:\n\n<iframe style='width:350px; height:350px;' src='http://www.happyfuncoding.com/embed/"+codeCurrentProgramId+"' scrolling='no' frameborder='0'></iframe>" );
 	}
 	else {
 		alert( "Load or save a program first and then press this link to discover the embed code." );
