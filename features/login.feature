@@ -2,7 +2,7 @@ Feature: Log into an account
     As an existing user
     In order that I be able to store programs and data under my account
     I want to be able to login to my account
-    
+
     Scenario: Login to a valid account
         Given I am on /login
         And there exists a user named "test" with password "password"

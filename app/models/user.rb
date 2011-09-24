@@ -59,9 +59,8 @@ class User < ActiveRecord::Base
 		
 		# MAKE a nice list of names with a list of their programs
 		friends_programs = []
-		for f in friends_user_ids_by_name.keys.sort{ |a,b| a.downcase <=> b.downcase }
-			user_id = friends_user_ids_by_name[ f ]
-			friends_programs.push( {:user_name=>f, :user_id=>user_id, :programs=>programs_by_friend[user_id][:programs] } )
+		for f in self.friends.sort{ |a,b| a.name.downcase <=> b.name.downcase }
+			friends_programs.push( {:user_name=>f.name, :user_id=>f.id, :programs=>programs_by_friend[f.id] ? programs_by_friend[f.id][:programs] : {} } )
 		end
 		
 		return friends_programs

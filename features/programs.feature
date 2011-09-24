@@ -35,7 +35,7 @@ Feature: View programs and friends
 		And I press "Load..."
 		And I fill in "codeFriendAddName" with "zack"
 		And I press "Add friend"
-		Then should see "zack"
+		Then inside div "friendsList" I should see "zack"
 
 	@javascript
     Scenario: Existing user should be able to see their friends' programs
@@ -78,9 +78,7 @@ Feature: View programs and friends
 		And I fill in "codeFriendAddName" with "zack"
 		And I press "Add friend"
 		And I wait 1 second
-		# THIS IS NOT RIGHT! I should see zack inside of a div inside of a div called "friendsList" havn't figured out yet how to scope my search
-		# This affects other places in here too
-		Then I should see "zack"
+		Then inside div "friendsList" I should see "zack"
 		And I fill in "codeFriendAddName" with "zack"
 		And I press "Add friend"
 		And I wait 1 second
@@ -106,12 +104,11 @@ Feature: View programs and friends
 		And I press "Load..."
 		And I fill in "codeFriendAddName" with "zack"
 		And I press "Add friend"
-		# SEe above
-		#Then inside div "friendsList" I should see "zack"
+		Then inside div "friendsList" I should see "zack"
 		When I click on div "delete-friend-zack"
+		And I press the alert ok button
 		And I wait 1 second
-		# SEE above!!
-		#Then inside div "friendsList" I should not see "zack"
+		Then inside div "friendsList" I should not see "zack"
 
 	@javascript
     Scenario: Existing user should be able to go to their own program
