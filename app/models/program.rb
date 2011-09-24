@@ -42,9 +42,15 @@ class Program < ActiveRecord::Base
 		return p
 	end
 	
-	def self.find_recent( count )
+	def self.find_new( count )
 		# Until I find out from Corey how to do this kind of thing correctly...
 		return Program.find_by_sql( "select users.name as user_name, programs.* from users, programs where users.id=programs.user_id order by programs.created_at desc limit 100" );
+		#return Program.order( "created_at desc" ).limit( count ) 
+	end
+
+	def self.find_recent( count )
+		# Until I find out from Corey how to do this kind of thing correctly...
+		return Program.find_by_sql( "select users.name as user_name, programs.* from users, programs where users.id=programs.user_id order by programs.updated_at desc limit 100" );
 		#return Program.order( "created_at desc" ).limit( count ) 
 	end
 

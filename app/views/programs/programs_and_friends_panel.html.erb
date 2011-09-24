@@ -47,7 +47,21 @@
 
 		<td style="vertical-align:top;">
 			<div class="h1">
-				Recent programs
+				New programs
+			</div>
+
+			<div class="indent10">
+				<% for p in @new_programs %>
+					<div style="min-height:18px;">
+						<a id="load-program-<%= p.user_name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a> by <span><%= p.user_name -%></span><br/>
+					</div>
+				<% end %>
+			</div>
+		</td>
+
+		<td style="vertical-align:top;">
+			<div class="h1">
+				Recent Edits
 			</div>
 
 			<div class="indent10">
@@ -58,6 +72,7 @@
 				<% end %>
 			</div>
 		</td>
+
 	<tr>
 </table>
 
