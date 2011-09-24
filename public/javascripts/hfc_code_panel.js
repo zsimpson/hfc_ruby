@@ -20,9 +20,10 @@ $(document).ready( function() {
 
 	$("#codeGlobalCodeDivDrag").mousedown( function(event) {
 		$("body").mousemove( function(event) {
-			var top = $("#codeFunctionCodeDiv").offset().top;
+			var top = $("#codeGlobalCodeDiv").offset().top;
 			$("#codeGlobalCodeDiv").css( "height", event.pageY - top );
-			$("#codeGlobalEditor").css( "height", $("#codeGlobalCodeDiv").height() - $("#codeGlobalEditor").position().top );
+			$("#codeGlobalEditor").css( "height", event.pageY - top - 30 );
+			$(codeMirrorGlobal.getScrollerElement()).css( "height", event.pageY - top - 30 );
 			codeResize();
 		});
 		$("body").mouseup( function() {
@@ -323,7 +324,7 @@ function codeGoto( id ) {
 }
 
 function codeLoadPreviousVersion() {
-	codeLoad( codeCurrentProgramId, codeCurrentProgramVersionNumber-1 )
+	codeLoad( codeCurrentProgramId, Math.max(0,codeCurrentProgramVersionNumber-1) )
 }
 
 function codeLoadNextVersion() {
