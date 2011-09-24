@@ -32,7 +32,7 @@
 	</tr>
 </table>
 
-<div id="mainDocumentDiv" style="display:none;">
+<div id="mainDocumentDiv" style="display:<%= @avoid_FOUC ? "none" : "block" -%>;">
 	<%= yield %>
 </div>
 

@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
 	def index
+		@avoid_FOUC = true
 		if @is_ie
 			render :text=>"<h2>Happy Fun Coding does not work with Internet Explorer because IE does not support the latest web standards.<br/><br/>Please try Chrome, Firefox, or Safari.</h2>"
 			return
