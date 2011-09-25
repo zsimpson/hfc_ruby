@@ -1,0 +1,11 @@
+<div class="h1">
+	Programs&nbsp;by&nbsp;<%= @programs_for_user_name -%>
+</div>
+<div class="indent10">
+	<% for p in @programs %>
+		<div>
+			<a id="load-program-<%= p.user_name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a></span>    
+			<br/>
+		</div>
+	<% end %>
+</div>

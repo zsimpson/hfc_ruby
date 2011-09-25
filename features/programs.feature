@@ -2,7 +2,7 @@ Feature: View programs and friends
     As an existing user
     In order that I be able my and my friends' programs
     I want to be able to see my programs and add friends
-    
+
 	@javascript
     Scenario: Anonymous user should see login to save
 		Given I am not logged in
@@ -116,6 +116,10 @@ Feature: View programs and friends
 
 	@javascript
     Scenario: Existing user should be able to go to a friend's program
+		Given pending
+
+	@javascript
+    Scenario: Click on a user to see all of their programs
 		Given pending
 
 

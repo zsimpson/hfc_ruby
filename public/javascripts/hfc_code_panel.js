@@ -448,7 +448,6 @@ function codeHidePrograms() {
 	$("#codeMainControlPanel").css( "display", "block" );
 }
 
-
 function codeFriendAddByTextField() {
 	$("#codeProgramsErrors").html( "" );
 	var name = $("#codeFriendAddName").val();
@@ -501,6 +500,10 @@ function codeDeleteById( programId ) {
 			}
 		});
 	}
+}
+
+function codeProgramsByUser(userId) {
+	$("#codeProgramsByUser").load( "/programs/programs_by_user_id/"+userId );
 }
 
 function codeShowGlobals() {

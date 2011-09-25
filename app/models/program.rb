@@ -41,6 +41,10 @@ class Program < ActiveRecord::Base
 		return get_version_count
 	end
 	
+	def user_name
+		return User.find( user_id ).name
+	end
+	
 	def self.find_by_id_and_version( id, version )
 		p = self.find( id )
 		p.program_version, p.version, p.version_count = p.get_version( version )
