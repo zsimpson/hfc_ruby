@@ -184,7 +184,7 @@ function codeRestart() {
 		if( m ) {
 			$("#codeCreateATwiddlerNote").css( "display", "none" );
 			codeTwiddlers[m[1]] = m[2];
-			$("#codeTwiddlers").append( "<tr><td>"+m[1]+"</td><td><input class='twiddler' varName='"+m[1]+"' type='text' id='" + m[1] + "' value='"+m[2]+"'></td></tr>" );
+			$("#codeTwiddlers").append( "<tr><td>"+m[1]+"</td><td><input class='twiddler' style='width:80px;' varName='"+m[1]+"' type='text' id='" + m[1] + "' value='"+m[2]+"'></td></tr>" );
 			twiddlerCount++;
 		}
 	}
@@ -237,6 +237,17 @@ function codeResizeCanvasToDefault() {
 
 function codeStop() {
 	codeHfcRunner.stop();
+}
+
+function codeTogglePause() {
+	if( codeHfcRunner.isPaused() ) {
+		$("#codePauseLink").html( "pause" );
+		codeHfcRunner.setPaused(false);
+	}
+	else {
+		$("#codePauseLink").html( "run" );
+		codeHfcRunner.setPaused(true);
+	}
 }
 
 function codeResize() {
@@ -298,18 +309,36 @@ function codeLoad( id, versionNumber ) {
 		codeHidePrograms();
 	
 		if( data.success ) {
-			//mainTabsSelect( "codePanel" );
 			codeCurrentProgramIsNew = false;
 			codeCurrentProgramName = data.name;
 			codeCurrentProgramId = data.id;
 			$("#codeCurrentProgramName").html( codeCurrentProgramName );
-			$("#codeAuthor").html( data.authorName );
+			$("#codeAuthor").html( data.author_name );
 			codeMirrorStart.setValue( data.start_code ? data.start_code : "" );
 			codeMirrorLoop.setValue( data.loop_code ? data.loop_code : "" );
 			codeCurrentProgramVersionNumber = data.version;
 			codeCurrentProgramVersionCount = data.version_count;
 			$("#codeVersionNumber").html( (data.version+1) + " of " + data.version_count );
 			setCookie( "lastLoadedProgramId", data.id );
+			
+			// SETUP the editors based on how many lines of code there and the screen size
+			var startLines = data.start_code.split( "\n" ).length;
+			var startEditorSize = Math.min( 300, Math.max( 100, startLines*20 ) ); 
+			$("#codeStartCodeDiv").css( "height", startEditorSize );
+			$("#codeStartEditor").css( "height", startEditorSize-30 );
+			$(codeMirrorStart.getScrollerElement()).css( "height", startEditorSize-30 );
+
+			// SETUP the loop editor to take the rest of the screen
+			var pageH = $(window).height();
+			var mcTop = $("#codeMainPanel").offset().top;
+			var h = pageH - mcTop - 25;
+			var top = $(codeMirrorLoop.getScrollerElement()).offset().top;
+			var loopEditorSize = pageH - top - 30;
+			$("#codeLoopCodeDiv").css( "height", loopEditorSize );
+			$("#codeLoopEditor").css( "height", loopEditorSize-30 );
+			$(codeMirrorLoop.getScrollerElement()).css( "height", loopEditorSize-30 );
+			
+			codeResize();
 			codeResizeCanvasToDefault();
 			codeRestart();
 		}
@@ -365,6 +394,7 @@ function codeSave() {
 					codeCurrentProgramId = data.id;
 					codeCurrentProgramName = data.name;
 					$("#codeCurrentProgramName").html( codeCurrentProgramName );
+					$("#codeAuthor").html( data.author_name );
 					codeCurrentProgramVersionNumber = 0;
 					codeCurrentProgramVersionCount = data.version_count;
 					$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );

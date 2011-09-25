@@ -65,15 +65,7 @@
 		<% end %>
 		
 		&nbsp;&nbsp;<a onclick="codeHowToEmbed()">How to embed</a>
-
-		<span style="float:right; min-width:150px;">
-			<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
-			<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
-			<span>Frame rate: </span>
-			<span id="codeFps"></span>
-			<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
-		</span>
-		
+	
 	</div>
 
 	<div id="codeSaveAsControlPanel" style="display:none;">
@@ -173,6 +165,22 @@
 	<div id="codeMainCol2" style="vertical-align:top; height:350px;">
 		<div>
 			<span class="areaLabel">Canvas</span>
+			<span style="float:right;">
+				FPS:
+				<span id="codeFps"></span>
+			</span>
+			<span style="float:right; margin-right:20px;">
+				<a id="codePauseLink" onclick="codeTogglePause()">pause</a>
+			</span>
+
+			<% if false %>
+				<span style="float:right; min-width:150px;">
+					<span id="codePauseWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Paused</span>
+					<span id="codeInfiniteLoopWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Unresponsive (<a onclick="loadPage('unresponsive')">help</a>)</span>
+					<span id="codeFpsWarning" style="font-weight:bold; display:none; background-color:yellow; color:black;">Frame rate low, try <a href="http://www.google.com/chrome">Chrome</a></span>
+				</span>
+			<% end %>
+
 		</div>
 
 		<div id="codeCanvasContainer" style="position:relative;">

@@ -163,6 +163,20 @@ Feature: Edit, Save code
 		Then I should see "2 of 2"
 		And the main code areas should contain "start2" and "loop2"
 
+	@javascript
+    Scenario: Save as of someone else's program should show you as the author
+		Given I am logged in as test
+		And there exists a user named "zack" with password "password"
+		And user "zack" has a program called "hello_world"
+		When I follow "Code"
+		And I press "Load..."
+		And I click on div "load-program-zack-hello_world"
+		And I press "Save As..."
+		And I fill in "codeSaveAsName" with "my_version"
+		And I press "Save"
+		Then I should see "my_version by test"
+
+
 # @TODO: More test of the versioning.  I know there's some problem the first time you press prev is goes back to the first on so test with a few more
 # @TODO: Test the globals and their versioning
 # @TODO: Test that the How to embed link brings up a good link

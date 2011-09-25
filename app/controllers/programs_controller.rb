@@ -6,7 +6,7 @@ class ProgramsController < ApplicationController
 				:success=>true,
 				:id=>p.id,
 				:name=>p.name,
-				:authorName=>User.find( p.user_id ).name,
+				:author_name=>User.find( p.user_id ).name,
 				:start_code=>p.program_version.start_code,
 				:loop_code=>p.program_version.loop_code,
 				:version=>p.version,
@@ -33,7 +33,7 @@ class ProgramsController < ApplicationController
 			begin
 				p = Program.find( params[:id] )
 				version_count = p.new_version( params[:start_code], params[:loop_code], @user.id )
-				render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1 } 
+				render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1, :author_name=>User.find( p.user_id ).name } 
 			rescue ActiveRecord::RecordNotFound
 				render :json=>{ :error=>"Program not found" }
 			end
@@ -47,7 +47,7 @@ class ProgramsController < ApplicationController
 						params[:start_code],
 						params[:loop_code]
 					)
-					render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>1 }
+					render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>1, :author_name=>User.find( p.user_id ).name }
 				rescue RangeError
 					render :json=>{ :error=>"Duplicate name" }
 				end

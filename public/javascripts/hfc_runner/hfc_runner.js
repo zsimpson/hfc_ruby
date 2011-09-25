@@ -357,6 +357,7 @@ var HfcRunner = (function ($,$M) {
 	var keyDown = null;
 	var imageDims = {};
 	var images = {};
+	var paused = false;
 	
 	colorToString = function( r, g, b ) {
 		r = Math.max( 1, Math.min( 255, r*255 ) );
@@ -460,7 +461,15 @@ var HfcRunner = (function ($,$M) {
 		my.resizeCanvasToDefault();
 		$.Hive.destroy();
 	}
-
+	
+	my.setPaused = function( pause ) {
+		paused = pause;
+	} 
+	
+	my.isPaused = function() {
+		return paused;
+	} 
+	
 	my.restart = function( _startCode, _loopCode, _globalCode, _twiddlers ) {
 		if( typeof(_startCode) != "undefined" ) {
 			startCode = _startCode;
@@ -548,7 +557,7 @@ var HfcRunner = (function ($,$M) {
 	runFrame = function() {
 		// POLL to see if the thread has completed a frame.  If so, send a message telling the
 		// thread of the current state and it will then run one more frame.
-		if( frameComplete ) {
+		if( !paused && frameComplete ) {
 			context[0].setTransform( 1, 0, 0, 1, 0, 0 );
 			context[1].setTransform( 1, 0, 0, 1, 0, 0 );
 			if( $.Hive.get(0) ) {

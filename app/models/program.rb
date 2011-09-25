@@ -35,6 +35,7 @@ class Program < ActiveRecord::Base
 		pv.save!
 		
 		# TOUCH the program too so that the updated_at will reflect the time that this version was created
+		self.touch
 		self.save!
 		
 		return get_version_count

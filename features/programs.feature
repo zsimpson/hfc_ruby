@@ -118,3 +118,10 @@ Feature: View programs and friends
     Scenario: Existing user should be able to go to a friend's program
 		Given pending
 
+
+
+
+
+
+		
+		
