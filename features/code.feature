@@ -10,6 +10,7 @@ Feature: Edit, Save code
 		When I follow "Code"
 		And I press "Load..."
 		And I click on div "load-program-test-test1"
+		And I wait 2 seconds
 		Then I should see "this is start code"
 		And I should see "this is loop code"
 		When I go to /
@@ -47,6 +48,7 @@ Feature: Edit, Save code
 		When I press "Load..."
 		Then I should see "test1"
 		When I click on div "load-program-test-test1"
+		And I wait 2 seconds
 		Then I should see "start1"
 		And I should see "loop1"
 
@@ -65,6 +67,7 @@ Feature: Edit, Save code
 		And I press "Load..."
 		Then I should see "test1"
 		When I click on div "load-program-test-test1"
+		And I wait 2 seconds
 		Then I should see "start1"
 		And I should see "loop1"
 
@@ -76,6 +79,7 @@ Feature: Edit, Save code
 		And I press "Load..."
 		Then I should see "test1"
 		When I click on div "load-program-test-test1"
+		And I wait 2 seconds
 		Then I should see "this is start code"
 		And I should see "this is loop code"
 		When I fill in the main code areas with "start123" and "loop123"
@@ -84,6 +88,7 @@ Feature: Edit, Save code
 		When I press "Load..."
 		Then I should see "test1"
 		When I click on div "load-program-test-test1"
+		And I wait 2 seconds
 		Then I should see "start123"
 		And I should see "loop123"
 
@@ -95,6 +100,7 @@ Feature: Edit, Save code
 		And I press "Load..."
 		Then I should see "test1"	
 		When I click on div "load-program-test-test1"
+		And I wait 2 seconds
 		Then I should see "this is start code"
 		And I should see "this is loop code"
 		When I fill in the main code areas with "start123" and "loop123"
@@ -107,12 +113,12 @@ Feature: Edit, Save code
 		Then I should see "test1"
 		And I should see "test2"
 		When I click on div "load-program-test-test1"
-		And I wait 1 second
+		And I wait 2 seconds
 		Then I should see "this is loop code"
 		And I should see "this is start code"
 		When I press "Load..."
 		When I click on div "load-program-test-test2"
-		And I wait 1 second
+		And I wait 2 seconds
 		Then I should see "start123"
 		And I should see "loop123"
 		
@@ -135,7 +141,7 @@ Feature: Edit, Save code
 		When I press "Load..."
 		Then I should see "test1"
 		When I click on div "load-program-test-test1"
-		And I wait 1 second
+		And I wait 2 seconds
 		Then I should see "start2"
 		And I should see "loop2"
 		
@@ -171,6 +177,7 @@ Feature: Edit, Save code
 		When I follow "Code"
 		And I press "Load..."
 		And I click on div "load-program-zack-hello_world"
+		And I wait 2 seconds
 		And I press "Save As..."
 		And I fill in "codeSaveAsName" with "my_version"
 		And I press "Save"
