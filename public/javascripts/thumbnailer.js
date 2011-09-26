@@ -33,7 +33,7 @@ function thumbnailer(elem, img, sx, lobes){
     this.cacheLanc = {};
     this.center = {};
     this.icenter = {};
-    setTimeout(this.process1, 1, this, 0);
+    setTimeout('this.process1', 1, this, 0);
 }
 
 thumbnailer.prototype.process1 = function(self, u){
@@ -73,9 +73,9 @@ thumbnailer.prototype.process1 = function(self, u){
     }
 
     if (++u < self.dest.width) 
-        setTimeout(self.process1, 0, self, u);
+        setTimeout('self.process1', 1, self, u);
     else 
-        setTimeout(self.process2, 0, self);
+        setTimeout('self.process2', 1, self);
 };
 thumbnailer.prototype.process2 = function(self){
     self.canvas.width = self.dest.width;
