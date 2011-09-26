@@ -33,7 +33,7 @@ function thumbnailer(elem, img, sx, lobes){
     this.cacheLanc = {};
     this.center = {};
     this.icenter = {};
-    setTimeout(this.process1, 0, this, 0);
+    setTimeout(this.process1, 1, this, 0);
 }
 
 thumbnailer.prototype.process1 = function(self, u){
