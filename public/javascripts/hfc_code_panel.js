@@ -14,10 +14,9 @@ var codeGlobalsEditting = "";
 var codeTwiddlers = {};
 var codeTwiddlerChecks = {};
 var codeTwiddlersByCanvas = false;
-
+var codeSvg = null;
 
 $(document).ready( function() {
-
 	$("#codeGlobalCodeDivDrag").mousedown( function(event) {
 		$("body").mousemove( function(event) {
 			var top = $("#codeGlobalCodeDiv").offset().top;
@@ -255,6 +254,15 @@ function codeSaveCanvas() {
 	window.open( data );
 }
 
+function codeSaveCanvasAsSVG() {
+	codeHfcRunner.setPaused(true);
+	setTimeout( function() {
+		var a = codeHfcRunner.svg();
+		alert( a );
+		codeHfcRunner.setPaused(false);
+	}, 100 );
+}
+
 function codeResize() {
 	// ARRANGE all the divs
 	var pageW = $(window).width();
@@ -385,31 +393,55 @@ function codeNew() {
 	codeStop();
 }
 	
+function codeResizeImage(url, width, height, callback) {
+    var sourceImage = new Image();
+    sourceImage.onload = function() {
+        // Create a canvas with the desired dimensions
+        var canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+		thumbnailer( canvas, sourceImage, 32, 8 );
+
+        // Scale and draw the source image to the canvas
+        //canvas.getContext("2d").drawImage(sourceImage, 0, 0, width, height);
+
+        // Convert the canvas to a data URL in PNG format
+        callback(canvas.toDataURL());
+    }
+
+    sourceImage.src = url;
+}
+
 function codeSave() {
 	if( codeCurrentProgramName == "Un-named" ) {
 		codeSaveAs();
 	}
 	else {
-		$.ajax({
-			type: "PUT",
-			url: "/programs/"+codeCurrentProgramId,
-			data:{name:codeCurrentProgramName, loop_code:codeMirrorLoop.getValue(), start_code:codeMirrorStart.getValue() },
-			success:function(data) {
-				if( data.success ) {
-					codeCurrentProgramId = data.id;
-					codeCurrentProgramName = data.name;
-					$("#codeCurrentProgramName").html( codeCurrentProgramName );
-					$("#codeAuthor").html( data.author_name );
-					codeCurrentProgramVersionNumber = 0;
-					codeCurrentProgramVersionCount = data.version_count;
-					$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
+		var data = document.getElementById( "codeMainCanvas0" ).toDataURL( "image/png" );
+		codeResizeImage( data, 45, 45, function(resizedData) {
+			$.ajax({
+				type: "PUT",
+				url: "/programs/"+codeCurrentProgramId,
+				data:{name:codeCurrentProgramName, loop_code:codeMirrorLoop.getValue(), start_code:codeMirrorStart.getValue(), icon:resizedData },
+				success:function(data) {
+					if( data.success ) {
+						codeCurrentProgramId = data.id;
+						codeCurrentProgramName = data.name;
+						$("#codeCurrentProgramName").html( codeCurrentProgramName );
+						$("#codeAuthor").html( data.author_name );
+						codeCurrentProgramVersionNumber = 0;
+						codeCurrentProgramVersionCount = data.version_count;
+						$("#codeVersionNumber").html( (data.version_count-codeCurrentProgramVersionNumber) + " of " + data.version_count );
+					}
+					else {
+						alert( data.error );
+						codeCurrentProgramName = "Un-named";
+					}
 				}
-				else {
-					alert( data.error );
-					codeCurrentProgramName = "Un-named";
-				}
-			}
+			});
 		});
+
 	}
 }
 
@@ -439,7 +471,21 @@ function codeLoginToSave() {
 }
 
 function codeShowPrograms() {
-	$("#codeProgramsPanel").load( "/programs/programs_and_friends_panel", commonSetupElements );
+	$("#codeProgramsPanel").load( "/programs/programs_and_friends_panel", function() {
+		/*
+		$(".codeLoadName").hover(
+			function(e){
+				$( "#icon-"+$(e.target).attr("programId") ).css( "width", 100 );
+				$( "#icon-"+$(e.target).attr("programId") ).css( "height", 100 );
+			},
+			function(e){
+				$( "#icon-"+$(e.target).attr("programId") ).css( "width", 32 );
+				$( "#icon-"+$(e.target).attr("programId") ).css( "height", 32 );
+			}
+		);
+		*/
+		commonSetupElements();
+	});
 	$("#codeProgramsPanel").css( "display", "block" );
 	$("#codeProgramsControlPanel").css( "display", "block" );
 	$("#codeMainPanel").css( "display", "none" );

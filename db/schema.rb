@@ -1,3 +1,4 @@
+# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -10,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110605020639) do
+ActiveRecord::Schema.define(:version => 20110926022139) do
 
   create_table "actions", :force => true do |t|
     t.integer  "user_id"
@@ -104,6 +105,7 @@ ActiveRecord::Schema.define(:version => 20110605020639) do
     t.datetime "updated_at"
     t.text     "start_code", :limit => 2147483647
     t.text     "loop_code",  :limit => 2147483647
+    t.binary   "icon"
   end
 
   add_index "programs", ["name"], :name => "index_programs_on_name"

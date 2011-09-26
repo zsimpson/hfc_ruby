@@ -155,6 +155,7 @@ var HfcRunner = (function ($,$M) {
 			currentContext.arc( x, y, r, 0, 3.141592654*2, false );
 			currentContext.closePath();
 			currentContext.stroke();
+			vecCmds.push( ["circle", [x, y, r]] );
 		},
 
 		clear: function( r, g, b ) {
@@ -183,7 +184,7 @@ var HfcRunner = (function ($,$M) {
 			currentContext.closePath();
 			currentContext.fill();
 		},
-
+		
 		fill: function( r, g, b, a ) {
 			drawState.setFill( r, g, b, a );
         },
@@ -239,6 +240,7 @@ var HfcRunner = (function ($,$M) {
 			currentContext.moveTo( x0, y0 );
 			currentContext.lineTo( x1, y1 );
 			currentContext.stroke();
+			vecCmds.push( ["line", [x0, y0, x1, y1]] );
 		},
 
 		lineTo: function( x, y ) {
@@ -358,6 +360,8 @@ var HfcRunner = (function ($,$M) {
 	var imageDims = {};
 	var images = {};
 	var paused = false;
+	var vecCmds = [];
+	var svgCallback = null;
 	
 	colorToString = function( r, g, b ) {
 		r = Math.max( 1, Math.min( 255, r*255 ) );
@@ -392,6 +396,8 @@ var HfcRunner = (function ($,$M) {
 	}
 	
 	my.init = function( options ) {
+		// @TODO: Why am I pulling all these varaibles out, why don't I just keep the options hash around
+	
 		sizeCallback = options.sizeCallback;
 		$canvas[0] = $("#"+options["canvasId0"]);
 		$canvas[1] = $("#"+options["canvasId1"])
@@ -406,6 +412,7 @@ var HfcRunner = (function ($,$M) {
 		frameCallback = options.frameCallback;
 		errorStateCallback = options.errorStateCallback;
 		fetchGlobalCallback = options.fetchGlobalCallback;
+		svgCallback = options.svgCallback;
 
 		$(window).mousemove( function(event) {
 			var off = $canvas[0].offset();
@@ -558,6 +565,7 @@ var HfcRunner = (function ($,$M) {
 		// POLL to see if the thread has completed a frame.  If so, send a message telling the
 		// thread of the current state and it will then run one more frame.
 		if( !paused && frameComplete ) {
+			vecCmds = [];
 			context[0].setTransform( 1, 0, 0, 1, 0, 0 );
 			context[1].setTransform( 1, 0, 0, 1, 0, 0 );
 			if( $.Hive.get(0) ) {
@@ -594,6 +602,19 @@ var HfcRunner = (function ($,$M) {
 			}
 		}
 		setTimeout( runFrame, 1 );
+	}
+
+	my.svg = function() {
+		var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"15cm\" height=\"15cm\">";
+		for( i=0; i<vecCmds.length; i++ ) {
+			if( vecCmds[i][0] == "circle" ) {
+				svg += "<circle cx='"+vecCmds[i][1][0]+"' cy='"+vecCmds[i][1][1]+"' r='"+vecCmds[i][1][2]+"'></circle>";
+			}
+			else if( vecCmds[i][0] == "line" ) {
+				svg += "<line x1='"+vecCmds[i][1][0]+"' y1='"+vecCmds[i][1][1]+"' x2='"+vecCmds[i][1][2]+"' y2='"+vecCmds[i][1][3]+"'></line>";
+			}
+		}
+		return svg + "</svg>";
 	}
 	
 	return my;

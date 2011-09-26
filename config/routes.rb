@@ -6,6 +6,7 @@ HfcRuby::Application.routes.draw do
 
   match "/programs/programs_and_friends_panel" => "programs#programs_and_friends_panel"
   match "/programs/programs_by_user_id/:id" => "programs#programs_by_user_id"
+  match "/programs/icon/:id" => "programs#icon"
   resources :programs
   
   match "/assets/get_art_page" => "assets#get_art_page"

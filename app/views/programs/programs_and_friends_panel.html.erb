@@ -1,6 +1,6 @@
 <table id="programsAndFriendsPanel" cellspacing="10">
 	<tr>
-		<td style="vertical-align:top; border-right:1px dotted gray;">
+		<td style="vertical-align:top; border-right:1px dotted gray; min-width:200px;">
 			<div class="h1">
 				Your programs
 			</div>
@@ -12,10 +12,23 @@
 					<% if !@my_programs || @my_programs.length == 0 %>
 						You have no programs yet.
 					<% else %>
-						<% for p in @my_programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
-							<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
-							<a id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a><br/>
-						<% end %>
+						<table>
+							<% for p in @my_programs.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+								<tr style="height:32px;">
+									<td>
+										<% if p.icon %>
+											<img id="icon-<%=p.id-%>" src="/programs/icon/<%=p.id-%>" style="width:32px; height:32px;">
+										<% end %>
+									</td>
+									<td>
+										<img id="delete-program-<%=User.current_user.name-%>-<%=p.name-%>" class="closeIcon programDeleteButton" src="/images/tabclose.png" onclick="codeDeleteById(<%= p.id %>)"/>
+									</td>
+									<td>
+										<a class="codeLoadName" id="load-program-<%=User.current_user.name-%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)" programId="<%=p.id-%>"><%= p.name -%></a><br/>
+									</td>
+								</tr>
+							<% end %>
+						</table>
 					<% end %>
 				<% end %>
 			</div>

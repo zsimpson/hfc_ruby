@@ -10,6 +10,7 @@
 <script src="/javascripts/jquery.hive.js"></script>
 <script src="/javascripts/hfc_runner/hfc_runner.js"></script>
 <script src="/javascripts/hfc_code_panel.js"></script>
+<script src="/javascripts/thumbnailer.js"></script>
 
 <style>
 	.CodeMirror {
@@ -171,8 +172,14 @@
 			</span>
 
 			<span style="float:right; margin-left:20px;">
-				<a onclick="codeSaveCanvas()">grab image</a>
+				<a onclick="codeSaveCanvas()">snapshot</a>
 			</span>
+
+			<% if false %>
+				<span style="float:right; margin-left:20px;">
+					<a onclick="codeSaveCanvasAsSVG()">svg</a>
+				</span>
+			<% end %>
 
 			<span style="float:right;">
 				FPS:
@@ -207,6 +214,8 @@
 			</div>
 		</div>
 
+		<div id="svgtest">
+		</div>
 	</div>
 	
 	<div id="codeMainCol3" style="vertical-align:top;">
@@ -214,4 +223,3 @@
 
 </div>
 
-<img id="hacktest"/>

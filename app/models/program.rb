@@ -30,11 +30,12 @@ class Program < ActiveRecord::Base
 		return program_versions[version], version, program_versions.length
 	end
 
-	def new_version( start_code, loop_code, user_id )
+	def new_version( start_code, loop_code, user_id, icon )
 		pv = ProgramVersion.new( :program_id=>self.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )
 		pv.save!
 		
 		# TOUCH the program too so that the updated_at will reflect the time that this version was created
+		self.icon = icon
 		self.touch
 		self.save!
 		
@@ -69,7 +70,7 @@ class Program < ActiveRecord::Base
 		return name
 	end
 	
-	def self.new_program_and_version( user_id, name, start_code, loop_code )
+	def self.new_program_and_version( user_id, name, start_code, loop_code, icon )
 		# This is going to have to either exception or return an invalid
 
 		# DISALLOW duplicate name
@@ -78,7 +79,7 @@ class Program < ActiveRecord::Base
 			return
 		end
 		
-		p = self.new( :user_id=>user_id, :name=>self.normalize_name(name) )
+		p = self.new( :user_id=>user_id, :name=>self.normalize_name(name), :icon=>icon )
 		p.save!
 
 		pv = ProgramVersion.new( :program_id=>p.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )

@@ -33,7 +33,7 @@ class ProgramsController < ApplicationController
 			# We're saving an existing program so no need to be logged in
 			begin
 				p = Program.find( params[:id] )
-				version_count = p.new_version( params[:start_code], params[:loop_code], @user.id )
+				version_count = p.new_version( params[:start_code], params[:loop_code], @user.id, params[:icon] )
 				render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1, :author_name=>p.user_name } 
 			rescue ActiveRecord::RecordNotFound
 				render :json=>{ :error=>"Program not found" }
@@ -46,7 +46,8 @@ class ProgramsController < ApplicationController
 						@user.id,
 						params[:name],
 						params[:start_code],
-						params[:loop_code]
+						params[:loop_code],
+						params[:icon]
 					)
 					render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>1, :author_name=>p.user_name }
 				rescue RangeError
@@ -60,6 +61,12 @@ class ProgramsController < ApplicationController
 
 	# Non REST
 	##############################################################################################
+
+	def icon
+		p = Program.find( params[:id] )
+		decoded = Base64.decode64( p.icon[22..-1] )
+		render :text=>decoded, :content_type=>"image/png", :layout=>false
+	end
 
 	def programs_and_friends_panel
 		if @user
