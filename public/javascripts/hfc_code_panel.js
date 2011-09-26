@@ -238,6 +238,17 @@ function codeStop() {
 	codeHfcRunner.stop();
 }
 
+function codeSetPause( pause ) {
+	if( !pause && codeHfcRunner.isPaused() ) {
+		$("#codePauseLink").html( "pause" );
+		codeHfcRunner.setPaused(false);
+	}
+	else if( pause && !codeHfcRunner.isPaused() ) {
+		$("#codePauseLink").html( "run" );
+		codeHfcRunner.setPaused(true);
+	}
+}
+
 function codeTogglePause() {
 	if( codeHfcRunner.isPaused() ) {
 		$("#codePauseLink").html( "pause" );
@@ -470,20 +481,34 @@ function codeLoginToSave() {
 	document.location = "/login";
 }
 
-function codeShowPrograms() {
-	$("#codeProgramsPanel").load( "/programs/programs_and_friends_panel", function() {
-		/*
-		$(".codeLoadName").hover(
-			function(e){
-				$( "#icon-"+$(e.target).attr("programId") ).css( "width", 100 );
-				$( "#icon-"+$(e.target).attr("programId") ).css( "height", 100 );
-			},
-			function(e){
-				$( "#icon-"+$(e.target).attr("programId") ).css( "width", 32 );
-				$( "#icon-"+$(e.target).attr("programId") ).css( "height", 32 );
+function codeSetupLoadHover() {
+	$(".codeLoadName").hover(
+		function(e) {
+			var id = $(e.target).attr("programId");
+			$("#codePreview").attr( "src", "/embed/"+id );
+			$("#codePreviewContainer").css( "visibility", "visible" );
+			var pageW = $(window).width();
+			if( e.pageX < pageW/2 ) {
+				$("#codePreviewContainer").css( "right", "0" );
+				$("#codePreviewContainer").css( "left", "" );
 			}
-		);
-		*/
+			else {
+				$("#codePreviewContainer").css( "right", "" );
+				$("#codePreviewContainer").css( "left", "0" );
+			}  
+		},
+		function(e) {
+			var id = $(e.target).attr("programId");
+			$("#codePreview").attr( "src", "" );
+			$("#codePreviewContainer").css( "visibility", "hidden" );
+		}
+	);
+}
+
+function codeShowPrograms() {
+	codeSetPause( true );
+	$("#codeProgramsPanel").load( "/programs/programs_and_friends_panel", function() {
+		codeSetupLoadHover();
 		commonSetupElements();
 	});
 	$("#codeProgramsPanel").css( "display", "block" );
@@ -493,6 +518,7 @@ function codeShowPrograms() {
 }
 
 function codeHidePrograms() {
+	codeSetPause( false );
 	$("#codeProgramsPanel").css( "display", "none" );
 	$("#codeProgramsControlPanel").css( "display", "none" );
 	$("#codeMainPanel").css( "display", "block" );
@@ -554,7 +580,7 @@ function codeDeleteById( programId ) {
 }
 
 function codeProgramsByUser(userId) {
-	$("#codeProgramsByUser").load( "/programs/programs_by_user_id/"+userId );
+	$("#codeProgramsByUser").load( "/programs/programs_by_user_id/"+userId, codeSetupLoadHover );
 }
 
 function codeShowGlobals() {

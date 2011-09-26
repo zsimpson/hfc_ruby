@@ -4,7 +4,7 @@
 <div class="indent10">
 	<% for p in @programs %>
 		<div>
-			<a id="load-program-<%= p.user_name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a></span>    
+			<a class="codeLoadName" programId="<%=p.id-%>" id="load-program-<%= p.user_name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a></span>    
 			<br/>
 		</div>
 	<% end %>
