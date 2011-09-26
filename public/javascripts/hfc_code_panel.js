@@ -250,6 +250,11 @@ function codeTogglePause() {
 	}
 }
 
+function codeSaveCanvas() {
+	var data = document.getElementById( "codeMainCanvas0" ).toDataURL( "image/png" );
+	window.open( data );
+}
+
 function codeResize() {
 	// ARRANGE all the divs
 	var pageW = $(window).width();

@@ -165,9 +165,15 @@
 	<div id="codeMainCol2" style="vertical-align:top; height:350px;">
 		<div>
 			<span class="areaLabel">Canvas</span>
+
 			<span style="float:right; margin-left:20px;">
 				<a id="codePauseLink" onclick="codeTogglePause()">pause</a>
 			</span>
+
+			<span style="float:right; margin-left:20px;">
+				<a onclick="codeSaveCanvas()">grab image</a>
+			</span>
+
 			<span style="float:right;">
 				FPS:
 				<span id="codeFps"></span>
@@ -207,3 +213,5 @@
 	</div>
 
 </div>
+
+<img id="hacktest"/>
