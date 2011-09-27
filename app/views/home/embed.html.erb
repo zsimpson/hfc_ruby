@@ -27,7 +27,7 @@
 				fetchGlobalCallback: function( name ) {
 					if( ! codeGlobalsReqestedLoad[name] ) {
 						codeGlobalsReqestedLoad[name] = true;
-						$.get( "/public_functions/"+name, function(data) {
+						$.get( "/globals/"+name, function(data) {
 							if( data.success ) {
 								codeHfcRunner.updateGlobal( data.name, data.name + " = " + data.code );
 							}

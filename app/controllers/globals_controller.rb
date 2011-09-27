@@ -1,18 +1,19 @@
-class PublicFunctionsController < ApplicationController
+class GlobalsController < ApplicationController
 	def index
-		@public_functions = PublicFunction.all
+		@globals = Global.all
 		render :layout=>false
 	end
 
 	def show
 		begin
 			params[:version] ||= -1
-			f = PublicFunction.find_by_name_and_version( params[:id], params[:version] )
+			f = Global.find_by_name_and_version( params[:id], params[:version] )
+			logger.debug "*** "+f.global_version.to_s
 			render :json=>{
 				:success=>true,
 				:id=>f.id,
 				:name=>f.name,
-				:code=>f.public_function_version.code,
+				:code=>f.global_version.code,
 				:version=>f.version,
 				:version_count=>f.version_count
 			}
@@ -24,19 +25,19 @@ class PublicFunctionsController < ApplicationController
 	def update
 		# We're saving an existing program so no need to be logged in
 		begin
-			p = PublicFunction.locate_or_create( @user.id, params[:id] )
-			version_count = p.new_version( params[:code], @user.id )
-			render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1 } 
+			g = Global.locate_or_create( @user.id, params[:id] )
+			version_count = g.new_version( params[:code], @user.id )
+			render :json => { :success=>true, :id=>g.id, :name=>g.name, :version_count=>version_count, :version=>version_count-1 } 
 		rescue ActiveRecord::RecordNotFound
-			render :json=>{ :error=>"Program not found" }
+			render :json=>{ :error=>"Global not found" }
 		end
 	end
 	
 	def destroy
 		if @user.super_user?
 			begin
-				@public_function = PublicFunction.find( params[:id] )
-				@public_function.destroy
+				@global = Global.find( params[:id] )
+				@global.destroy
 				render :json => { :success=>true } 
 			rescue
 				render :json => { :error=>"Unable to delete" } 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110926022139) do
+ActiveRecord::Schema.define(:version => 20110927021949) do
 
   create_table "actions", :force => true do |t|
     t.integer  "user_id"
@@ -42,16 +42,24 @@ ActiveRecord::Schema.define(:version => 20110926022139) do
   add_index "friendships", ["friend_id"], :name => "index_friendships_on_friend_id"
   add_index "friendships", ["user_id"], :name => "index_friendships_on_user_id"
 
-  create_table "function_versions", :force => true do |t|
-    t.integer  "public_function_id"
+  create_table "global_versions", :force => true do |t|
+    t.integer  "global_id"
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "code",               :limit => 2147483647
+    t.text     "code",       :limit => 2147483647
   end
 
-  add_index "function_versions", ["public_function_id"], :name => "index_function_versions_on_function_id"
-  add_index "function_versions", ["user_id"], :name => "index_function_versions_on_user_id"
+  add_index "global_versions", ["global_id"], :name => "index_function_versions_on_function_id"
+  add_index "global_versions", ["user_id"], :name => "index_function_versions_on_user_id"
+
+  create_table "globals", :force => true do |t|
+    t.integer "user_id"
+    t.string  "name"
+  end
+
+  add_index "globals", ["name"], :name => "index_functions_on_name"
+  add_index "globals", ["user_id"], :name => "index_functions_on_user_id"
 
   create_table "messages", :force => true do |t|
     t.integer  "user_id"
@@ -103,22 +111,11 @@ ActiveRecord::Schema.define(:version => 20110926022139) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "start_code", :limit => 2147483647
-    t.text     "loop_code",  :limit => 2147483647
     t.binary   "icon"
   end
 
   add_index "programs", ["name"], :name => "index_programs_on_name"
   add_index "programs", ["user_id"], :name => "index_programs_on_user_id"
-
-  create_table "public_functions", :force => true do |t|
-    t.integer "user_id"
-    t.string  "name"
-    t.text    "code",    :limit => 2147483647
-  end
-
-  add_index "public_functions", ["name"], :name => "index_functions_on_name"
-  add_index "public_functions", ["user_id"], :name => "index_functions_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "name"

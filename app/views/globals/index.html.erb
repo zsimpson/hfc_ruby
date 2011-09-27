@@ -1,4 +1,4 @@
-<% for f in @public_functions.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
+<% for f in @globals.sort { |a,b| a.name.downcase <=> b.name.downcase } %>
 	<div style="min-height:18px;">
 		<% if @user.super_user? %>
 			<img id="delete-global-<%=f.name-%>" class="closeIcon globalDeleteButton" src="/images/tabclose.png" onclick="codeGlobalDeleteById(<%= f.id %>)"/>

@@ -71,20 +71,8 @@ class Program < ActiveRecord::Base
 	end
 	
 	def self.new_program_and_version( user_id, name, start_code, loop_code, icon )
-		# This is going to have to either exception or return an invalid
-
-		# DISALLOW duplicate name
-#		if self.find_by_name( name )
-#			raise RangeError
-#			return
-#		end
-		
-		p = self.new( :user_id=>user_id, :name=>self.normalize_name(name), :icon=>icon )
-		p.save!
-
-		pv = ProgramVersion.new( :program_id=>p.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )
-		pv.save!
-
+		p = self.create!( :user_id=>user_id, :name=>self.normalize_name(name), :icon=>icon )
+		pv = ProgramVersion.create!( :program_id=>p.id, :start_code=>start_code, :loop_code=>loop_code, :user_id=>user_id )
 		return p
 	end
 	

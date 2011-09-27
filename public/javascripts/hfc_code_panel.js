@@ -94,7 +94,7 @@ $(document).ready( function() {
 		fetchGlobalCallback: function( name ) {
 			if( ! codeGlobalsReqestedLoad[name] ) {
 				codeGlobalsReqestedLoad[name] = true;
-				$.get( "/public_functions/"+name, function(data) {
+				$.get( "/globals/"+name, function(data) {
 					if( data.success ) {
 						codeHfcRunner.updateGlobal( data.name, data.name + " = " + data.code );
 					}
@@ -584,7 +584,7 @@ function codeProgramsByUser(userId) {
 }
 
 function codeShowGlobals() {
-	$("#codeGlobalsPanel").load( "/public_functions", commonSetupElements );
+	$("#codeGlobalsPanel").load( "/globals", commonSetupElements );
 	$("#codeGlobalsPanel").css( "display", "block" );
 	$("#codeGlobalsControlPanel").css( "display", "block" );
 	$("#codeMainPanel").css( "display", "none" );
@@ -627,7 +627,7 @@ function codeSaveGlobal() {
 	}
 	else {
 		$.ajax({
-			url:"/public_functions/"+codeGlobalsEditting,
+			url:"/globals/"+codeGlobalsEditting,
 			type:"PUT",
 			data:{ code:codeMirrorGlobal.getValue() },
 			success: function(data) {
@@ -647,7 +647,7 @@ function codeGlobalEdit( name, version ) {
 	if( typeof(version) == "undefined" ) {
 		version = -1;
 	}
-	$.get( "/public_functions/"+name, {version:version}, function(data) {
+	$.get( "/globals/"+name, {version:version}, function(data) {
 		if( data.success ) {
 			codeShowGlobalEditor();
 			codeMirrorGlobal.setValue( data.name + " = " + data.code );
@@ -685,7 +685,7 @@ function codeGlobalLatestVersion() {
 function codeGlobalDeleteById( id ) {
 	if( confirm( "Are you sure you want to delete this global function?" ) ) {
 		$.ajax({
-			url:"/public_functions/"+id,
+			url:"/globals/"+id,
 			type:"DELETE",
 			success: function(data) {
 				if( data.success ) {

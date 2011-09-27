@@ -13,8 +13,8 @@ HfcRuby::Application.routes.draw do
   match "/assets/show_by_name" => "assets#show_by_name"
   resources :assets
   
-  match "/public_functions/list" => "public_functions#list"
-  resources :public_functions
+  match "/globals/list" => "public_functions#list"
+  resources :globals
   
   resources :friends
 
