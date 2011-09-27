@@ -44,6 +44,10 @@ class User < ActiveRecord::Base
 		a.action = action
 		a.save!
 	end
+
+	def add_friend_by_id( friend_id )
+		Friendship.create!( :user_id=>self.id, :friend_id=>friend_id )
+	end
 	
 	def get_friends_programs
 		programs_by_friend = {}
@@ -57,7 +61,12 @@ class User < ActiveRecord::Base
 			friends_user_ids_by_name[ i[:user_name] ] = i[:user_id]
 		end
 		
-		# MAKE a nice list of names with a list of their programs
+		# MAKE a nice list of names with a list of their programs like this
+		# [
+		#	{ :user_name=>"zack", :user_id=>1, :programs=>{} },
+		#	{ :user_name=>"bob", :user_id=>2, :programs=>[ {:program_id=>1, :program_name=>"oink"}, {:program_id=>2, :program_name=>"boink"} ] },
+		# ]
+				
 		friends_programs = []
 		for f in self.friends.sort{ |a,b| a.name.downcase <=> b.name.downcase }
 			friends_programs.push( {:user_name=>f.name, :user_id=>f.id, :programs=>programs_by_friend[f.id] ? programs_by_friend[f.id][:programs] : {} } )

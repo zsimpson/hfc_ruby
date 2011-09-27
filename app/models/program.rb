@@ -6,6 +6,8 @@ class Program < ActiveRecord::Base
 	attr_accessor :program_version
 	attr_accessor :version
 	attr_accessor :version_count
+	
+	validates_uniqueness_of :name, :message=>"Duplicate name"
 
 	def get_all_versions
 		return ProgramVersion.all( :conditions=>{ :program_id=>self.id }, :order=>"created_at" )
@@ -54,14 +56,12 @@ class Program < ActiveRecord::Base
 	
 	def self.find_new( count )
 		# Until I find out from Corey how to do this kind of thing correctly...
-		return Program.find_by_sql( "select users.name as user_name, programs.* from users, programs where users.id=programs.user_id order by programs.created_at desc limit 100" );
-		#return Program.order( "created_at desc" ).limit( count ) 
+		return Program.find_by_sql( ["select users.name as user_name, programs.* from users, programs where users.id=programs.user_id order by programs.id desc limit ?", count] );
 	end
 
 	def self.find_recent( count )
 		# Until I find out from Corey how to do this kind of thing correctly...
-		return Program.find_by_sql( "select users.name as user_name, programs.* from users, programs where users.id=programs.user_id order by programs.updated_at desc limit 100" );
-		#return Program.order( "created_at desc" ).limit( count ) 
+		return Program.find_by_sql( ["select users.name as user_name, programs.* from users, programs where users.id=programs.user_id order by programs.updated_at desc limit ?", count] );
 	end
 
 	def self.normalize_name( name )
@@ -74,10 +74,10 @@ class Program < ActiveRecord::Base
 		# This is going to have to either exception or return an invalid
 
 		# DISALLOW duplicate name
-		if self.find_by_name( name )
-			raise RangeError
-			return
-		end
+#		if self.find_by_name( name )
+#			raise RangeError
+#			return
+#		end
 		
 		p = self.new( :user_id=>user_id, :name=>self.normalize_name(name), :icon=>icon )
 		p.save!

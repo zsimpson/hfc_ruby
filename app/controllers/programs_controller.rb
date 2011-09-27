@@ -50,7 +50,7 @@ class ProgramsController < ApplicationController
 						params[:icon]
 					)
 					render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>1, :author_name=>p.user_name }
-				rescue RangeError
+				rescue ActiveRecord::RecordInvalid
 					render :json=>{ :error=>"Duplicate name" }
 				end
 			else
