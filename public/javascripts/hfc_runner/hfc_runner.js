@@ -68,7 +68,7 @@ var HfcRunner = (function ($,$M) {
 		}
 		
 		this.loadStrokeState = function(context) {
-			var minScale = Math.min( Math.abs(this.defaultMat.e(1,1)), Math.abs(this.defaultMat.e(2,2)) )
+			var minScale = Math.min( Math.abs(this.windowMat.e(1,1)), Math.abs(this.windowMat.e(2,2)) )
 			context.lineWidth = this.lineWidth / minScale
 			context.strokeStyle = this.stroke
 			context.globalAlpha = this.strokeA
@@ -98,12 +98,7 @@ var HfcRunner = (function ($,$M) {
 			this.font = "";
 			this.textAlign = "left";
 			this.textBaseline = "top";
-			this.defaultMat = $M( [
-				[ 1, 0, 0 ], 
-				[ 0, 1, 0 ], 
-				[ 0, 0, 1 ]
-			] );
-
+			this.windowMat = Matrix.I( 3 );
 			this.setFill( 0, 0, 0, 1 )
 			this.setStroke( 1, 0, 0, 0, 1, "butt", "miter" )
 			this.setShadow( 0, 0, 2, 0, 0, 0 )
@@ -139,19 +134,22 @@ var HfcRunner = (function ($,$M) {
 		beginPath: function() {
 			currentContext.beginPath();
 			if( svgCmds ) {
-				svgCmds += "<path d=\"";
+				svgCmds += "\n<path "+svgTransform()+"d=\"";
 			}
 		},
 		
 		bezierTo: function( cx0, cy0, cx1, cy1, x, y ) {
 			currentContext.bezierCurveTo( cx0, cy0, cx1, cy1, x, y );
+			if( svgCmds ) {
+				svgCmds += " C " + cx0 + " " + cy0 + " " + cx1 + " " + cy1 + " " + x + " " + y + " ";
+			}
 		},
 		
 		box: function( x0, y0, w, h ) {
 			drawState.loadStrokeState( currentContext );
 			currentContext.strokeRect( x0, y0, w, h );
 			if( svgCmds ) {
-				svgCmds += "<rect x='"+x0+svgUnits+"' y='"+y0+svgUnits+"' width='"+w+svgUnits+"' height='"+h+svgUnits+"' "+svgStyle(true,false)+"/>\n";
+				svgCmds += "<rect "+svgTransform()+"x='"+x0+"' y='"+y0+"' width='"+w+"' height='"+h+"' "+svgStyle(true,false)+"/>\n";
 			}
 		},
 
@@ -162,12 +160,13 @@ var HfcRunner = (function ($,$M) {
 			currentContext.closePath();
 			currentContext.stroke();
 			if( svgCmds ) {
-				svgCmds += "<circle cx='"+x+svgUnits+"' cy='"+y+svgUnits+"' r='"+r+svgUnits+"' "+svgStyle(true,false)+"/>\n";
+				svgCmds += "<circle "+svgTransform()+"cx='"+x+"' cy='"+y+"' r='"+r+"' "+svgStyle(true,false)+"/>\n";
 			}
 		},
 
 		clear: function( r, g, b ) {
 			currentContext.setTransform( 1, 0, 0, 1, 0, 0 );
+			currentMat = Matrix.I(3);
 			currentContext.fillStyle = colorToString( r, g, b );
 			currentContext.globalAlpha = 1;
 			currentContext.fillRect( 0, 0, canvasW, canvasH );
@@ -195,7 +194,7 @@ var HfcRunner = (function ($,$M) {
 			currentContext.closePath();
 			currentContext.fill();
 			if( svgCmds ) {
-				svgCmds += "<circle cx='"+x+svgUnits+"' cy='"+y+svgUnits+"' r='"+r+svgUnits+"' "+svgStyle(false,true)+"/>\n";
+				svgCmds += "<circle "+svgTransform()+"cx='"+x+"' cy='"+y+"' r='"+r+"' "+svgStyle(false,true)+"/>\n";
 			}
 		},
 		
@@ -221,7 +220,7 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		identity: function() {
-			currentContext.setTransform( drawState.defaultMat.e(1,1), drawState.defaultMat.e(2,1), drawState.defaultMat.e(1,2), drawState.defaultMat.e(2,2), drawState.defaultMat.e(1,3), drawState.defaultMat.e(2,3) );
+			currentContext.setTransform( drawState.windowMat.e(1,1), drawState.windowMat.e(2,1), drawState.windowMat.e(1,2), drawState.windowMat.e(2,2), drawState.windowMat.e(1,3), drawState.windowMat.e(2,3) );
 		},
 		
 		image: function( url, x, y, w, h, sx, sy, sw, sh ) {
@@ -255,21 +254,21 @@ var HfcRunner = (function ($,$M) {
 			currentContext.lineTo( x1, y1 );
 			currentContext.stroke();
 			if( svgCmds ) {
-				svgCmds += "<line x1='"+x0+svgUnits+"' y1='"+y0+svgUnits+"' x2='"+x1+svgUnits+"' y2='"+y1+svgUnits+"' "+svgStyle(true,false)+"/>\n";
+				svgCmds += "<line "+svgTransform()+"x1='"+x0+"' y1='"+y0+"' x2='"+x1+"' y2='"+y1+"' "+svgStyle(true,false)+"/>\n";
 			}
 		},
 
 		lineTo: function( x, y ) {
 			currentContext.lineTo( x, y );
 			if( svgCmds ) {
-				svgCmds += " L "+x+svgUnits+" "+y+svgUnits+" ";
+				svgCmds += " L "+x+" "+y+" ";
 			}
 		},
 		
 		moveTo: function( x, y ) {
 			currentContext.moveTo( x, y );
 			if( svgCmds ) {
-				svgCmds += " M "+x+svgUnits+" "+y+svgUnits+" ";
+				svgCmds += " M "+x+" "+y+" ";
 			}
 		},
 		
@@ -279,26 +278,32 @@ var HfcRunner = (function ($,$M) {
 		
 		push: function() {
 			currentContext.save();
+			transformStack.push( currentMat.dup() );
 		},
 		
 		pop: function() {
 			currentContext.restore();
+			currentMat = transformStack.pop();
 		},
 		
 		rect: function( x0, y0, w, h ) {
 			drawState.loadFillState( currentContext );
 			currentContext.fillRect( x0, y0, w, h );
 			if( svgCmds ) {
-				svgCmds += "<rect x='"+x0+svgUnits+"' y='"+y0+svgUnits+"' width='"+w+svgUnits+"' height='"+h+svgUnits+"' "+svgStyle(false,true)+"/>\n";
+				svgCmds += "<rect "+svgTransform()+"x='"+x0+"' y='"+y0+"' width='"+w+"' height='"+h+"' "+svgStyle(false,true)+"/>\n";
 			}
 		},
 
 		rotate: function( a ) {
 			currentContext.rotate( a );
+			var rotMat = $M([ [ cos(x), -sin(x), 0 ], [ sin(x), cos(x), 0 ], [ 0, 0, 1 ] ]);
+			currentMat = currentMat.x( rotMat );
 		},
 		
 		scale: function( x, y ) {
 			currentContext.scale( x, y );
+			var scaleMat = $M([ [ x, 0, 0 ], [ 0, y, 0 ], [ 0, 0, 1 ] ]);
+			currentMat = currentMat.x( scaleMat );
 		},
 		
         shadow: function( x, y, blur, r, g, b ) {
@@ -317,7 +322,7 @@ var HfcRunner = (function ($,$M) {
 			drawState.loadStrokeState( currentContext );
 			currentContext.stroke();
 			if( svgCmds ) {
-				svgCmds += "\" "+svgStyle(true,false)+" />\n";
+				svgCmds += "\" "+svgStyle(true,false)+" />\n</g>";
 			}
 		},
 		
@@ -327,14 +332,14 @@ var HfcRunner = (function ($,$M) {
 			currentContext.strokeText( s, x, y );
 		},
 		
-		svgBegin: function( units ) {
-			svgCmds = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
-			svgUnits = units; 
+		svgBegin: function() {
+			svgCmds = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='100in' height='100in' viewBox='0 0 100 100'>";
 		},
 		
 		svgEnd: function() {
 			svgCmds += "</svg>";
 			svgCallback( svgCmds );
+			svgCmds = null;
 		},
 		
 		text: function( s, x, y ) {
@@ -345,28 +350,19 @@ var HfcRunner = (function ($,$M) {
 
 		translate: function( x, y ) {
 			currentContext.translate( x, y );
+			var translateMat = $M([ [ 0, 0, x ], [ 0, 0, y], [ 0, 0, 1 ] ]);
+			currentMat = currentMat.x( translateMat );
 		},
 		
 		window: function( a, b, c, d, e, f ) {
-			defaultMat = $M( [
+			drawState.windowMat = $M( [
 				[ a, c, e ], 
 				[ b, d, f ], 
 				[ 0, 0, 1 ]
 			] ) 
+			currentMat = drawState.windowMat.dup();
 			currentContext.setTransform( a, b, c, d, e, f );
 		},
-		
-		
-		//unresponsiveOverride: function() {
-		//	unresponsiveOverride = true;
-		//},
-
-//		else if( data.cmd == "debug" ) {
-//			$("#debugStream").append( data.args[0] + "<br/>" );
-//			$("#debugStream").scrollTop($("#debugStream")[0].scrollHeight);
-//			console.log( data.args[0] );
-//		}
-
 	};
 
 	var frameComplete = true;
@@ -398,9 +394,25 @@ var HfcRunner = (function ($,$M) {
 	var imageDims = {};
 	var images = {};
 	var paused = false;
+	var transformStack = [];
 	var svgCmds = null;
 	var svgUnits = null;
 	var svgCallback = null;
+	var currentMat = Matrix.I(3);
+	
+	svgTransform = function() {
+		var a = currentMat.elements[0][0];
+		var b = currentMat.elements[1][0];
+		var c = currentMat.elements[0][1];
+		var d = currentMat.elements[1][1];
+		var e = currentMat.elements[0][2];
+		var f = currentMat.elements[1][2];
+		return " transform='matrix("+a+" "+b+" "+c+" "+d+" "+e+" "+f+")' ";
+	}
+
+	svgStyle = function( withStroke, withFill ) {
+		return "style='stroke:" + (withStroke?drawState.stroke:"none") + "; fill:" + (withFill?drawState.fill:"none") + "; stroke-width:0.01;'";
+	}
 	
 	colorToString = function( r, g, b ) {
 		r = Math.max( 1, Math.min( 255, r*255 ) );
@@ -533,6 +545,7 @@ var HfcRunner = (function ($,$M) {
 		drawState.reset();
 		context[0].setTransform( 1, 0, 0, 1, 0, 0 )
 		context[1].setTransform( 1, 0, 0, 1, 0, 0 )
+		currentMat = Matrix.I(3);
 		
 		// EXTRACT the global symbol references
 		var source = [ startCode, loopCode, globalCode ];
@@ -607,6 +620,7 @@ var HfcRunner = (function ($,$M) {
 			vecCmds = [];
 			context[0].setTransform( 1, 0, 0, 1, 0, 0 );
 			context[1].setTransform( 1, 0, 0, 1, 0, 0 );
+			currentMat = Matrix.I(3);
 			if( $.Hive.get(0) ) {
 				// COMPUTE FPS
 				var stopFrameTime = new Date().getTime();
@@ -643,9 +657,6 @@ var HfcRunner = (function ($,$M) {
 		setTimeout( runFrame, 1 );
 	}
 	
-	svgStyle = function( withStroke, withFill ) {
-		return "style='stroke:" + (withStroke?drawState.stroke:"none") + "; fill:" + (withFill?drawState.fill:"none") + ";'";
-	}
 
 	return my;
 }($,$M));

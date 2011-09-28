@@ -414,8 +414,8 @@ with( Math ) {
 		$.send( { "cmd":"pop" } );
 	}
 	
-	function svgBegin( units ) {
-		$.send( { "cmd":"svgBegin", "args":[units] } );
+	function svgBegin() {
+		$.send( { "cmd":"svgBegin", "args":[] } );
 	}
 
 	function svgEnd() {
