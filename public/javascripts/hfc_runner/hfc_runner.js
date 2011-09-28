@@ -129,24 +129,38 @@ var HfcRunner = (function ($,$M) {
 			drawState.setAlpha( a );
 		},
 		
-		arc: function( x, y, r, a0, a1, dir ) {
+		arc: function( x, y, r, a0, a1, antiClock ) {
 			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.beginPath();
-			currentContext.arc( x, y, r, a0, a1, dir );
+			currentContext.arc( x, y, r, a0, a1, antiClock );
 			currentContext.stroke();
 			if( svgCmds ) {
-				var x0 = Math.cos( a0 ) + x;
-				var y0 = Math.sin( a0 ) + y;
-				var x1 = Math.cos( a1 ) + x;
-				var y1 = Math.sin( a1 ) + y;
-				var largeArc = dir ? 0 : 1;
-				var sweep = dir ? 0 : 1;
+				var x0 = r*Math.cos( a0 ) + x;
+				var y0 = r*Math.sin( a0 ) + y;
+				var x1 = r*Math.cos( a1 ) + x;
+				var y1 = r*Math.sin( a1 ) + y;
+				var largeArc = antiClock ? 0 : 1;
+				var sweep = antiClock ? 0 : 1;
 				svgCmds += "<path "+svgTransform()+" d='M "+x0+" "+y0+" A "+r+" "+r+" 0 "+largeArc+" "+sweep+" "+x1+" "+y1+"' "+svgStyle(true,false)+"/>\n";
+			}
+		},
+		
+		pathArc: function( x, y, r, a0, a1, antiClock ) {
+			currentContext.arc( x, y, r, a0, a1, antiClock );
+			if( svgCmds ) {
+				var x0 = r*Math.cos( a0 ) + x;
+				var y0 = r*Math.sin( a0 ) + y;
+				var x1 = r*Math.cos( a1 ) + x;
+				var y1 = r*Math.sin( a1 ) + y;
+				var largeArc = antiClock ? 0 : 1;
+				var sweep = antiClock ? 0 : 1;
+				svgCmds += " M "+x0+" "+y0+" A "+r+" "+r+" 0 "+largeArc+" "+sweep+" "+x1+" "+y1+" ";
 			}
 		},
 
 		beginPath: function() {
 			currentContext.beginPath();
+			pathClosed = false;
 			if( svgCmds ) {
 				svgCmds += "\n<path "+svgTransform()+"d=\"";
 			}
@@ -186,6 +200,7 @@ var HfcRunner = (function ($,$M) {
 		},
 	
 		closePath: function() {
+			pathClosed = true;
 			currentContext.closePath();
 			if( svgCmds ) {
 				svgCmds += " z ";
@@ -334,7 +349,7 @@ var HfcRunner = (function ($,$M) {
 			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.stroke();
 			if( svgCmds ) {
-				svgCmds += "\" "+svgStyle(true,false)+" />\n";
+				svgCmds += "\" "+svgStyle(true,pathClosed)+" />\n";
 			}
 		},
 		
@@ -407,6 +422,7 @@ var HfcRunner = (function ($,$M) {
 	var paused = false;
 	var currentMat = Matrix.I(3);
 	var transformStack = [];
+	var pathClosed = false;
 	var svgCmds = null;
 	var svgUnits = null;
 	var svgCallback = null;

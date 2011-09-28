@@ -242,6 +242,11 @@ with( Math ) {
 		$.send( { "cmd":"bezierTo", "args":[cx0,cy0,cx1,cy1,x,y] } );
 	}
 
+	function pathArc(x,y,r,a0,a1,antiClock) {
+		if( typeof(antiClock) == "undefined" ) antiClock = false;
+		$.send( { "cmd":"pathArc", "args":[x,y,r,a0,a1,antiClock] } );
+	}
+
 	function pathStroke() {
 		$.send( { "cmd":"strokePath" } );
 	}
