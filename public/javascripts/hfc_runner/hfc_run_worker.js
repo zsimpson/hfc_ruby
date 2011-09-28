@@ -242,15 +242,6 @@ with( Math ) {
 		$.send( { "cmd":"bezierTo", "args":[cx0,cy0,cx1,cy1,x,y] } );
 	}
 
-	function pathArcTo(x0,y0,x1,y1,r) {
-		$.send( { "cmd":"arcTo", "args":[x0,y0,x1,y1,r] } );
-	}
-
-	function pathArc(x,y,r,a0,a1,antiClock) {
-		if( typeof(antiClock) == "undefined" ) antiClock = false;
-		$.send( { "cmd":"pathArc", "args":[x,y,r,a0,a1,antiClock] } );
-	}
-
 	function pathStroke() {
 		$.send( { "cmd":"strokePath" } );
 	}
@@ -414,8 +405,8 @@ with( Math ) {
 		$.send( { "cmd":"pop" } );
 	}
 	
-	function svgBegin() {
-		$.send( { "cmd":"svgBegin", "args":[] } );
+	function svgBegin( w, h ) {
+		$.send( { "cmd":"svgBegin", "args":[w,h] } );
 	}
 
 	function svgEnd() {

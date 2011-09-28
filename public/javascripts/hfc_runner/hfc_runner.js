@@ -4,82 +4,92 @@ var HfcRunner = (function ($,$M) {
 
 	function HfcDrawState() {
 		this.setFill = function( r, g, b, a ) {
-			this.gradient = null
-			this.fill = colorToString( r, g, b )
-			this.fill = "#" + this.fill.substring( 1, 7 )
-			this.fillA = a
+			this.gradient = null;
+			this.fill = colorToString( r, g, b );
+			this.fill = "#" + this.fill.substring( 1, 7 );
+			this.fillA = a;
 		}
 		
 		this.setAlpha = function( a ) {
-			this.fillA = a
+			this.fillA = a;
 		}
 		
 		this.setStroke = function( w, r, g, b, a, cap, join ) {
-			this.lineWidth = w
-			this.stroke = colorToString( r, g, b )
-			this.strokeA = a
-			this.lineCap = cap
-			this.lineJoin = join
+			var m = w.toString(10).match(/([0-9.]+)px/);
+			if( m ) {
+				this.lineWidthAbsoluteMode = parseFloat( m[1] );
+			}
+			else {
+				this.lineWidthAbsoluteMode = false;
+				this.lineWidth = w;
+			}
+			this.stroke = colorToString( r, g, b );
+			this.strokeA = a;
+			this.lineCap = cap;
+			this.lineJoin = join;
 		}
 		
 		this.setShadow = function( x, y, blur, r, g, b ) {
-			this.shadowX = x
-			this.shadowY = y
-			this.shadowBlur = blur
-			this.shadowColor = colorToString( r, g, b )
+			this.shadowX = x;
+			this.shadowY = y;
+			this.shadowBlur = blur;
+			this.shadowColor = colorToString( r, g, b );
 		}
 
 		this.setFont = function( name, size ) {
-			this.font = size + "px " + name
+			this.font = size + "px " + name;
 		}
 
 		this.setAlign = function( align, baseline ) {
-			this.textAlign = align
-			this.textBaseline = baseline
+			this.textAlign = align;
+			this.textBaseline = baseline;
 		}
 
 		this.createGradient = function( x0, y0, x1, y1 ) {
-			this.gradient = context[0].createLinearGradient(x0,y0,x1,y1)
+			this.gradient = context[0].createLinearGradient(x0,y0,x1,y1);
 		}
 		
 		this.createGradientRadial = function( x0, y0, r0, x1, y1, r1 ) {
-			this.gradient = context[0].createRadialGradient(x0,y0,r0,x1,y1,r1)
+			this.gradient = context[0].createRadialGradient(x0,y0,r0,x1,y1,r1);
 		}
 		
 		this.addColorStop = function( p, r, g, b ) {
-			this.gradient.addColorStop( p, colorToString( r, g, b ) )
+			this.gradient.addColorStop( p, colorToString( r, g, b ) );
 		}
 
 		this.loadFillState = function(context) {
-			context.fillStyle = this.gradient ? this.gradient : this.fill
-			context.globalAlpha = this.fillA
+			context.fillStyle = this.gradient ? this.gradient : this.fill;
+			context.globalAlpha = this.fillA;
 			if( this.shadowX == 0 && this.shadowY == 0 ) {
-				context.shadowOffsetX = null
-				context.shadowOffsetY = null
-				context.shadowBlur = null
-				context.shadowColor = null
+				context.shadowOffsetX = null;
+				context.shadowOffsetY = null;
+				context.shadowBlur = null;
+				context.shadowColor = null;
 			}
 			else {
-				context.shadowOffsetX = this.shadowX
-				context.shadowOffsetY = this.shadowY
-				context.shadowBlur = this.shadowBlur
-				context.shadowColor = this.shadowColor
+				context.shadowOffsetX = this.shadowX;
+				context.shadowOffsetY = this.shadowY;
+				context.shadowBlur = this.shadowBlur;
+				context.shadowColor = this.shadowColor;
 			}
 		}
 		
-		this.loadStrokeState = function(context) {
-			var minScale = Math.min( Math.abs(this.windowMat.e(1,1)), Math.abs(this.windowMat.e(2,2)) )
+		this.loadStrokeState = function(context,currentMat) {
+			var minScale = 1;
+			if( this.lineWidthAbsoluteMode ) {
+				minScale = Math.min( Math.abs(currentMat.e(1,1)), Math.abs(currentMat.e(2,2)) ) / this.lineWidthAbsoluteMode;
+			}
 			context.lineWidth = this.lineWidth / minScale
-			context.strokeStyle = this.stroke
-			context.globalAlpha = this.strokeA
-			context.lineCap = this.lineCap
-			context.lineJoin = this.lineJoin
+			context.strokeStyle = this.stroke;
+			context.globalAlpha = this.strokeA;
+			context.lineCap = this.lineCap;
+			context.lineJoin = this.lineJoin;
 		}
 		
 		this.loadFontState = function( context ) {
-			context.font = this.font
-			context.textAlign = this.textAlign
-			context.textBaseline = this.textBaseline
+			context.font = this.font;
+			context.textAlign = this.textAlign;
+			context.textBaseline = this.textBaseline;
 		}
 		
 		this.reset = function() {
@@ -98,12 +108,11 @@ var HfcRunner = (function ($,$M) {
 			this.font = "";
 			this.textAlign = "left";
 			this.textBaseline = "top";
-			this.windowMat = Matrix.I( 3 );
-			this.setFill( 0, 0, 0, 1 )
-			this.setStroke( 1, 0, 0, 0, 1, "butt", "miter" )
-			this.setShadow( 0, 0, 2, 0, 0, 0 )
-			this.setFont( "Calibri", 20 )
-			this.setAlign( "left", "top" )
+			this.setFill( 0, 0, 0, 1 );
+			this.setStroke( 1, 0, 0, 0, 1, "butt", "miter" );
+			this.setShadow( 0, 0, 2, 0, 0, 0 );
+			this.setFont( "Calibri", 20 );
+			this.setAlign( "left", "top" );
 		}
 	}
 	
@@ -121,16 +130,21 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		arc: function( x, y, r, a0, a1, dir ) {
-			drawState.loadStrokeState( currentContext );
+			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.beginPath();
 			currentContext.arc( x, y, r, a0, a1, dir );
 			currentContext.stroke();
+			if( svgCmds ) {
+				var x0 = Math.cos( a0 ) + x;
+				var y0 = Math.sin( a0 ) + y;
+				var x1 = Math.cos( a1 ) + x;
+				var y1 = Math.sin( a1 ) + y;
+				var largeArc = dir ? 0 : 1;
+				var sweep = dir ? 0 : 1;
+				svgCmds += "<path "+svgTransform()+" d='M "+x0+" "+y0+" A "+r+" "+r+" 0 "+largeArc+" "+sweep+" "+x1+" "+y1+"' "+svgStyle(true,false)+"/>\n";
+			}
 		},
 
-		arcTo: function( a, b, c, d, e ) {
-			currentContext.arcTo( a, b, c, d, e );
-		},
-		
 		beginPath: function() {
 			currentContext.beginPath();
 			if( svgCmds ) {
@@ -146,7 +160,7 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		box: function( x0, y0, w, h ) {
-			drawState.loadStrokeState( currentContext );
+			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.strokeRect( x0, y0, w, h );
 			if( svgCmds ) {
 				svgCmds += "<rect "+svgTransform()+"x='"+x0+"' y='"+y0+"' width='"+w+"' height='"+h+"' "+svgStyle(true,false)+"/>\n";
@@ -154,7 +168,7 @@ var HfcRunner = (function ($,$M) {
 		},
 
 		circle: function( x, y, r ) {
-			drawState.loadStrokeState( currentContext );
+			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.beginPath();
 			currentContext.arc( x, y, r, 0, 3.141592654*2, false );
 			currentContext.closePath();
@@ -165,8 +179,7 @@ var HfcRunner = (function ($,$M) {
 		},
 
 		clear: function( r, g, b ) {
-			currentContext.setTransform( 1, 0, 0, 1, 0, 0 );
-			currentMat = Matrix.I(3);
+			resetMats();
 			currentContext.fillStyle = colorToString( r, g, b );
 			currentContext.globalAlpha = 1;
 			currentContext.fillRect( 0, 0, canvasW, canvasH );
@@ -183,8 +196,11 @@ var HfcRunner = (function ($,$M) {
 			drawState.setComposite( a );
 		},
 		
-		curveTo: function( x, y, a, b ) {
-			currentContext.quadraticCurveTo( x, y, a, b );
+		curveTo: function( cx, cy, x, y ) {
+			currentContext.quadraticCurveTo( cx, cy, x, y );
+			if( svgCmds ) {
+				svgCmds += " Q " + cx + " " + cy + " " + x + " " + y + " ";
+			}
 		},
 		
 		disc: function( x, y, r ) {
@@ -220,7 +236,7 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		identity: function() {
-			currentContext.setTransform( drawState.windowMat.e(1,1), drawState.windowMat.e(2,1), drawState.windowMat.e(1,2), drawState.windowMat.e(2,2), drawState.windowMat.e(1,3), drawState.windowMat.e(2,3) );
+			resetMats();
 		},
 		
 		image: function( url, x, y, w, h, sx, sy, sw, sh ) {
@@ -248,7 +264,7 @@ var HfcRunner = (function ($,$M) {
 		},
 		
 		line: function( x0, y0, x1, y1 ) {
-			drawState.loadStrokeState( currentContext );
+			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.beginPath();
 			currentContext.moveTo( x0, y0 );
 			currentContext.lineTo( x1, y1 );
@@ -272,10 +288,6 @@ var HfcRunner = (function ($,$M) {
 			}
 		},
 		
-		pathArc: function( a, b, c, d, e, f ) {
-			currentContext.arc( a, b, c, d, e, f );
-		},
-		
 		push: function() {
 			currentContext.save();
 			transformStack.push( currentMat.dup() );
@@ -296,7 +308,7 @@ var HfcRunner = (function ($,$M) {
 
 		rotate: function( a ) {
 			currentContext.rotate( a );
-			var rotMat = $M([ [ cos(x), -sin(x), 0 ], [ sin(x), cos(x), 0 ], [ 0, 0, 1 ] ]);
+			var rotMat = $M([ [ cos(a), -sin(a), 0 ], [ sin(a), cos(a), 0 ], [ 0, 0, 1 ] ]);
 			currentMat = currentMat.x( rotMat );
 		},
 		
@@ -319,21 +331,22 @@ var HfcRunner = (function ($,$M) {
         },
 		
 		strokePath: function() {
-			drawState.loadStrokeState( currentContext );
+			drawState.loadStrokeState( currentContext, currentMat );
 			currentContext.stroke();
 			if( svgCmds ) {
-				svgCmds += "\" "+svgStyle(true,false)+" />\n</g>";
+				svgCmds += "\" "+svgStyle(true,false)+" />\n";
 			}
 		},
 		
 		strokeText: function( s, x, y ) {
-			drawState.loadStrokeState( currentContext );
+			drawState.loadStrokeState( currentContext, currentMat );
 			drawState.loadFontState( currentContext );
 			currentContext.strokeText( s, x, y );
 		},
 		
-		svgBegin: function() {
-			svgCmds = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='100in' height='100in' viewBox='0 0 100 100'>";
+		svgBegin: function( w, h ) {
+			svgInverseMat = currentMat.inverse();
+			svgCmds = "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='"+w+"in' height='"+h+"in' viewBox='0 0 "+w+" "+h+"'>\n";
 		},
 		
 		svgEnd: function() {
@@ -350,18 +363,17 @@ var HfcRunner = (function ($,$M) {
 
 		translate: function( x, y ) {
 			currentContext.translate( x, y );
-			var translateMat = $M([ [ 0, 0, x ], [ 0, 0, y], [ 0, 0, 1 ] ]);
+			var translateMat = $M([ [ 1, 0, x ], [ 0, 1, y], [ 0, 0, 1 ] ]);
 			currentMat = currentMat.x( translateMat );
 		},
 		
 		window: function( a, b, c, d, e, f ) {
-			drawState.windowMat = $M( [
+			currentContext.setTransform( a, b, c, d, e, f );
+			currentMat = $M( [
 				[ a, c, e ], 
 				[ b, d, f ], 
 				[ 0, 0, 1 ]
 			] ) 
-			currentMat = drawState.windowMat.dup();
-			currentContext.setTransform( a, b, c, d, e, f );
 		},
 	};
 
@@ -370,7 +382,6 @@ var HfcRunner = (function ($,$M) {
 	var $canvas = [];
 	var context = [];
 	var currentContext = null;
-	var drawState = HfcDrawState;
 	var startCode = "";
 	var loopCode = "";
 	var globalCode = "";
@@ -394,19 +405,22 @@ var HfcRunner = (function ($,$M) {
 	var imageDims = {};
 	var images = {};
 	var paused = false;
+	var currentMat = Matrix.I(3);
 	var transformStack = [];
 	var svgCmds = null;
 	var svgUnits = null;
 	var svgCallback = null;
-	var currentMat = Matrix.I(3);
+	var svgInverseMat = null;
 	
 	svgTransform = function() {
-		var a = currentMat.elements[0][0];
-		var b = currentMat.elements[1][0];
-		var c = currentMat.elements[0][1];
-		var d = currentMat.elements[1][1];
-		var e = currentMat.elements[0][2];
-		var f = currentMat.elements[1][2];
+		svgBeginMat = null;
+		var m = svgInverseMat.x( currentMat );
+		var a = m.elements[0][0];
+		var b = m.elements[1][0];
+		var c = m.elements[0][1];
+		var d = m.elements[1][1];
+		var e = m.elements[0][2];
+		var f = m.elements[1][2];
 		return " transform='matrix("+a+" "+b+" "+c+" "+d+" "+e+" "+f+")' ";
 	}
 
@@ -444,6 +458,12 @@ var HfcRunner = (function ($,$M) {
 		mainCanvas1.setAttribute( "height", h );
 		mainCanvas1.width = mainCanvas1.width; // forces a reset
 		sizeCallback( w, h );
+	}
+	
+	resetMats = function() {
+		context[0].setTransform( 1, 0, 0, 1, 0, 0 )
+		context[1].setTransform( 1, 0, 0, 1, 0, 0 )
+		currentMat = Matrix.I(3);
 	}
 	
 	my.init = function( options ) {
@@ -543,9 +563,7 @@ var HfcRunner = (function ($,$M) {
 		}
 		
 		drawState.reset();
-		context[0].setTransform( 1, 0, 0, 1, 0, 0 )
-		context[1].setTransform( 1, 0, 0, 1, 0, 0 )
-		currentMat = Matrix.I(3);
+		resetMats();
 		
 		// EXTRACT the global symbol references
 		var source = [ startCode, loopCode, globalCode ];
@@ -617,10 +635,8 @@ var HfcRunner = (function ($,$M) {
 		// POLL to see if the thread has completed a frame.  If so, send a message telling the
 		// thread of the current state and it will then run one more frame.
 		if( !paused && frameComplete ) {
-			vecCmds = [];
-			context[0].setTransform( 1, 0, 0, 1, 0, 0 );
-			context[1].setTransform( 1, 0, 0, 1, 0, 0 );
-			currentMat = Matrix.I(3);
+			svgCmds = null;
+			resetMats();
 			if( $.Hive.get(0) ) {
 				// COMPUTE FPS
 				var stopFrameTime = new Date().getTime();
@@ -656,7 +672,6 @@ var HfcRunner = (function ($,$M) {
 		}
 		setTimeout( runFrame, 1 );
 	}
-	
 
 	return my;
 }($,$M));
