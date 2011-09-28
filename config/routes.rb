@@ -11,6 +11,7 @@ HfcRuby::Application.routes.draw do
   
   match "/assets/get_art_page" => "assets#get_art_page"
   match "/assets/show_by_name" => "assets#show_by_name"
+  match "/assets/return_as_file" => "assets#return_as_file"
   resources :assets
   
   match "/globals/list" => "public_functions#list"

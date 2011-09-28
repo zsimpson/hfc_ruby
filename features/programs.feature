@@ -57,7 +57,7 @@ Feature: View programs and friends
 		And I fill in "codeFriendAddName" with "test"
 		And I press "Add friend"
 		Then inside div "friendsList" I should not see "test"
-		And inside div "codeProgramsErrors" I should see "trying to add self as friend"
+		And inside div "codeProgramsErrors" I should see "trying to add yourself as a friend"
 
 	@javascript
     Scenario: Existing user should not be able to add non-existing person as a friend

@@ -138,6 +138,9 @@ var HfcRunner = (function ($,$M) {
 		
 		beginPath: function() {
 			currentContext.beginPath();
+			if( svgCmds ) {
+				svgCmds += "<path d=\"";
+			}
 		},
 		
 		bezierTo: function( cx0, cy0, cx1, cy1, x, y ) {
@@ -147,6 +150,9 @@ var HfcRunner = (function ($,$M) {
 		box: function( x0, y0, w, h ) {
 			drawState.loadStrokeState( currentContext );
 			currentContext.strokeRect( x0, y0, w, h );
+			if( svgCmds ) {
+				svgCmds += "<rect x='"+x0+svgUnits+"' y='"+y0+svgUnits+"' width='"+w+svgUnits+"' height='"+h+svgUnits+"' "+svgStyle(true,false)+"/>\n";
+			}
 		},
 
 		circle: function( x, y, r ) {
@@ -155,7 +161,9 @@ var HfcRunner = (function ($,$M) {
 			currentContext.arc( x, y, r, 0, 3.141592654*2, false );
 			currentContext.closePath();
 			currentContext.stroke();
-			vecCmds.push( ["circle", [x, y, r]] );
+			if( svgCmds ) {
+				svgCmds += "<circle cx='"+x+svgUnits+"' cy='"+y+svgUnits+"' r='"+r+svgUnits+"' "+svgStyle(true,false)+"/>\n";
+			}
 		},
 
 		clear: function( r, g, b ) {
@@ -167,6 +175,9 @@ var HfcRunner = (function ($,$M) {
 	
 		closePath: function() {
 			currentContext.closePath();
+			if( svgCmds ) {
+				svgCmds += " z ";
+			}
 		},
 		
 		composite: function( a ) {
@@ -183,6 +194,9 @@ var HfcRunner = (function ($,$M) {
 			currentContext.arc( x, y, r, 0, 3.14*2, false );
 			currentContext.closePath();
 			currentContext.fill();
+			if( svgCmds ) {
+				svgCmds += "<circle cx='"+x+svgUnits+"' cy='"+y+svgUnits+"' r='"+r+svgUnits+"' "+svgStyle(false,true)+"/>\n";
+			}
 		},
 		
 		fill: function( r, g, b, a ) {
@@ -240,15 +254,23 @@ var HfcRunner = (function ($,$M) {
 			currentContext.moveTo( x0, y0 );
 			currentContext.lineTo( x1, y1 );
 			currentContext.stroke();
-			vecCmds.push( ["line", [x0, y0, x1, y1]] );
+			if( svgCmds ) {
+				svgCmds += "<line x1='"+x0+svgUnits+"' y1='"+y0+svgUnits+"' x2='"+x1+svgUnits+"' y2='"+y1+svgUnits+"' "+svgStyle(true,false)+"/>\n";
+			}
 		},
 
 		lineTo: function( x, y ) {
 			currentContext.lineTo( x, y );
+			if( svgCmds ) {
+				svgCmds += " L "+x+svgUnits+" "+y+svgUnits+" ";
+			}
 		},
 		
 		moveTo: function( x, y ) {
 			currentContext.moveTo( x, y );
+			if( svgCmds ) {
+				svgCmds += " M "+x+svgUnits+" "+y+svgUnits+" ";
+			}
 		},
 		
 		pathArc: function( a, b, c, d, e, f ) {
@@ -266,6 +288,9 @@ var HfcRunner = (function ($,$M) {
 		rect: function( x0, y0, w, h ) {
 			drawState.loadFillState( currentContext );
 			currentContext.fillRect( x0, y0, w, h );
+			if( svgCmds ) {
+				svgCmds += "<rect x='"+x0+svgUnits+"' y='"+y0+svgUnits+"' width='"+w+svgUnits+"' height='"+h+svgUnits+"' "+svgStyle(false,true)+"/>\n";
+			}
 		},
 
 		rotate: function( a ) {
@@ -291,12 +316,25 @@ var HfcRunner = (function ($,$M) {
 		strokePath: function() {
 			drawState.loadStrokeState( currentContext );
 			currentContext.stroke();
+			if( svgCmds ) {
+				svgCmds += "\" "+svgStyle(true,false)+" />\n";
+			}
 		},
 		
 		strokeText: function( s, x, y ) {
 			drawState.loadStrokeState( currentContext );
 			drawState.loadFontState( currentContext );
 			currentContext.strokeText( s, x, y );
+		},
+		
+		svgBegin: function( units ) {
+			svgCmds = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
+			svgUnits = units; 
+		},
+		
+		svgEnd: function() {
+			svgCmds += "</svg>";
+			svgCallback( svgCmds );
 		},
 		
 		text: function( s, x, y ) {
@@ -360,7 +398,8 @@ var HfcRunner = (function ($,$M) {
 	var imageDims = {};
 	var images = {};
 	var paused = false;
-	var vecCmds = [];
+	var svgCmds = null;
+	var svgUnits = null;
 	var svgCallback = null;
 	
 	colorToString = function( r, g, b ) {
@@ -396,7 +435,7 @@ var HfcRunner = (function ($,$M) {
 	}
 	
 	my.init = function( options ) {
-		// @TODO: Why am I pulling all these varaibles out, why don't I just keep the options hash around
+		// @TODO: Why am I pulling all these variables out, why don't I just keep the options hash around?
 	
 		sizeCallback = options.sizeCallback;
 		$canvas[0] = $("#"+options["canvasId0"]);
@@ -603,20 +642,11 @@ var HfcRunner = (function ($,$M) {
 		}
 		setTimeout( runFrame, 1 );
 	}
-
-	my.svg = function() {
-		var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"15cm\" height=\"15cm\">";
-		for( i=0; i<vecCmds.length; i++ ) {
-			if( vecCmds[i][0] == "circle" ) {
-				svg += "<circle cx='"+vecCmds[i][1][0]+"' cy='"+vecCmds[i][1][1]+"' r='"+vecCmds[i][1][2]+"'></circle>";
-			}
-			else if( vecCmds[i][0] == "line" ) {
-				svg += "<line x1='"+vecCmds[i][1][0]+"' y1='"+vecCmds[i][1][1]+"' x2='"+vecCmds[i][1][2]+"' y2='"+vecCmds[i][1][3]+"'></line>";
-			}
-		}
-		return svg + "</svg>";
-	}
 	
+	svgStyle = function( withStroke, withFill ) {
+		return "style='stroke:" + (withStroke?drawState.stroke:"none") + "; fill:" + (withFill?drawState.fill:"none") + ";'";
+	}
+
 	return my;
 }($,$M));
 

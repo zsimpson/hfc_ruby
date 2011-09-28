@@ -124,6 +124,10 @@
 						}
 					});
 				}
+			},
+			svgCallback: function( svg ) {
+				$("#codeHasSVG").css( "display", "block" );
+				codeSVG = svg;
 			}
 		}); 
 	
@@ -308,6 +312,8 @@
 		if( codeGlobalsEditting ) {
 			codeHfcRunner.updateGlobal( codeGlobalsEditting, codeMirrorGlobal.getValue() );
 		}
+
+		$("#codeHasSVG").css( "display", "none" );
 		
 		codeHfcRunner.restart( codeMirrorStart.getValue(), codeMirrorLoop.getValue(), [], codeTwiddlers );
 	}
@@ -401,12 +407,8 @@
 	}
 	
 	function codeSaveCanvasAsSVG() {
-		codeHfcRunner.setPaused(true);
-		setTimeout( function() {
-			var a = codeHfcRunner.svg();
-			alert( a );
-			codeHfcRunner.setPaused(false);
-		}, 100 );
+		var form = "<form action='/assets/return_as_file' method='post'><input type='hidden' name='filename' value='file.svg'><input type='hidden' name='data' value='"+escape(codeSVG)+"'></form>"
+		jQuery(form).appendTo("body").submit().remove();
 	}
 	
 	function codeResizeImage(url, width, height, callback) {
@@ -767,6 +769,7 @@
 </script>
 
 
+
 <div id="codeControlPanel" class="controlPanel">
 	<div id="codeMainControlPanel">
 		Current program: <span id="codeCurrentProgramName" style="font-weight:bold;">Un-named</span> by <span id="codeAuthor"></span>
@@ -925,11 +928,9 @@
 				<a onclick="codeSaveCanvas()">snapshot</a>
 			</span>
 
-			<% if false %>
-				<span style="float:right; margin-left:20px;">
-					<a onclick="codeSaveCanvasAsSVG()">svg</a>
-				</span>
-			<% end %>
+			<span id="codeHasSVG" style="float:right; margin-left:20px;">
+				<a onclick="codeSaveCanvasAsSVG()">svg</a>
+			</span>
 
 			<span style="float:right;">
 				FPS:

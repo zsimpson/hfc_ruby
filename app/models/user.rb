@@ -45,6 +45,11 @@ class User < ActiveRecord::Base
 		a.save!
 	end
 
+	def add_friend_by_name( friend_name )
+		friend = User.find_by_name!( friend_name )
+		add_friend_by_id( friend.id )
+	end
+	
 	def add_friend_by_id( friend_id )
 		Friendship.create!( :user_id=>self.id, :friend_id=>friend_id )
 	end

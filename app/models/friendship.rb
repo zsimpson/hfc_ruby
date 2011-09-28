@@ -11,4 +11,8 @@ class Friendship < ActiveRecord::Base
 		end
 	end
 	
+	def self.remove_by_ids( user_id, friend_id )
+		Friendship.delete_all( { :user_id=>user_id, :friend_id=>friend_id } )
+	end
+	
 end

@@ -24,19 +24,6 @@ class AssetsController < ApplicationController
 		render :nothing=>true
 	end
 
-#	def update
-#		existing = Asset.find( :first, :conditions=>["name = ?",params[:name]] )
-#		if existing
-#			render :text=>"collision"
-#		else
-#			a = Asset.find( params[:id] )
-#			a.name = params[:name]
-#			a.save!
-#			render :text=>"saved"
-#		end
-#	end
-
-
 	# Non-REST
 	################################################################################
 	
@@ -49,6 +36,10 @@ class AssetsController < ApplicationController
 
 	def get_art_page
 		render :layout=>false
+	end
+	
+	def return_as_file
+		send_data( CGI::unescape(params[:data]), :type=>"image/svg", :filename=>params[:filename], :disposition=>'inline' )
 	end
 
 end

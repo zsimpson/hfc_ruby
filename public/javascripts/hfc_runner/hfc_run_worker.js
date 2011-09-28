@@ -413,6 +413,14 @@ with( Math ) {
 	function popState() {
 		$.send( { "cmd":"pop" } );
 	}
+	
+	function svgBegin( units ) {
+		$.send( { "cmd":"svgBegin", "args":[units] } );
+	}
+
+	function svgEnd() {
+		$.send( { "cmd":"svgEnd", "args":[] } );
+	}
 
 }
 
