@@ -28,8 +28,8 @@ describe Program do
 			Program.count.should == 1
 			ProgramVersion.count.should == 1
 			@p.program_versions.count.should == 1
-			@p.get_version_count.should == 1
-			@p.get_all_versions.length.should == 1
+			@p.version_get_count.should == 1
+			@p.version_get_all.length.should == 1
 		end		
 
 		it "should be able create a second version by the same user" do
@@ -39,10 +39,10 @@ describe Program do
 			Program.count.should == 1
 			ProgramVersion.count.should == 2
 			@p.program_versions.count.should == 2
-			@p.get_version_count.should == 2
-			@p.get_all_versions.length.should == 2
+			@p.version_get_count.should == 2
+			@p.version_get_all.length.should == 2
 
-			vers = @p.get_all_versions
+			vers = @p.version_get_all
 			vers[0].start_code.should == "start1"
 			vers[0].loop_code.should == "loop1"
 			vers[1].start_code.should == "start2"
@@ -51,13 +51,13 @@ describe Program do
 		end
 	
 		it "should be able to get the name of the creator of a program" do
-			@p.user_name.should == @me.name
+			@p.user.name.should == @me.name
 		end
 
 		it "should be able to create a version posted by a different user" do
 			someone_else = User.create!( :name=>"someone" )
 			@p.new_version( "start2", "loop2", someone_else.id, nil )
-			@p.get_all_versions.length.should == 2
+			@p.version_get_all.length.should == 2
 			
 		end
 	end
@@ -72,26 +72,26 @@ describe Program do
 	
 		it "should clamp the version number when fetching a version" do
 			# Fetching good version		
-			record, version, version_count = @p.get_version( 0 )
+			record, version, version_count = @p.version_get( 0 )
 			record.start_code.should == "start1"
 			version.should == 0
 			version_count.should == 2
 	
 			# Fetching good version		
-			record, version, version_count = @p.get_version( 1 )
+			record, version, version_count = @p.version_get( 1 )
 			record.start_code.should == "start2"
 			version.should == 1
 			version_count.should == 2
 	
 			# Fetching bad version, should clamp		
-			record, version, version_count = @p.get_version( 2 )
+			record, version, version_count = @p.version_get( 2 )
 			record.start_code.should == "start2"
 			version.should == 1
 			version_count.should == 2
 		end
 	
 		it "should return the latest version if asked for -1" do
-			record, version, version_count = @p.get_version( -1 )
+			record, version, version_count = @p.version_get( -1 )
 			record.start_code.should == "start2"
 			version.should == 1
 			version_count.should == 2
@@ -109,19 +109,23 @@ describe Program do
 		end
 		
 		it "should be able to find the newest programs in sorted order" do
-			new_list = Program.find_new( 2 )
+			new_list = Program.version_all_newest( 2 )
 			new_list.length.should == 2
 			new_list[0].id.should == @p2.id
 			new_list[1].id.should == @p1.id
+			new_list[0].user.name.should == @u2.name
+			new_list[1].user.name.should == @u1.name
 		end
 
 		it "should be able to find recent edits in sorted order" do
 			@p0.new_version( "start0-1", "loop0-1", @u0.id, nil )
-			recent_list = Program.find_recent( 2 )
+			recent_list = Program.version_all_recent_edits( 2 )
 			recent_list.length.should == 2
 			recent_list[0].id.should == @p0.id
-			#recent_list[1].id.should == @p2.id
-			# There doesn't seem to be enough accuracy in the clock to test this?!
+			recent_list[1].id.should == @p2.id
+			recent_list[0].user.name.should == "u0"
+			recent_list[0].versioned_at.should_not be_empty
+			
 		end
 
 	end

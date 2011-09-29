@@ -1,4 +1,6 @@
 class Global < ActiveRecord::Base
+	include ::Versionable 
+
 	belongs_to :user
 	has_many :global_versions, :dependent=>:destroy
 
@@ -8,32 +10,17 @@ class Global < ActiveRecord::Base
 
 	validates_uniqueness_of :name, :message=>"Duplicate name"
 
-	def get_all_versions
-		return GlobalVersion.all( :conditions=>{ :global_id=>self.id }, :order=>"created_at" )
-	end
-
-	def get_version_count
-		return GlobalVersion.count_by_sql( ["select count(*) from global_versions where global_id=?",self.id] )
-	end
-
-	def get_version( version )
-		global_versions = get_all_versions
-
-		version = version.to_i
-		if version < 0
-			version = global_versions.length-1
-		end
-
-		# BOUND version
-		version = [ global_versions.length-1, version ].min
-		version = [ 0, version ].max
-		
-		return global_versions[version], version, global_versions.length
+	after_initialize :do_after_initialize
+	
+	def do_after_initialize
+		@version_model_class = GlobalVersion
+		@version_model_owner_class = Global
+		@version_key_name = 'global_id'
 	end
 
 	def new_version( code, user_id )
 		gv = GlobalVersion.create!( :global_id=>self.id, :code=>Global.clean_code(code), :user_id=>user_id )
-		return get_version_count
+		return version_get_count
 	end
 	
 	def self.clean_code( code )
@@ -55,7 +42,7 @@ class Global < ActiveRecord::Base
 		if ! g
 			raise ActiveRecord::RecordNotFound
 		else
-			g.global_version, g.version, g.version_count = g.get_version( version )
+			g.global_version, g.version, g.version_count = g.version_get( version )
 			return g
 		end
 	end

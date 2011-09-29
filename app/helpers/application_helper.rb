@@ -1,4 +1,6 @@
 module ApplicationHelper
+	require 'Versionable'
+
 	def time_to_ago_string(created_at)
 		sec = (Time.now - created_at).to_i
 		min = (sec/60).to_i;
