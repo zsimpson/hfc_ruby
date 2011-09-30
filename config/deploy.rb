@@ -31,9 +31,8 @@ namespace :deploy do
   end
 
   desc "Git the zbslib_ruby project"
-  task :git_zbslib
-    run "cd #{release_path}/app/lib"
-    run "git clone git@github.com:zsimpson/zbslib_ruby.git"
+  task :git_zbslib, :roles=>:app do
+    run "cd #{release_path}/app/lib; git clone git@github.com:zsimpson/zbslib_ruby.git"
   end
 
 end
