@@ -7,7 +7,7 @@ class ProgramsController < ApplicationController
 				:success=>true,
 				:id=>p.id,
 				:name=>p.name,
-				:author_name=>p.user_name,
+				:author_name=>p.user.name,
 				:start_code=>p.program_version.start_code,
 				:loop_code=>p.program_version.loop_code,
 				:version=>p.version,
@@ -34,7 +34,7 @@ class ProgramsController < ApplicationController
 			begin
 				p = Program.find( params[:id] )
 				version_count = p.new_version( params[:start_code], params[:loop_code], @user.id, params[:icon] )
-				render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1, :author_name=>p.user_name } 
+				render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>version_count, :version=>version_count-1, :author_name=>p.user.name } 
 			rescue ActiveRecord::RecordNotFound
 				render :json=>{ :error=>"Program not found" }
 			end
@@ -49,7 +49,7 @@ class ProgramsController < ApplicationController
 						params[:loop_code],
 						params[:icon]
 					)
-					render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>1, :author_name=>p.user_name }
+					render :json => { :success=>true, :id=>p.id, :name=>p.name, :version_count=>1, :author_name=>p.user.name }
 				rescue ActiveRecord::RecordInvalid
 					render :json=>{ :error=>"Duplicate name" }
 				end
@@ -73,8 +73,8 @@ class ProgramsController < ApplicationController
 			@my_programs = Program.find_all_by_user_id( @user.id )
 			@friends_programs = @user.get_friends_programs
 		end
-		@new_programs = Program.find_new( 40 )
-		@recent_programs = Program.find_recent( 40 )
+		@new_programs = Program.version_all_newest( 100 )
+		@recent_programs = Program.version_all_recent_edits( 100 )
 		render :layout=>false
 	end
 

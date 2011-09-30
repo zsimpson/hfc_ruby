@@ -78,7 +78,7 @@
 			<div class="indent10">
 				<% for p in @new_programs %>
 					<div style="min-height:18px;">
-						<a class="codeLoadName" programId="<%=p.id-%>" id="load-program-<%= p.user_name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a> by <span class="author" onclick="codeProgramsByUser(<%=p.user_id-%>)"><%= p.user_name -%></span><br/>
+						<a class="codeLoadName" programId="<%=p.id-%>" id="load-program-<%= p.user.name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a> by <span class="author" onclick="codeProgramsByUser(<%=p.user_id-%>)"><%= p.user.name -%></span><br/>
 					</div>
 				<% end %>
 			</div>
@@ -92,7 +92,7 @@
 			<div class="indent10">
 				<% for p in @recent_programs %>
 					<div style="min-height:18px;">
-						<a class="codeLoadName" programId="<%=p.id-%>" id="load-program-<%= p.user_name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a> by <span class="author" onclick="codeProgramsByUser(<%=p.user_id-%>)"><%= p.user_name -%></span>
+						<a class="codeLoadName" programId="<%=p.id-%>" id="load-program-<%= p.user.name -%>-<%=p.name-%>" onclick="codeGoto(<%=p.id-%>)"><%= p.name -%></a> by <span class="author" onclick="codeProgramsByUser(<%=p.user_id-%>)"><%= p.user.name -%></span>
 						<%= time_to_ago_string( p.updated_at ) -%>    
 						<br/>
 					</div>

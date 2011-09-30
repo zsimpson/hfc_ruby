@@ -34,6 +34,12 @@ class Program < ActiveRecord::Base
 		return version_get_count
 	end
 	
+	def self.find_by_id_and_version( id, version )
+		p = Program.find( id )
+		p.program_version, p.version, p.version_count = p.version_get( version )
+		return p
+	end
+	
 	def self.normalize_name( name )
 		name.gsub!( ' ', '_' )
 		name.gsub!( /[^A-Za-z0-9_-]/, '' )
