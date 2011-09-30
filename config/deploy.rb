@@ -23,10 +23,18 @@ namespace :deploy do
 end
 
 after 'deploy:update_code', 'deploy:symlink_db'
+after 'deploy:update_code', 'deploy:git_zbslib'
 namespace :deploy do
   desc "Symlinks the database.yml"
   task :symlink_db, :roles => :app do
     run "ln -nfs #{deploy_to}/shared/config/database.yml #{release_path}/config/database.yml"
   end
+
+  desc "Git the zbslib_ruby project"
+  task :git_zbslib
+    run "cd #{release_path}/app/lib"
+    run "git clone git@github.com:zsimpson/zbslib_ruby.git"
+  end
+
 end
 
