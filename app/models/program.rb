@@ -1,6 +1,4 @@
 class Program < ActiveRecord::Base
-	# @TODO: Refactor to share this code between HSC and HFC
-	
 	include ::Versionable 
 
 	belongs_to :user
