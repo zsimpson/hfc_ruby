@@ -485,6 +485,7 @@
 	function codeLoginToSave() {
 		setCookie( "startCode", codeMirrorStart.getValue() );
 		setCookie( "loopCode", codeMirrorLoop.getValue() );
+		setCookie( "lastLoadedProgramId", "" )
 		document.location = "/login";
 	}
 	
