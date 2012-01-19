@@ -43,11 +43,7 @@
 					<tr>
 				<% end %>
 				<td>
-					<% if @user && @user.super_user? %>
-						<img style="max-width:100px; max-height:100px;" src="/assets/<%=a.id-%>"/><br/>
-					<% else %>
-						<img style="max-width:100px; max-height:100px;" src="/home/get_asset?id=<%=a.id-%>"/><br/>
-					<% end %>
+					<img style="max-width:100px; max-height:100px;" src="/assets/<%=a.id-%>"/><br/>
 					<%= a.name -%>
 				</td>
 			<% end %>
