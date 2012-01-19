@@ -375,6 +375,64 @@ var HfcRunner = (function ($,$M) {
 			drawState.loadFontState( currentContext );
 			currentContext.fillText( s, x, y );
 		},
+		
+		threeInit: function( tris ) {
+	        scene = new THREE.Scene();
+	        camera = new THREE.PerspectiveCamera( 75, 1.0/1.0, 1, 100000 );
+	        camera.position.z = 100;
+	        scene.add( camera );
+	
+	        //geometry = new THREE.CubeGeometry( 200, 200, 200 );
+	        
+	        var geometry = new THREE.Geometry();
+	        for( var i=0; i<tris.length; i++ ) {
+		        var v0 = new THREE.Vertex( new THREE.Vector3( tris[i][0][0], tris[i][0][1], tris[i][0][2] ) ); 
+		        var v1 = new THREE.Vertex( new THREE.Vector3( tris[i][1][0], tris[i][1][1], tris[i][1][2] ) ); 
+		        var v2 = new THREE.Vertex( new THREE.Vector3( tris[i][2][0], tris[i][2][1], tris[i][2][2] ) );
+		        var face = new THREE.Face3( geometry.vertices.push(v0)-1, geometry.vertices.push(v1)-1, geometry.vertices.push(v2)-1 );
+		        geometry.faces.push( face )
+	        }
+	        geometry.computeFaceNormals();
+	        geometry.computeCentroids();
+       
+	        material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	
+	        mesh = new THREE.Mesh( geometry, material );
+	        scene.add( mesh );
+	
+	        renderer = new THREE.CanvasRenderer();
+	        //renderer = new THREE.WebGLRenderer( { clearAlpha:1, clearColor:0 } );
+	        renderer.setSize( 350, 350 );
+	        
+			document.body.appendChild( renderer.domElement );
+			$(renderer.domElement).css( "position", "absolute" );
+			var off = $canvas[0].offset();
+			$(renderer.domElement).css( "top", off.top );
+			$(renderer.domElement).css( "left", off.left );
+			
+			controls = new THREE.TrackballControls( camera, renderer.domElement );
+			controls.screen = { width:300, height:300, offsetLeft:off.left, offsetTop:off.top };
+/*
+			controls.rotateSpeed = 3.0;
+			controls.zoomSpeed = 1.2;
+			controls.panSpeed = 0.2;
+			controls.noZoom = false;
+			controls.noPan = false;
+			controls.noRotate = false;
+			controls.staticMoving = false;
+			controls.dynamicDampingFactor = 0.3;
+			controls.keys = [ 65, 83, 68 ];
+*/
+			controls.screen.width = 300;
+			controls.screen.height = 300;
+//			controls.target.set( 0, 0, 0 );
+		},
+		
+		threeRender: function() {
+			controls.update();
+			//renderer.clear();
+			renderer.render( scene, camera );
+		},
 
 		translate: function( x, y ) {
 			currentContext.translate( x, y );
@@ -427,6 +485,14 @@ var HfcRunner = (function ($,$M) {
 	var svgUnits = null;
 	var svgCallback = null;
 	var svgInverseMat = null;
+
+	var scene;
+	var camera;
+	var geometry;
+	var material;
+	var mesh;
+	var renderer;
+	var controls;
 	
 	svgTransform = function() {
 		svgBeginMat = null;
@@ -461,10 +527,14 @@ var HfcRunner = (function ($,$M) {
 	resizeCanvas = function( w, h ) {
 		canvasW = w;
 		canvasH = h;
-		$canvas[0].css( "width", w );
-		$canvas[0].css( "height", h );
-		$canvas[1].css( "width", w );
-		$canvas[1].css( "height", h );
+		if( $canvas[0] ) {
+			$canvas[0].css( "width", w );
+			$canvas[0].css( "height", h );
+		}
+		if( $canvas[1] ) {
+			$canvas[1].css( "width", w );
+			$canvas[1].css( "height", h );
+		}
 		var mainCanvas0 = document.getElementById( "codeMainCanvas0" );
 		var mainCanvas1 = document.getElementById( "codeMainCanvas1" );
 		mainCanvas0.setAttribute( "width", w );
@@ -473,7 +543,9 @@ var HfcRunner = (function ($,$M) {
 		mainCanvas1.setAttribute( "width", w );
 		mainCanvas1.setAttribute( "height", h );
 		mainCanvas1.width = mainCanvas1.width; // forces a reset
-		sizeCallback( w, h );
+		if( sizeCallback ) {
+			sizeCallback( w, h );
+		}
 	}
 	
 	resetMats = function() {
@@ -539,15 +611,19 @@ var HfcRunner = (function ($,$M) {
 		resizeCanvas( 350, 350 );
 		$("#mainCanvas0").css( "visibility", "visible" );
 		$("#mainCanvas1").css( "visibility", "hidden" );
-		context[0].setTransform( 1, 0, 0, 1, 0, 0 );
-		context[0].fillStyle = "#FFFFFF";
-		context[0].globalAlpha = 1;
-		context[0].fillRect( 0, 0, canvasW, canvasH );
+		if( context[0] ) {
+			context[0].setTransform( 1, 0, 0, 1, 0, 0 );
+			context[0].fillStyle = "#FFFFFF";
+			context[0].globalAlpha = 1;
+			context[0].fillRect( 0, 0, canvasW, canvasH );
+		}
 		$("#mainCanvas1").css( "visibility", "visible" );
-		context[1].setTransform( 1, 0, 0, 1, 0, 0 );
-		context[1].fillStyle = "#FFFFFF";
-		context[1].globalAlpha = 1;
-		context[1].fillRect( 0, 0, canvasW, canvasH );
+		if( context[1] ) {
+			context[1].setTransform( 1, 0, 0, 1, 0, 0 );
+			context[1].fillStyle = "#FFFFFF";
+			context[1].globalAlpha = 1;
+			context[1].fillRect( 0, 0, canvasW, canvasH );
+		}
 		$("#mainCanvas1").css( "visibility", "hidden" );
 	}
 	
@@ -577,6 +653,11 @@ var HfcRunner = (function ($,$M) {
 		if( typeof(_twiddlers) != "undefined" ) {
 			twiddlers = _twiddlers;
 		}
+
+		if( renderer ) {
+			document.body.removeChild( renderer.domElement );
+		}
+
 		
 		drawState.reset();
 		resetMats();

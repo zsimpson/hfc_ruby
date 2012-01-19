@@ -1,4 +1,23 @@
+<script src="/javascripts/ajaxupload/fileuploader.js"></script>
+<link rel="stylesheet" href="/javascripts/ajaxupload/fileuploader.css">
+
 <script type="text/javascript">
+	$(document).ready( function() {
+		var uploader = new qq.FileUploader({
+			element: document.getElementById( 'file-uploader' ),
+			action: '/assets/upload',
+			allowedExtensions: [ "jpg", "jpeg", "png" ],
+			onSubmit: function(id,filename) {
+				var name = $("#uploadName").val();
+				uploader.setParams( { name: name } );
+			},
+			onComplete: function() {
+				$("#uploadDiv").css( "display", "none" );
+				artLoad();
+			}
+		});
+	});
+
 	function artTabSelected() {
 		artLoad();
 	}
@@ -9,7 +28,26 @@
 		});
 	}
 
+	function artDelete( id ) {
+		if( confirm( "Are you sure you wish to delete this file?" ) ) { 
+			$.ajax({
+				type: "DELETE",
+				url: "/assets/"+id,
+				success: artLoad
+			});
+		}
+	}
+	
 </script>
+
+<% if @user %>
+<div onclick="$('#uploadDiv').slideDown()">Upload&gt;&gt;</div>
+<div id="uploadDiv" style="display:none;">
+	Uploaded asset name: <input type="text" id="uploadName"/>
+	<div id="file-uploader" style="display:inline-block;">
+	</div>
+</div>
+<% end %>
 
 <div id="artContent">
 </div>

@@ -6,16 +6,6 @@ class AssetsController < ApplicationController
 		send_data( a.data, :type=>mime_type, :filename=>a.filename, :disposition=>'inline' )
 	end
 	
-	def create
-		a = Asset.new
-		a.user_id = @user ? @user.id : 0
-		a.filename = params[:userfile]
-		a.data = params[:userfile].read
-		a.save!
-		
-		render :text=>a.id.to_s
-	end
-
 	def destroy
 		a = Asset.find( params[:id] )
 		if a && @user && (@user.id == a.user_id || @user.super_user?)
@@ -40,6 +30,23 @@ class AssetsController < ApplicationController
 	
 	def return_as_file
 		send_data( CGI::unescape(params[:data]), :type=>"image/svg", :filename=>params[:filename], :disposition=>'inline' )
+	end
+	
+	def upload
+		if params[:qqfile].class == String
+			begin
+				a = Asset.new
+				a.user_id = @user ? @user.id : 0
+				a.name = params[:name]
+				a.filename = params[:qqfile]
+				a.data = request.body.read
+				a.save!
+				render :json=>{ :success=>true }
+			rescue
+				render :json=>{ :error=>"Invalid or duplicate name" }
+			end
+		end
+
 	end
 
 end

@@ -4,25 +4,6 @@
 </div>
 <div class="thinBorder grayBackground">
 	<% if @user %>
-		<div>
-			<a onclick="$('#uploadForm').slideDown()" style="cursor:pointer;">Upload >></a>
-		</div>
-		<div id="uploadForm" style="display:none;">
-			<table>
-				<tr>
-					<td>
-						<div id="uploadedImageContainer" style="border: 2px dotted gray; width:100px; height:100px;">
-						</div>
-					</td>
-					<td>
-						<button id="uploadButton">Choose file</button> (jpeg and png accepted)</br>
-						<span class="areaLabel">Unique Name:</span><input type="text" id="uploadName"/><br/>
-						<button onclick="uploadSaveButton()">Save</button>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
 		<% if @user.assets.length == 0 %>
 			<i>You have not uploaded any images yet</i>
 		<% end %>
@@ -63,7 +44,7 @@
 				<% end %>
 				<td>
 					<% if @user && @user.super_user? %>
-						<img onclick="deleteArt(<%=a.id-%>)" style="max-width:100px; max-height:100px;" src="/assets/<%=a.id-%>"/><br/>
+						<img style="max-width:100px; max-height:100px;" src="/assets/<%=a.id-%>"/><br/>
 					<% else %>
 						<img style="max-width:100px; max-height:100px;" src="/home/get_asset?id=<%=a.id-%>"/><br/>
 					<% end %>

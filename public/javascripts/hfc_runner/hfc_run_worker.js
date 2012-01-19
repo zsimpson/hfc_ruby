@@ -417,6 +417,14 @@ with( Math ) {
 	function svgEnd() {
 		$.send( { "cmd":"svgEnd", "args":[] } );
 	}
+	
+	function threeInit( tris ) {
+        $.send( { "cmd":"threeInit", "args":[tris] } );
+	}
+
+	function threeRender() {
+        $.send( { "cmd":"threeRender", "args":[] } );
+	}
 
 }
 
