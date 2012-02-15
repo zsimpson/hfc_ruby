@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="11.000000px"
+   height="11.000000px"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.41.1"
+   sodipodi:docbase="/var/home/ilmari/Misc"
+   sodipodi:docname="Star.75.svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.0000000"
+     inkscape:cx="5.5000000"
+     inkscape:cy="5.5000000"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     gridspacingx="10.000000px"
+     gridspacingy="10.000000px"
+     inkscape:grid-bbox="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1272"
+     inkscape:window-height="952"
+     inkscape:window-x="0"
+     inkscape:window-y="0" />
+  <metadata
+     id="metadata4">
+    <rdf:RDF
+       id="RDF5">
+      <cc:Work
+         rdf:about=""
+         id="Work6">
+        <dc:format
+           id="format7">image/svg+xml</dc:format>
+        <dc:type
+           id="type9"
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="star"
+       style="stroke-opacity:0.37647060;stroke-dashoffset:0.0000000;stroke-miterlimit:40.000000;stroke-linejoin:miter;stroke-width:7.7491493;stroke:#808080;fill-rule:nonzero;fill-opacity:1.0000000;fill:none"
+       id="use17567"
+       sodipodi:sides="5"
+       sodipodi:cx="50.000000"
+       inkscape:rounded="0.0000000"
+       inkscape:randomized="0.0000000"
+       d="M 100.00000,50.000000 L 65.371323,61.167920 L 65.450850,97.552826 L 44.128677,68.070074 L 9.5491503,79.389263 L 31.000000,50.000000 L 9.5491503,20.610737 L 44.128677,31.929926 L 65.450850,2.4471742 L 65.371323,38.832080 L 100.00000,50.000000 z "
+       inkscape:flatsided="false"
+       sodipodi:cy="50.000000"
+       sodipodi:r1="50.000000"
+       sodipodi:arg1="0.0000000"
+       sodipodi:arg2="0.62831853"
+       sodipodi:r2="19.000000"
+       transform="matrix(0.000000,-9.678482e-2,9.678482e-2,0.000000,0.660760,10.80135)" />
+    <path
+       id="use25958"
+       d="M 5.5000000 1.1250000 L 4.4062500 4.4687500 L 0.90625000 4.4687500 L 3.7500000 6.5312500 L 2.6562500 9.8750000 L 5.5000000 7.8125000 L 7.0000000 8.9062500 L 7.0000000 4.4687500 L 6.5937500 4.4687500 L 5.5000000 1.1250000 z "
+       style="fill:#fcff00;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:7.7491493;stroke-linejoin:miter;stroke-miterlimit:40.000000;stroke-dashoffset:0.0000000;stroke-opacity:0.37647060" />
+    <path
+       id="use26721"
+       d="M 5.4687500 0.0000000 C 5.0276184 1.3677109 4.5967375 2.7258315 4.1562500 4.0937500 C 2.6853223 4.0907979 1.2209249 4.0979609 -0.25000000 4.0937500 C 0.94279848 4.9531591 2.1209080 5.8264200 3.3125000 6.6875000 C 2.8549252 8.0848758 2.3974751 9.4784117 1.9375000 10.875000 C 3.1279568 10.011847 4.3125451 9.1172715 5.5000000 8.2500000 C 5.9981500 8.6138262 6.5021370 8.9795301 7.0000000 9.3437500 L 7.0000000 8.4375000 C 6.4977861 8.0714945 6.0026886 7.7091029 5.5000000 7.3437500 C 4.7907481 7.8592418 4.0838147 8.3589071 3.3750000 8.8750000 C 3.6480700 8.0411913 3.9153378 7.2091052 4.1875000 6.3750000 C 3.4754507 5.8636304 2.7734326 5.3566728 2.0625000 4.8437500 C 2.9396125 4.8446650 3.8103871 4.8434151 4.6875000 4.8437500 C 4.9582296 4.0094820 5.2306107 3.1784521 5.5000000 2.3437500 C 5.7693989 3.1784490 6.0417556 4.0094867 6.3125000 4.8437500 C 6.5422200 4.8436604 6.7702801 4.8439938 7.0000000 4.8437500 L 7.0000000 4.0937500 C 6.9478394 4.0938522 6.8959106 4.0936454 6.8437500 4.0937500 C 6.4032616 2.7258318 5.9723833 1.3677104 5.5312500 0.0000000 L 5.4687500 0.0000000 z M 7.0000000 6.2500000 C 6.9388159 6.2940186 6.8737224 6.3310347 6.8125000 6.3750000 C 6.8738885 6.5631327 6.9384255 6.7494280 7.0000000 6.9375000 L 7.0000000 6.2500000 z "
+       style="fill:#605a00;fill-opacity:1.0000000;fill-rule:nonzero;stroke:none;stroke-width:7.7491493;stroke-linejoin:miter;stroke-miterlimit:40.000000;stroke-dashoffset:0.0000000;stroke-opacity:1.0000000" />
+  </g>
+</svg>

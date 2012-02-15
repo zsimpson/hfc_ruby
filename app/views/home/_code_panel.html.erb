@@ -90,6 +90,12 @@
 			mode:{name:"javascript"},
 			lineNumbers:true,
 			theme:"neat",
+			onKeyEvent: function( inst, evt ) {
+				if( evt.ctrlKey && evt.keyCode == 83 ) {
+					codeSave();
+					evt.preventDefault();
+				}				
+			}
 		}
 		codeMirrorGlobal = CodeMirror.fromTextArea( document.getElementById("codeGlobalEditor"), codeMirrorOptions );
 		codeMirrorStart  = CodeMirror.fromTextArea( document.getElementById("codeStartEditor" ), codeMirrorOptions );
@@ -781,7 +787,7 @@
 		</button>
 		
 		<button onclick="codeShowPrograms()">
-			Load...
+			Load
 		</button>
 		
 		<% if User.current_user %>
@@ -791,25 +797,17 @@
 			</button>
 			
 			<button onclick="codeSaveAs()">
-				Save As...
+				Save As
 			</button>
 			
 			Version <span id="codeVersionNumber" style="font-weight:bold;"></span>:
 
-			<button onclick="codeLoadPreviousVersion()">
-				Previous
-			</button>
-
-			<button onclick="codeLoadNextVersion()">
-				Next
-			</button>
-
-			<button onclick="codeLoadLatestVersion()">
-				Latest
-			</button>
+			<img src="/images/go-previous.svg" style="height:25px; vertical-align:bottom;" onclick="codeLoadPreviousVersion()"/>
+			<img src="/images/go-next.svg" style="height:25px; vertical-align:bottom;" onclick="codeLoadNextVersion()"/>
+			<img src="/images/go-last.svg" style="height:25px; vertical-align:bottom;" onclick="codeLoadLatestVersion()"/>
 
 			<button onclick="codeShowGlobals()" style="margin-left:30px;">
-				Globals...
+				Globals
 			</button>
 			
 		<% else %>
