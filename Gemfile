@@ -1,8 +1,8 @@
 source 'http://rubygems.org'
 
-gem "rack", '1.2.4'
+gem "rack", '1.2.5'
 gem 'rake', '0.9.2'
-gem 'rails', '3.0.10'
+gem 'rails', '3.0.19'
 gem 'mysql'
 
 # Deploy with Capistrano
